@@ -4,7 +4,13 @@ import type {
   OperationType,
   PropertyStatus,
   PropertyType,
+  Role,
 } from "@/types/enums";
+
+export const ROLE_LABELS: Record<Role, string> = {
+  ADMIN: "Admin",
+  CLIENT: "Client",
+};
 
 export const PROPERTY_TYPE_LABELS: Record<PropertyType, string> = {
   HOUSE: "House",

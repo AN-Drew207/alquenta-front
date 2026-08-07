@@ -19,6 +19,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ROLE_LABELS } from "@/lib/constants";
+import type { Role } from "@/types/enums";
 
 const registerSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -93,7 +95,9 @@ export default function RegisterPage() {
               render={({ field }) => (
                 <Select value={field.value} onValueChange={field.onChange}>
                   <SelectTrigger className="w-full">
-                    <SelectValue />
+                    <SelectValue>
+                      {(value: Role) => ROLE_LABELS[value]}
+                    </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="CLIENT">

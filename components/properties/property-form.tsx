@@ -170,7 +170,9 @@ export function PropertyForm({
             render={({ field }) => (
               <Select value={field.value} onValueChange={field.onChange}>
                 <SelectTrigger className="w-full">
-                  <SelectValue />
+                  <SelectValue>
+                    {(value: PropertyType) => PROPERTY_TYPE_LABELS[value]}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   {(Object.keys(PROPERTY_TYPE_LABELS) as PropertyType[]).map(
@@ -193,7 +195,9 @@ export function PropertyForm({
             render={({ field }) => (
               <Select value={field.value} onValueChange={field.onChange}>
                 <SelectTrigger className="w-full">
-                  <SelectValue />
+                  <SelectValue>
+                    {(value: OperationType) => OPERATION_TYPE_LABELS[value]}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   {(Object.keys(OPERATION_TYPE_LABELS) as OperationType[]).map(
@@ -252,7 +256,9 @@ export function PropertyForm({
             render={({ field }) => (
               <Select value={field.value} onValueChange={field.onChange}>
                 <SelectTrigger className="w-full">
-                  <SelectValue />
+                  <SelectValue>
+                    {(value: PropertyStatus) => PROPERTY_STATUS_LABELS[value]}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   {(Object.keys(PROPERTY_STATUS_LABELS) as PropertyStatus[]).map(

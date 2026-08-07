@@ -43,7 +43,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Gestion Inmueble",
+  title: "Alquenta",
   description: "Property marketplace — browse, list, and offer on properties",
 };
 
