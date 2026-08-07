@@ -32,7 +32,7 @@ export default function DashboardPage() {
             Overview of your property listings.
           </p>
         </div>
-        <Button render={<Link href="/my-properties/new" />}>
+        <Button nativeButton={false} render={<Link href="/my-properties/new" />}>
           Publish a property
         </Button>
       </div>

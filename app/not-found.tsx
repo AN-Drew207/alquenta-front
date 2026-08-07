@@ -8,7 +8,7 @@ export default function NotFound() {
       <p className="mt-2 text-muted-foreground">
         We couldn&apos;t find the page you&apos;re looking for.
       </p>
-      <Button className="mt-6" render={<Link href="/" />}>
+      <Button className="mt-6" nativeButton={false} render={<Link href="/" />}>
         Back to home
       </Button>
     </main>

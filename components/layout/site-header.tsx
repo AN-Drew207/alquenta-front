@@ -41,6 +41,7 @@ export function SiteHeader() {
                   <Button
                     variant="ghost"
                     size="sm"
+                    nativeButton={false}
                     render={<Link href="/dashboard" />}
                   >
                     Dashboard
@@ -48,6 +49,7 @@ export function SiteHeader() {
                   <Button
                     variant="ghost"
                     size="sm"
+                    nativeButton={false}
                     render={<Link href="/my-properties" />}
                   >
                     My properties
@@ -57,6 +59,7 @@ export function SiteHeader() {
               <Button
                 variant="ghost"
                 size="sm"
+                nativeButton={false}
                 render={<Link href="/conversations" />}
               >
                 Conversations
@@ -64,6 +67,7 @@ export function SiteHeader() {
               <Button
                 variant="ghost"
                 size="sm"
+                nativeButton={false}
                 render={<Link href="/notifications" />}
               >
                 Notifications
@@ -99,10 +103,15 @@ export function SiteHeader() {
             </>
           ) : (
             <>
-              <Button variant="ghost" size="sm" render={<Link href="/login" />}>
+              <Button
+                variant="ghost"
+                size="sm"
+                nativeButton={false}
+                render={<Link href="/login" />}
+              >
                 Log in
               </Button>
-              <Button size="sm" render={<Link href="/register" />}>
+              <Button size="sm" nativeButton={false} render={<Link href="/register" />}>
                 Sign up
               </Button>
             </>

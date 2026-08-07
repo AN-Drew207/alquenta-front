@@ -49,7 +49,7 @@ export default function MyPropertiesPage() {
             Manage the properties you&apos;ve published.
           </p>
         </div>
-        <Button render={<Link href="/my-properties/new" />}>
+        <Button nativeButton={false} render={<Link href="/my-properties/new" />}>
           Publish a property
         </Button>
       </div>
@@ -92,6 +92,7 @@ export default function MyPropertiesPage() {
                   <Button
                     variant="outline"
                     size="sm"
+                    nativeButton={false}
                     render={<Link href={`/my-properties/${property.id}/edit`} />}
                   >
                     Edit

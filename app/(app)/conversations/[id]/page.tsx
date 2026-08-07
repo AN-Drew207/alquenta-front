@@ -20,7 +20,12 @@ export default function ConversationDetailPage() {
 
   return (
     <main className="mx-auto max-w-3xl flex-1 px-4 py-8">
-      <Button variant="ghost" size="sm" render={<Link href="/conversations" />}>
+      <Button
+        variant="ghost"
+        size="sm"
+        nativeButton={false}
+        render={<Link href="/conversations" />}
+      >
         <ArrowLeft className="size-4" />
         Back to conversations
       </Button>

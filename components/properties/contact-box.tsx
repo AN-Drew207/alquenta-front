@@ -41,7 +41,10 @@ export function ContactBox({
           <p className="mb-3 text-sm text-muted-foreground">
             Log in as a client to contact the owner or make an offer.
           </p>
-          <Button render={<Link href={`/login?redirect=/properties/${propertyId}`} />}>
+          <Button
+            nativeButton={false}
+            render={<Link href={`/login?redirect=/properties/${propertyId}`} />}
+          >
             Log in to contact
           </Button>
         </CardContent>
@@ -56,7 +59,11 @@ export function ContactBox({
           <CardTitle className="text-base">This is your listing</CardTitle>
         </CardHeader>
         <CardContent>
-          <Button variant="outline" render={<Link href="/my-properties" />}>
+          <Button
+            variant="outline"
+            nativeButton={false}
+            render={<Link href="/my-properties" />}
+          >
             Manage my properties
           </Button>
         </CardContent>
