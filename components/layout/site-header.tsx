@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
@@ -141,9 +142,15 @@ export function SiteHeader() {
   return (
     <header className="border-b border-border bg-background">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4">
-        <Link href="/" className="flex items-center gap-2 font-semibold">
-          <Building2 className="size-5 text-primary" />
-          Alquenta
+        <Link href="/" className="flex items-center pt-1">
+          <Image
+            src="/logo/alquenta-logo-color.svg"
+            alt="Alquenta"
+            width={125}
+            height={28}
+            priority
+            className="h-6 w-auto"
+          />
         </Link>
 
         <PublicNav />
