@@ -3,9 +3,9 @@
     "description": "Marketplace de propiedades — explora, publica y contacta propietarios directamente"
   },
   "common": {
-    "language": "Idioma",
-    "english": "Inglés",
-    "spanish": "Español",
+    "toggleTheme": "Cambiar tema",
+    "lightMode": "Modo claro",
+    "darkMode": "Modo oscuro",
     "cancel": "Cancelar",
     "back": "Atrás",
     "next": "Siguiente",

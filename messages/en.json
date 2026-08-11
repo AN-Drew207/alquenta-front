@@ -3,9 +3,9 @@
     "description": "Property marketplace — browse, list, and contact owners directly"
   },
   "common": {
-    "language": "Language",
-    "english": "English",
-    "spanish": "Spanish",
+    "toggleTheme": "Toggle theme",
+    "lightMode": "Light mode",
+    "darkMode": "Dark mode",
     "cancel": "Cancel",
     "back": "Back",
     "next": "Next",

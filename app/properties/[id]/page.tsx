@@ -4,7 +4,10 @@ import { getFormatter, getTranslations } from "next-intl/server";
 import { Badge } from "@/components/ui/badge";
 import { PropertyGallery } from "@/components/properties/property-gallery";
 import { ContactBox } from "@/components/properties/contact-box";
-import { getOperationTypeLabels, getPropertyTypeLabels } from "@/lib/i18n/labels.server";
+import {
+  getOperationTypeLabels,
+  getPropertyTypeLabels,
+} from "@/lib/i18n/labels.server";
 import { cn } from "@/lib/utils";
 import type { Property } from "@/types/property";
 
@@ -52,7 +55,9 @@ export default async function PropertyDetailPage({
             <Badge
               className={cn(
                 "border-transparent text-white",
-                property.operationType === "RENT" ? "bg-primary" : "bg-blue-600",
+                property.operationType === "RENT"
+                  ? "bg-primary"
+                  : "bg-blue-600",
               )}
             >
               {operationTypeLabels[property.operationType]}
@@ -74,16 +79,19 @@ export default async function PropertyDetailPage({
           </p>
 
           <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-2 text-sm text-muted-foreground sm:grid-cols-4">
-            <span className="flex items-center gap-1">
-              <Ruler className="size-4 shrink-0" /> {property.squareMeters ?? 0}m²
+            <span className="flex items-center gap-1 whitespace-nowrap">
+              <Ruler className="size-4 shrink-0" /> {property.squareMeters ?? 0}
+              m²
             </span>
-            <span className="flex items-center gap-1">
-              <Bed className="size-4 shrink-0" /> {t("bedrooms", { count: property.bedrooms ?? 0 })}
+            <span className="flex items-center gap-1 whitespace-nowrap">
+              <Bed className="size-4 shrink-0" />{" "}
+              {t("bedrooms", { count: property.bedrooms ?? 0 })}
             </span>
-            <span className="flex items-center gap-1">
-              <Bath className="size-4 shrink-0" /> {t("bathrooms", { count: property.bathrooms ?? 0 })}
+            <span className="flex items-center gap-1 whitespace-nowrap">
+              <Bath className="size-4 shrink-0" />{" "}
+              {t("bathrooms", { count: property.bathrooms ?? 0 })}
             </span>
-            <span className="flex items-center gap-1">
+            <span className="flex items-center gap-1 whitespace-nowrap">
               <Car className="size-4 shrink-0" />{" "}
               {t("parkingSpaces", { count: property.parkingSpaces ?? 0 })}
             </span>

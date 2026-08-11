@@ -2,23 +2,24 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
+import { useTheme } from "next-themes";
+import { useSyncExternalStore } from "react";
 import {
   Bell,
   Building2,
-  Check,
   ChevronDown,
-  Globe,
   LayoutDashboard,
+  LogIn,
   Menu,
   MessageSquare,
+  Moon,
+  Sun,
+  UserPlus,
 } from "lucide-react";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { useLogoutMutation } from "@/hooks/use-auth-mutations";
 import { useMyNotifications } from "@/hooks/use-notifications";
-import { setLocale } from "@/lib/actions/set-locale";
-import type { Locale } from "@/i18n/request";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarBadge, AvatarFallback } from "@/components/ui/avatar";
@@ -91,20 +92,66 @@ function PublicNav() {
   );
 }
 
+function useMounted() {
+  return useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
+}
+
+function useIsDarkTheme() {
+  const { resolvedTheme, setTheme } = useTheme();
+  const mounted = useMounted();
+  return { isDark: mounted && resolvedTheme === "dark", setTheme };
+}
+
+function ThemeToggle({ className }: { className?: string }) {
+  const t = useTranslations("common");
+  const { isDark, setTheme } = useIsDarkTheme();
+
+  return (
+    <Button
+      variant="ghost"
+      size="icon"
+      className={className}
+      onClick={() => setTheme(isDark ? "light" : "dark")}
+    >
+      {isDark ? <Sun className="size-4" /> : <Moon className="size-4" />}
+      <span className="sr-only">{t("toggleTheme")}</span>
+    </Button>
+  );
+}
+
+function ThemeMenuItem() {
+  const t = useTranslations("common");
+  const { isDark, setTheme } = useIsDarkTheme();
+
+  return (
+    <DropdownMenuItem onClick={() => setTheme(isDark ? "light" : "dark")}>
+      {isDark ? <Sun /> : <Moon />}
+      {isDark ? t("lightMode") : t("darkMode")}
+    </DropdownMenuItem>
+  );
+}
+
 function MobileNav() {
   const t = useTranslations("nav");
   const propertyTypeLabels = usePropertyTypeLabels();
   const propertyTypes = Object.keys(propertyTypeLabels) as PropertyType[];
+  const { data: user, isLoading } = useCurrentUser();
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        render={<Button variant="ghost" size="icon" className="md:hidden" />}
+        render={
+          <Button variant="ghost" size="icon" className="md:hidden" />
+        }
       >
         <Menu className="size-5" />
         <span className="sr-only">{t("menu")}</span>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="w-56">
+      <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuItem render={<Link href="/" />}>
           {t("home")}
         </DropdownMenuItem>
@@ -131,50 +178,23 @@ function MobileNav() {
         <DropdownMenuItem render={<Link href="/contact" />}>
           {t("contact")}
         </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
-}
 
-function LanguageSwitcher() {
-  const locale = useLocale();
-  const t = useTranslations("common");
-  const router = useRouter();
+        <DropdownMenuSeparator />
+        <ThemeMenuItem />
 
-  async function handleSelect(next: Locale) {
-    if (next === locale) return;
-    await setLocale(next);
-    router.refresh();
-  }
-
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger
-        render={
-          <Button variant="ghost" size="icon" className="cursor-pointer" />
-        }
-      >
-        <Globe className="size-4" />
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuGroup>
-          <DropdownMenuLabel>{t("language")}</DropdownMenuLabel>
-        </DropdownMenuGroup>
-
-        <DropdownMenuItem
-          onClick={() => handleSelect("es")}
-          className="justify-between"
-        >
-          {t("spanish")}
-          {locale === "es" && <Check className="size-3.5" />}
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          onClick={() => handleSelect("en")}
-          className="justify-between"
-        >
-          {t("english")}
-          {locale === "en" && <Check className="size-3.5" />}
-        </DropdownMenuItem>
+        {!isLoading && !user && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem render={<Link href="/login" />}>
+              <LogIn />
+              {t("logIn")}
+            </DropdownMenuItem>
+            <DropdownMenuItem render={<Link href="/register" />}>
+              <UserPlus />
+              {t("signUp")}
+            </DropdownMenuItem>
+          </>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );
@@ -192,24 +212,21 @@ export function SiteHeader() {
   return (
     <header className="border-b border-border bg-background">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4">
-        <div className="flex items-center gap-1">
-          <MobileNav />
-          <Link href="/" className="flex items-center pt-1">
-            <Image
-              src="/logo/alquenta-logo-color.svg"
-              alt="Alquenta"
-              width={125}
-              height={28}
-              priority
-              className="h-6 w-auto"
-            />
-          </Link>
-        </div>
+        <Link href="/" className="flex items-center pt-1">
+          <Image
+            src="/logo/alquenta-logo-color.svg"
+            alt="Alquenta"
+            width={125}
+            height={28}
+            priority
+            className="h-6 w-auto"
+          />
+        </Link>
 
         <PublicNav />
 
         <div className="flex items-center gap-2">
-          <LanguageSwitcher />
+          <ThemeToggle className="hidden md:inline-flex" />
           {isLoading ? (
             <Skeleton className="h-8 w-24" />
           ) : user ? (
@@ -280,7 +297,7 @@ export function SiteHeader() {
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <>
+            <div className="hidden items-center gap-2 md:flex">
               <Button
                 variant="ghost"
                 size="sm"
@@ -296,8 +313,9 @@ export function SiteHeader() {
               >
                 {t("signUp")}
               </Button>
-            </>
+            </div>
           )}
+          <MobileNav />
         </div>
       </div>
     </header>
