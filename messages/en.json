@@ -132,7 +132,7 @@
     "cancelConfirmDescription": "\"{title}\" will stop being published, but it stays saved in your properties. You'll be able to delete it permanently afterwards.",
     "propertyCancelled": "Listing cancelled",
     "couldNotCancelProperty": "Could not cancel listing",
-    "delete": "Delete permanently",
+    "delete": "Delete",
     "deleteConfirmTitle": "Delete this property permanently?",
     "deleteConfirmDescription": "This action cannot be undone. \"{title}\" will be permanently removed.",
     "propertyDeleted": "Property deleted",

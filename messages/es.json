@@ -132,7 +132,7 @@
     "cancelConfirmDescription": "\"{title}\" dejará de estar publicada, pero queda guardada en tus propiedades. Después vas a poder eliminarla de forma permanente.",
     "propertyCancelled": "Publicación cancelada",
     "couldNotCancelProperty": "No se pudo cancelar la publicación",
-    "delete": "Eliminar definitivamente",
+    "delete": "Eliminar",
     "deleteConfirmTitle": "¿Eliminar esta propiedad de forma permanente?",
     "deleteConfirmDescription": "Esta acción no se puede deshacer. \"{title}\" se eliminará de forma permanente.",
     "propertyDeleted": "Propiedad eliminada",
