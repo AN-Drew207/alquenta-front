@@ -73,18 +73,18 @@ export default async function PropertyDetailPage({
             })}
           </p>
 
-          <div className="mt-4 grid grid-cols-4 gap-2 text-sm text-muted-foreground">
+          <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-2 text-sm text-muted-foreground sm:grid-cols-4">
             <span className="flex items-center gap-1">
-              <Ruler className="size-4" /> {property.squareMeters ?? 0}m²
+              <Ruler className="size-4 shrink-0" /> {property.squareMeters ?? 0}m²
             </span>
             <span className="flex items-center gap-1">
-              <Bed className="size-4" /> {t("bedrooms", { count: property.bedrooms ?? 0 })}
+              <Bed className="size-4 shrink-0" /> {t("bedrooms", { count: property.bedrooms ?? 0 })}
             </span>
             <span className="flex items-center gap-1">
-              <Bath className="size-4" /> {t("bathrooms", { count: property.bathrooms ?? 0 })}
+              <Bath className="size-4 shrink-0" /> {t("bathrooms", { count: property.bathrooms ?? 0 })}
             </span>
             <span className="flex items-center gap-1">
-              <Car className="size-4" />{" "}
+              <Car className="size-4 shrink-0" />{" "}
               {t("parkingSpaces", { count: property.parkingSpaces ?? 0 })}
             </span>
           </div>

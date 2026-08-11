@@ -12,6 +12,7 @@
     "unexpectedError": "Unexpected error"
   },
   "nav": {
+    "menu": "Menu",
     "home": "Home",
     "propertyTypes": "Property Types",
     "about": "About",

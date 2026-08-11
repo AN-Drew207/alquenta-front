@@ -12,6 +12,7 @@
     "unexpectedError": "Error inesperado"
   },
   "nav": {
+    "menu": "Menú",
     "home": "Inicio",
     "propertyTypes": "Tipos de propiedad",
     "about": "Nosotros",

@@ -11,6 +11,7 @@ import {
   ChevronDown,
   Globe,
   LayoutDashboard,
+  Menu,
   MessageSquare,
 } from "lucide-react";
 import { useCurrentUser } from "@/hooks/use-current-user";
@@ -27,7 +28,11 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuPortal,
   DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { usePropertyTypeLabels } from "@/lib/i18n/labels";
@@ -83,6 +88,51 @@ function PublicNav() {
         {t("contact")}
       </Button>
     </nav>
+  );
+}
+
+function MobileNav() {
+  const t = useTranslations("nav");
+  const propertyTypeLabels = usePropertyTypeLabels();
+  const propertyTypes = Object.keys(propertyTypeLabels) as PropertyType[];
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger
+        render={<Button variant="ghost" size="icon" className="md:hidden" />}
+      >
+        <Menu className="size-5" />
+        <span className="sr-only">{t("menu")}</span>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="start" className="w-56">
+        <DropdownMenuItem render={<Link href="/" />}>
+          {t("home")}
+        </DropdownMenuItem>
+
+        <DropdownMenuSub>
+          <DropdownMenuSubTrigger>{t("propertyTypes")}</DropdownMenuSubTrigger>
+          <DropdownMenuPortal>
+            <DropdownMenuSubContent>
+              {propertyTypes.map((type) => (
+                <DropdownMenuItem
+                  key={type}
+                  render={<Link href={`/?type=${type}`} />}
+                >
+                  {propertyTypeLabels[type]}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuSubContent>
+          </DropdownMenuPortal>
+        </DropdownMenuSub>
+
+        <DropdownMenuItem render={<Link href="/about" />}>
+          {t("about")}
+        </DropdownMenuItem>
+        <DropdownMenuItem render={<Link href="/contact" />}>
+          {t("contact")}
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
 
@@ -142,16 +192,19 @@ export function SiteHeader() {
   return (
     <header className="border-b border-border bg-background">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4">
-        <Link href="/" className="flex items-center pt-1">
-          <Image
-            src="/logo/alquenta-logo-color.svg"
-            alt="Alquenta"
-            width={125}
-            height={28}
-            priority
-            className="h-6 w-auto"
-          />
-        </Link>
+        <div className="flex items-center gap-1">
+          <MobileNav />
+          <Link href="/" className="flex items-center pt-1">
+            <Image
+              src="/logo/alquenta-logo-color.svg"
+              alt="Alquenta"
+              width={125}
+              height={28}
+              priority
+              className="h-6 w-auto"
+            />
+          </Link>
+        </div>
 
         <PublicNav />
 
