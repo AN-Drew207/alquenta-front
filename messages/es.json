@@ -39,9 +39,9 @@
     "viewDetails": "Ver detalles",
     "minPrice": "Precio mín.",
     "maxPrice": "Precio máx.",
-    "bedroomsPlaceholder": "Dormitorios",
-    "bathroomsPlaceholder": "Baños",
-    "parkingPlaceholder": "Estacionamiento",
+    "bedroomsPlaceholder": "N° Habitaciones",
+    "bathroomsPlaceholder": "N° Baños",
+    "parkingPlaceholder": "N° Estacionamientos",
     "any": "Cualquiera",
     "countOrMore": "{count}+",
     "totalAvailable": "{count, plural, =1 {1 propiedad disponible} other {# propiedades disponibles}}"
