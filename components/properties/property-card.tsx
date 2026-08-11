@@ -1,18 +1,17 @@
+"use client";
+
 import Link from "next/link";
-import { Bed, Bath, Ruler } from "lucide-react";
+import { useFormatter, useTranslations } from "next-intl";
+import { Bed, Bath, Car, Ruler } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { OPERATION_TYPE_LABELS } from "@/lib/constants";
+import { useOperationTypeLabels } from "@/lib/i18n/labels";
+import { cn } from "@/lib/utils";
 import type { Property } from "@/types/property";
 
-function formatPrice(price: number): string {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    maximumFractionDigits: 0,
-  }).format(price);
-}
-
 export function PropertyCard({ property }: { property: Property }) {
+  const t = useTranslations("home");
+  const format = useFormatter();
+  const operationTypeLabels = useOperationTypeLabels();
   const cover = property.images[0];
 
   return (
@@ -28,12 +27,17 @@ export function PropertyCard({ property }: { property: Property }) {
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center text-sm text-muted-foreground">
-              No image
+              {t("noImage")}
             </div>
           )}
         </div>
-        <span className="absolute top-2.5 right-2.5 rounded-full bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground">
-          {OPERATION_TYPE_LABELS[property.operationType]}
+        <span
+          className={cn(
+            "absolute top-2.5 right-2.5 rounded-full px-3 py-1.5 text-xs font-medium text-white",
+            property.operationType === "RENT" ? "bg-primary" : "bg-blue-600",
+          )}
+        >
+          {operationTypeLabels[property.operationType]}
         </span>
       </Link>
 
@@ -42,40 +46,44 @@ export function PropertyCard({ property }: { property: Property }) {
 
         <div className="flex items-end gap-1">
           <span className="text-xl font-bold tracking-wide text-foreground">
-            {formatPrice(property.price)}
+            {format.number(property.price, {
+              style: "currency",
+              currency: "USD",
+              maximumFractionDigits: 0,
+            })}
           </span>
           {property.operationType === "RENT" && (
             <span className="pb-0.5 text-sm font-medium text-muted-foreground">
-              / month
+              {t("perMonth")}
             </span>
           )}
         </div>
 
-        <div className="flex flex-wrap justify-between gap-2 rounded-xl bg-muted px-5 py-2">
-          {property.bedrooms !== null && (
-            <div className="flex flex-col items-center gap-0.5">
-              <Bed className="size-5 text-muted-foreground" />
-              <span className="text-xs text-muted-foreground">
-                {property.bedrooms}
-              </span>
-            </div>
-          )}
-          {property.bathrooms !== null && (
-            <div className="flex flex-col items-center gap-0.5">
-              <Bath className="size-5 text-muted-foreground" />
-              <span className="text-xs text-muted-foreground">
-                {property.bathrooms}
-              </span>
-            </div>
-          )}
-          {property.squareMeters !== null && (
-            <div className="flex flex-col items-center gap-0.5">
-              <Ruler className="size-5 text-muted-foreground" />
-              <span className="text-xs text-muted-foreground">
-                {property.squareMeters}m²
-              </span>
-            </div>
-          )}
+        <div className="grid grid-cols-4 gap-2 rounded-xl bg-muted px-2 py-2">
+          <div className="flex flex-col items-center gap-0.5">
+            <Ruler className="size-5 text-muted-foreground" />
+            <span className="text-xs text-muted-foreground">
+              {property.squareMeters ?? 0}m²
+            </span>
+          </div>
+          <div className="flex flex-col items-center gap-0.5">
+            <Bed className="size-5 text-muted-foreground" />
+            <span className="text-xs text-muted-foreground">
+              {property.bedrooms ?? 0}
+            </span>
+          </div>
+          <div className="flex flex-col items-center gap-0.5">
+            <Bath className="size-5 text-muted-foreground" />
+            <span className="text-xs text-muted-foreground">
+              {property.bathrooms ?? 0}
+            </span>
+          </div>
+          <div className="flex flex-col items-center gap-0.5">
+            <Car className="size-5 text-muted-foreground" />
+            <span className="text-xs text-muted-foreground">
+              {property.parkingSpaces ?? 0}
+            </span>
+          </div>
         </div>
 
         <Button
@@ -83,7 +91,7 @@ export function PropertyCard({ property }: { property: Property }) {
           render={<Link href={`/properties/${property.id}`} />}
           className="w-full rounded-full font-semibold"
         >
-          View Details
+          {t("viewDetails")}
         </Button>
       </div>
     </div>

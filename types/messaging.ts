@@ -11,7 +11,6 @@ export interface Message {
   conversationId: string;
   authorId: string;
   content: string;
-  offerAmount: number | null;
   read: boolean;
   createdAt: string;
 }
@@ -19,7 +18,6 @@ export interface Message {
 export interface StartConversationInput {
   propertyId: string;
   content: string;
-  offerAmount?: number;
 }
 
 export interface StartConversationResponse {
@@ -29,5 +27,4 @@ export interface StartConversationResponse {
 
 export interface ReplyInput {
   content: string;
-  offerAmount?: number;
 }

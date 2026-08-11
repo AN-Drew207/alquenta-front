@@ -55,3 +55,14 @@ export function useDeletePropertyMutation() {
     },
   });
 }
+
+export function useCancelPropertyMutation() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => updateProperty(id, { status: "CANCELLED" }),
+    onSuccess: (_property, id) => {
+      queryClient.invalidateQueries({ queryKey: ["properties", "mine"] });
+      queryClient.invalidateQueries({ queryKey: ["properties", id] });
+    },
+  });
+}

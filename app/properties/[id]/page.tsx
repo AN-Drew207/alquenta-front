@@ -1,12 +1,11 @@
 import { notFound } from "next/navigation";
-import { Bed, Bath, Ruler, MapPin } from "lucide-react";
+import { Bed, Bath, Car, Ruler, MapPin } from "lucide-react";
+import { getFormatter, getTranslations } from "next-intl/server";
 import { Badge } from "@/components/ui/badge";
 import { PropertyGallery } from "@/components/properties/property-gallery";
 import { ContactBox } from "@/components/properties/contact-box";
-import {
-  OPERATION_TYPE_LABELS,
-  PROPERTY_TYPE_LABELS,
-} from "@/lib/constants";
+import { getOperationTypeLabels, getPropertyTypeLabels } from "@/lib/i18n/labels.server";
+import { cn } from "@/lib/utils";
 import type { Property } from "@/types/property";
 
 async function getProperty(id: string): Promise<Property | null> {
@@ -25,14 +24,6 @@ async function getProperty(id: string): Promise<Property | null> {
   return res.json();
 }
 
-function formatPrice(price: number): string {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    maximumFractionDigits: 0,
-  }).format(price);
-}
-
 export default async function PropertyDetailPage({
   params,
 }: PageProps<"/properties/[id]">) {
@@ -43,6 +34,11 @@ export default async function PropertyDetailPage({
     notFound();
   }
 
+  const t = await getTranslations("propertyDetail");
+  const format = await getFormatter();
+  const propertyTypeLabels = await getPropertyTypeLabels();
+  const operationTypeLabels = await getOperationTypeLabels();
+
   return (
     <main className="mx-auto max-w-6xl flex-1 px-4 py-8">
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
@@ -51,44 +47,65 @@ export default async function PropertyDetailPage({
 
           <div className="mt-6 flex items-center gap-2">
             <Badge variant="secondary">
-              {PROPERTY_TYPE_LABELS[property.type]}
+              {propertyTypeLabels[property.type]}
             </Badge>
-            <Badge variant="outline">
-              {OPERATION_TYPE_LABELS[property.operationType]}
+            <Badge
+              className={cn(
+                "border-transparent text-white",
+                property.operationType === "RENT" ? "bg-primary" : "bg-blue-600",
+              )}
+            >
+              {operationTypeLabels[property.operationType]}
             </Badge>
           </div>
 
           <h1 className="mt-2 text-2xl font-bold">{property.title}</h1>
           <p className="mt-1 flex items-center gap-1 text-muted-foreground">
             <MapPin className="size-4" />
-            {property.address}, {property.city}
+            {property.address}, {property.municipality}, {property.state}
           </p>
 
           <p className="mt-4 text-3xl font-bold">
-            {formatPrice(property.price)}
+            {format.number(property.price, {
+              style: "currency",
+              currency: "USD",
+              maximumFractionDigits: 0,
+            })}
           </p>
 
-          <div className="mt-4 flex items-center gap-4 text-sm text-muted-foreground">
-            {property.bedrooms !== null && (
-              <span className="flex items-center gap-1">
-                <Bed className="size-4" /> {property.bedrooms} bedrooms
-              </span>
-            )}
-            {property.bathrooms !== null && (
-              <span className="flex items-center gap-1">
-                <Bath className="size-4" /> {property.bathrooms} bathrooms
-              </span>
-            )}
-            {property.squareMeters !== null && (
-              <span className="flex items-center gap-1">
-                <Ruler className="size-4" /> {property.squareMeters}m²
-              </span>
-            )}
+          <div className="mt-4 grid grid-cols-4 gap-2 text-sm text-muted-foreground">
+            <span className="flex items-center gap-1">
+              <Ruler className="size-4" /> {property.squareMeters ?? 0}m²
+            </span>
+            <span className="flex items-center gap-1">
+              <Bed className="size-4" /> {t("bedrooms", { count: property.bedrooms ?? 0 })}
+            </span>
+            <span className="flex items-center gap-1">
+              <Bath className="size-4" /> {t("bathrooms", { count: property.bathrooms ?? 0 })}
+            </span>
+            <span className="flex items-center gap-1">
+              <Car className="size-4" />{" "}
+              {t("parkingSpaces", { count: property.parkingSpaces ?? 0 })}
+            </span>
           </div>
 
           <p className="mt-6 whitespace-pre-line text-sm leading-relaxed">
             {property.description}
           </p>
+
+          {property.videos.length > 0 && (
+            <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
+              {property.videos.map((video) => (
+                // eslint-disable-next-line jsx-a11y/media-has-caption
+                <video
+                  key={video}
+                  src={video}
+                  controls
+                  className="aspect-video w-full rounded-lg bg-muted"
+                />
+              ))}
+            </div>
+          )}
         </div>
 
         <div>

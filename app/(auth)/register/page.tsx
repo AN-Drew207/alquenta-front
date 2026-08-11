@@ -6,6 +6,7 @@ import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 import { useRegisterMutation } from "@/hooks/use-auth-mutations";
 import { isApiError } from "@/lib/api/client";
 import { Button } from "@/components/ui/button";
@@ -19,23 +20,24 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ROLE_LABELS } from "@/lib/constants";
+import { useRoleLabels } from "@/lib/i18n/labels";
 import type { Role } from "@/types/enums";
 
-const registerSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  email: z.email("Enter a valid email"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
-  role: z.enum(["ADMIN", "CLIENT"]),
-  phone: z.string().optional(),
-});
-
-type RegisterFormValues = z.infer<typeof registerSchema>;
-
 export default function RegisterPage() {
+  const t = useTranslations("auth");
+  const roleLabels = useRoleLabels();
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirect") ?? undefined;
   const registerMutation = useRegisterMutation(redirectTo);
+
+  const registerSchema = z.object({
+    name: z.string().min(1, t("nameRequired")),
+    email: z.email(t("invalidEmail")),
+    password: z.string().min(8, t("passwordMinLength")),
+    role: z.enum(["ADMIN", "CLIENT"]),
+    phone: z.string().optional(),
+  });
+  type RegisterFormValues = z.infer<typeof registerSchema>;
 
   const {
     register,
@@ -50,7 +52,7 @@ export default function RegisterPage() {
   function onSubmit(values: RegisterFormValues) {
     registerMutation.mutate(values, {
       onError: (error) => {
-        toast.error(isApiError(error) ? error.message : "Could not create account");
+        toast.error(isApiError(error) ? error.message : t("couldNotCreateAccount"));
       },
     });
   }
@@ -58,37 +60,37 @@ export default function RegisterPage() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Create an account</CardTitle>
+        <CardTitle>{t("createAccount")}</CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-1.5">
-            <Label htmlFor="name">Name</Label>
+            <Label htmlFor="name">{t("name")}</Label>
             <Input id="name" {...register("name")} />
             {errors.name && (
               <p className="text-sm text-destructive">{errors.name.message}</p>
             )}
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">{t("email")}</Label>
             <Input id="email" type="email" {...register("email")} />
             {errors.email && (
               <p className="text-sm text-destructive">{errors.email.message}</p>
             )}
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="password">{t("password")}</Label>
             <Input id="password" type="password" {...register("password")} />
             {errors.password && (
               <p className="text-sm text-destructive">{errors.password.message}</p>
             )}
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="phone">Phone (optional)</Label>
+            <Label htmlFor="phone">{t("phoneOptional")}</Label>
             <Input id="phone" {...register("phone")} />
           </div>
           <div className="space-y-1.5">
-            <Label>I am a...</Label>
+            <Label>{t("iAmA")}</Label>
             <Controller
               control={control}
               name="role"
@@ -96,15 +98,15 @@ export default function RegisterPage() {
                 <Select value={field.value} onValueChange={field.onChange}>
                   <SelectTrigger className="w-full">
                     <SelectValue>
-                      {(value: Role) => ROLE_LABELS[value]}
+                      {(value: Role) => roleLabels[value]}
                     </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="CLIENT">
-                      Client — browse and offer on properties
+                      {t("roleClientDescription")}
                     </SelectItem>
                     <SelectItem value="ADMIN">
-                      Admin — publish and manage properties
+                      {t("roleAdminDescription")}
                     </SelectItem>
                   </SelectContent>
                 </Select>
@@ -116,13 +118,13 @@ export default function RegisterPage() {
             className="w-full"
             disabled={registerMutation.isPending}
           >
-            {registerMutation.isPending ? "Creating account..." : "Sign up"}
+            {registerMutation.isPending ? t("creatingAccount") : t("signUp")}
           </Button>
         </form>
         <p className="mt-4 text-center text-sm text-muted-foreground">
-          Already have an account?{" "}
+          {t("alreadyHaveAccount")}{" "}
           <Link href="/login" className="text-primary underline-offset-4 hover:underline">
-            Log in
+            {t("logIn")}
           </Link>
         </p>
       </CardContent>

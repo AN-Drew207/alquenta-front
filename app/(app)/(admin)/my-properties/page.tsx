@@ -2,7 +2,12 @@
 
 import Link from "next/link";
 import { toast } from "sonner";
-import { useMyProperties, useDeletePropertyMutation } from "@/hooks/use-properties";
+import { useTranslations, useFormatter } from "next-intl";
+import {
+  useMyProperties,
+  useDeletePropertyMutation,
+  useCancelPropertyMutation,
+} from "@/hooks/use-properties";
 import { isApiError } from "@/lib/api/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -26,17 +31,31 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { PROPERTY_STATUS_LABELS, PROPERTY_TYPE_LABELS } from "@/lib/constants";
+import { usePropertyStatusLabels, usePropertyTypeLabels } from "@/lib/i18n/labels";
 
 export default function MyPropertiesPage() {
+  const t = useTranslations("myProperties");
+  const tCommon = useTranslations("common");
+  const format = useFormatter();
+  const propertyTypeLabels = usePropertyTypeLabels();
+  const propertyStatusLabels = usePropertyStatusLabels();
   const { data: properties, isLoading } = useMyProperties();
   const deleteMutation = useDeletePropertyMutation();
+  const cancelMutation = useCancelPropertyMutation();
 
   function handleDelete(id: string) {
     deleteMutation.mutate(id, {
-      onSuccess: () => toast.success("Property deleted"),
+      onSuccess: () => toast.success(t("propertyDeleted")),
       onError: (error) =>
-        toast.error(isApiError(error) ? error.message : "Could not delete property"),
+        toast.error(isApiError(error) ? error.message : t("couldNotDeleteProperty")),
+    });
+  }
+
+  function handleCancel(id: string) {
+    cancelMutation.mutate(id, {
+      onSuccess: () => toast.success(t("propertyCancelled")),
+      onError: (error) =>
+        toast.error(isApiError(error) ? error.message : t("couldNotCancelProperty")),
     });
   }
 
@@ -44,48 +63,56 @@ export default function MyPropertiesPage() {
     <main className="mx-auto max-w-6xl flex-1 px-4 py-8">
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">My properties</h1>
-          <p className="text-muted-foreground">
-            Manage the properties you&apos;ve published.
-          </p>
+          <h1 className="text-2xl font-bold">{t("title")}</h1>
+          <p className="text-muted-foreground">{t("subtitle")}</p>
         </div>
         <Button nativeButton={false} render={<Link href="/my-properties/new" />}>
-          Publish a property
+          {t("publishProperty")}
         </Button>
       </div>
 
       {isLoading ? (
         <Skeleton className="h-64 w-full" />
       ) : !properties || properties.length === 0 ? (
-        <p className="py-12 text-center text-muted-foreground">
-          You haven&apos;t published any properties yet.
-        </p>
+        <p className="py-12 text-center text-muted-foreground">{t("emptyState")}</p>
       ) : (
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Title</TableHead>
-              <TableHead>Type</TableHead>
-              <TableHead>City</TableHead>
-              <TableHead>Price</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead>{t("columnTitle")}</TableHead>
+              <TableHead>{t("columnType")}</TableHead>
+              <TableHead>{t("columnLocation")}</TableHead>
+              <TableHead>{t("columnPrice")}</TableHead>
+              <TableHead>{t("columnStatus")}</TableHead>
+              <TableHead className="text-right">{t("columnActions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {properties.map((property) => (
               <TableRow key={property.id}>
-                <TableCell className="font-medium">{property.title}</TableCell>
-                <TableCell>{PROPERTY_TYPE_LABELS[property.type]}</TableCell>
-                <TableCell>{property.city}</TableCell>
-                <TableCell>${property.price.toLocaleString()}</TableCell>
+                <TableCell className="font-medium">
+                  <Link href={`/properties/${property.id}`} className="hover:underline">
+                    {property.title}
+                  </Link>
+                </TableCell>
+                <TableCell>{propertyTypeLabels[property.type]}</TableCell>
+                <TableCell>
+                  {property.municipality}, {property.state}
+                </TableCell>
+                <TableCell>
+                  {format.number(property.price, {
+                    style: "currency",
+                    currency: "USD",
+                    maximumFractionDigits: 0,
+                  })}
+                </TableCell>
                 <TableCell>
                   <Badge
                     variant={
                       property.status === "AVAILABLE" ? "default" : "secondary"
                     }
                   >
-                    {PROPERTY_STATUS_LABELS[property.status]}
+                    {propertyStatusLabels[property.status]}
                   </Badge>
                 </TableCell>
                 <TableCell className="flex justify-end gap-2 text-right">
@@ -95,28 +122,49 @@ export default function MyPropertiesPage() {
                     nativeButton={false}
                     render={<Link href={`/my-properties/${property.id}/edit`} />}
                   >
-                    Edit
+                    {t("edit")}
                   </Button>
-                  <AlertDialog>
-                    <AlertDialogTrigger render={<Button variant="destructive" size="sm" />}>
-                      Delete
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Delete this property?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          This action cannot be undone. &quot;{property.title}&quot;
-                          will be permanently removed.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={() => handleDelete(property.id)}>
-                          Delete
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
+                  {property.status === "CANCELLED" ? (
+                    <AlertDialog>
+                      <AlertDialogTrigger render={<Button variant="destructive" size="sm" />}>
+                        {t("delete")}
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>{t("deleteConfirmTitle")}</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            {t("deleteConfirmDescription", { title: property.title })}
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>{tCommon("cancel")}</AlertDialogCancel>
+                          <AlertDialogAction onClick={() => handleDelete(property.id)}>
+                            {t("delete")}
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  ) : (
+                    <AlertDialog>
+                      <AlertDialogTrigger render={<Button variant="destructive" size="sm" />}>
+                        {t("cancelListing")}
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>{t("cancelConfirmTitle")}</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            {t("cancelConfirmDescription", { title: property.title })}
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>{tCommon("cancel")}</AlertDialogCancel>
+                          <AlertDialogAction onClick={() => handleCancel(property.id)}>
+                            {t("cancelListing")}
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  )}
                 </TableCell>
               </TableRow>
             ))}

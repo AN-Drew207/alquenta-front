@@ -1,38 +1,23 @@
 import { Handshake, MessagesSquare, Search, ShieldCheck } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import { Card, CardContent } from "@/components/ui/card";
 
-const steps = [
-  {
-    icon: Search,
-    title: "Browse the catalog",
-    description: "Explore available properties from independent owners and agencies, filter by type and city.",
-  },
-  {
-    icon: MessagesSquare,
-    title: "Contact the owner",
-    description: "Send a message or make an offer directly from the listing — no middleman, no waiting.",
-  },
-  {
-    icon: Handshake,
-    title: "Negotiate directly",
-    description: "Chat back and forth in one conversation thread until you both agree on the terms.",
-  },
-  {
-    icon: ShieldCheck,
-    title: "Close the deal",
-    description: "The actual contract happens off-platform, between you and the property owner.",
-  },
-];
+const STEP_ICONS = [Search, MessagesSquare, Handshake, ShieldCheck];
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const t = await getTranslations("about");
+  const steps = [1, 2, 3, 4].map((n) => ({
+    icon: STEP_ICONS[n - 1],
+    title: t(`step${n}Title`),
+    description: t(`step${n}Description`),
+  }));
+
   return (
     <main className="mx-auto max-w-4xl flex-1 px-4 py-12">
       <div className="text-center">
-        <h1 className="text-3xl font-bold">About Alquenta</h1>
+        <h1 className="text-3xl font-bold">{t("title")}</h1>
         <p className="mx-auto mt-3 max-w-2xl text-muted-foreground">
-          Alquenta is a property marketplace where anyone can publish
-          listings as an admin, and anyone can browse and reach out as a
-          client — directly, without intermediaries.
+          {t("intro")}
         </p>
       </div>
 

@@ -2,16 +2,18 @@
 
 import { useParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 import { useProperty, useUpdatePropertyMutation } from "@/hooks/use-properties";
 import { isApiError } from "@/lib/api/client";
 import {
-  PropertyForm,
+  PropertyWizard,
   type PropertyFormSubmitValues,
-} from "@/components/properties/property-form";
+} from "@/components/properties/property-wizard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function EditPropertyPage() {
+  const t = useTranslations("myProperties");
   const params = useParams<{ id: string }>();
   const router = useRouter();
   const { data: property, isLoading } = useProperty(params.id);
@@ -20,31 +22,31 @@ export default function EditPropertyPage() {
   function handleSubmit(values: PropertyFormSubmitValues) {
     updateMutation.mutate(values, {
       onSuccess: () => {
-        toast.success("Property updated");
+        toast.success(t("propertyUpdated"));
         router.push("/my-properties");
       },
       onError: (error) => {
-        toast.error(isApiError(error) ? error.message : "Could not update property");
+        toast.error(isApiError(error) ? error.message : t("couldNotUpdateProperty"));
       },
     });
   }
 
   return (
-    <main className="mx-auto max-w-2xl flex-1 px-4 py-8">
-      <Card>
+    <main className="mx-auto max-w-5xl flex-1 px-4 py-8">
+      <Card className="w-full">
         <CardHeader>
-          <CardTitle>Edit property</CardTitle>
+          <CardTitle>{t("editTitle")}</CardTitle>
         </CardHeader>
         <CardContent>
           {isLoading || !property ? (
             <Skeleton className="h-96 w-full" />
           ) : (
-            <PropertyForm
+            <PropertyWizard
               defaultProperty={property}
               onSubmit={handleSubmit}
               isSubmitting={updateMutation.isPending}
               showStatus
-              submitLabel="Save changes"
+              submitLabel={t("saveChanges")}
             />
           )}
         </CardContent>

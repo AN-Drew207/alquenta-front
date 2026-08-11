@@ -1,40 +1,14 @@
-import type { Metadata } from "next";
-import { Geist_Mono } from "next/font/google";
-import localFont from "next/font/local";
+import { Geist_Mono, Manrope } from "next/font/google";
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale, getMessages, getTranslations } from "next-intl/server";
 import { QueryProvider } from "@/lib/query-client";
 import { Toaster } from "@/components/ui/sonner";
 import { SiteHeader } from "@/components/layout/site-header";
 import "./globals.css";
 
-const thicccboi = localFont({
-  variable: "--font-thicccboi",
-  src: [
-    {
-      path: "../public/fonts/thicccboi/THICCCBOI-Regular.woff2",
-      weight: "400",
-      style: "normal",
-    },
-    {
-      path: "../public/fonts/thicccboi/THICCCBOI-Medium.woff2",
-      weight: "500",
-      style: "normal",
-    },
-    {
-      path: "../public/fonts/thicccboi/THICCCBOI-SemiBold.woff2",
-      weight: "600",
-      style: "normal",
-    },
-    {
-      path: "../public/fonts/thicccboi/THICCCBOI-Bold.woff2",
-      weight: "700",
-      style: "normal",
-    },
-    {
-      path: "../public/fonts/thicccboi/THICCCBOI-ExtraBold.woff2",
-      weight: "800",
-      style: "normal",
-    },
-  ],
+const manrope = Manrope({
+  variable: "--font-brand",
+  subsets: ["latin"],
 });
 
 const geistMono = Geist_Mono({
@@ -42,23 +16,31 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "Alquenta",
-  description: "Property marketplace — browse, list, and offer on properties",
-};
+export async function generateMetadata() {
+  const t = await getTranslations("meta");
+  return {
+    title: "Alquenta",
+    description: t("description"),
+  };
+}
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const locale = await getLocale();
+  const messages = await getMessages();
+
   return (
     <html
-      lang="en"
-      className={`${thicccboi.variable} ${geistMono.variable} h-full antialiased`}
+      lang={locale}
+      className={`${manrope.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <QueryProvider>
-          <SiteHeader />
-          {children}
-          <Toaster />
-        </QueryProvider>
+        <NextIntlClientProvider locale={locale} messages={messages}>
+          <QueryProvider>
+            <SiteHeader />
+            {children}
+            <Toaster />
+          </QueryProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

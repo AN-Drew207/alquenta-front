@@ -1,14 +1,27 @@
+import { getTranslations } from "next-intl/server";
 import { PropertyCard } from "@/components/properties/property-card";
 import { PropertyFilters } from "@/components/properties/property-filters";
+import { PaginationControls } from "@/components/properties/pagination-controls";
 import type { Property } from "@/types/property";
 
-async function getProperties(params: {
+const PAGE_SIZE = 12;
+
+interface PropertySearchParams {
   type?: string;
-  city?: string;
-}): Promise<Property[]> {
+  state?: string;
+  municipality?: string;
+  minPrice?: string;
+  maxPrice?: string;
+  bedrooms?: string;
+  bathrooms?: string;
+  parkingSpaces?: string;
+}
+
+async function getProperties(params: PropertySearchParams): Promise<Property[]> {
   const search = new URLSearchParams();
-  if (params.type) search.set("type", params.type);
-  if (params.city) search.set("city", params.city);
+  for (const [key, value] of Object.entries(params)) {
+    if (value) search.set(key, value);
+  }
 
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/api/properties?${search.toString()}`,
@@ -22,35 +35,78 @@ async function getProperties(params: {
   return res.json();
 }
 
+function readParam(
+  params: Record<string, string | string[] | undefined>,
+  key: string,
+): string | undefined {
+  return typeof params[key] === "string" ? params[key] : undefined;
+}
+
 export default async function HomePage({ searchParams }: PageProps<"/">) {
   const params = await searchParams;
-  const type = typeof params.type === "string" ? params.type : undefined;
-  const city = typeof params.city === "string" ? params.city : undefined;
 
-  const properties = await getProperties({ type, city });
+  const properties = await getProperties({
+    type: readParam(params, "type"),
+    state: readParam(params, "state"),
+    municipality: readParam(params, "municipality"),
+    minPrice: readParam(params, "minPrice"),
+    maxPrice: readParam(params, "maxPrice"),
+    bedrooms: readParam(params, "bedrooms"),
+    bathrooms: readParam(params, "bathrooms"),
+    parkingSpaces: readParam(params, "parkingSpaces"),
+  });
+  const t = await getTranslations("home");
+
+  const totalCount = properties.length;
+  const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
+  const currentPage = Math.min(
+    totalPages,
+    Math.max(1, Number(readParam(params, "page")) || 1),
+  );
+  const paginatedProperties = properties.slice(
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE,
+  );
+
+  function pageHref(page: number) {
+    const search = new URLSearchParams();
+    for (const [key, value] of Object.entries(params)) {
+      if (typeof value === "string" && key !== "page") search.set(key, value);
+    }
+    if (page > 1) search.set("page", String(page));
+    const query = search.toString();
+    return query ? `/?${query}` : "/";
+  }
 
   return (
     <main className="mx-auto max-w-6xl flex-1 px-4 py-8">
       <div className="mb-6 flex flex-col gap-4">
         <div>
-          <h1 className="text-2xl font-bold">Find your next property</h1>
-          <p className="text-muted-foreground">
-            Browse available listings from independent owners and agencies.
-          </p>
+          <h1 className="text-2xl font-bold">{t("title")}</h1>
+          <p className="text-muted-foreground">{t("subtitle")}</p>
         </div>
         <PropertyFilters />
+        <p className="text-sm text-muted-foreground">
+          {t("totalAvailable", { count: totalCount })}
+        </p>
       </div>
 
       {properties.length === 0 ? (
-        <p className="py-12 text-center text-muted-foreground">
-          No properties match your search.
-        </p>
+        <p className="py-12 text-center text-muted-foreground">{t("noResults")}</p>
       ) : (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {properties.map((property) => (
-            <PropertyCard key={property.id} property={property} />
-          ))}
-        </div>
+        <>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {paginatedProperties.map((property) => (
+              <PropertyCard key={property.id} property={property} />
+            ))}
+          </div>
+
+          <PaginationControls
+            currentPage={currentPage}
+            totalPages={totalPages}
+            buildHref={pageHref}
+          />
+        </>
       )}
     </main>
   );

@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 import { useLoginMutation } from "@/hooks/use-auth-mutations";
 import { isApiError } from "@/lib/api/client";
 import { Button } from "@/components/ui/button";
@@ -13,17 +14,17 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-const loginSchema = z.object({
-  email: z.email("Enter a valid email"),
-  password: z.string().min(1, "Password is required"),
-});
-
-type LoginFormValues = z.infer<typeof loginSchema>;
-
 export default function LoginPage() {
+  const t = useTranslations("auth");
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirect") ?? undefined;
   const loginMutation = useLoginMutation(redirectTo);
+
+  const loginSchema = z.object({
+    email: z.email(t("invalidEmail")),
+    password: z.string().min(1, t("passwordRequired")),
+  });
+  type LoginFormValues = z.infer<typeof loginSchema>;
 
   const {
     register,
@@ -36,7 +37,7 @@ export default function LoginPage() {
   function onSubmit(values: LoginFormValues) {
     loginMutation.mutate(values, {
       onError: (error) => {
-        toast.error(isApiError(error) ? error.message : "Could not log in");
+        toast.error(isApiError(error) ? error.message : t("couldNotLogIn"));
       },
     });
   }
@@ -44,32 +45,32 @@ export default function LoginPage() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Log in</CardTitle>
+        <CardTitle>{t("logIn")}</CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-1.5">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">{t("email")}</Label>
             <Input id="email" type="email" {...register("email")} />
             {errors.email && (
               <p className="text-sm text-destructive">{errors.email.message}</p>
             )}
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="password">{t("password")}</Label>
             <Input id="password" type="password" {...register("password")} />
             {errors.password && (
               <p className="text-sm text-destructive">{errors.password.message}</p>
             )}
           </div>
           <Button type="submit" className="w-full" disabled={loginMutation.isPending}>
-            {loginMutation.isPending ? "Logging in..." : "Log in"}
+            {loginMutation.isPending ? t("loggingIn") : t("logIn")}
           </Button>
         </form>
         <p className="mt-4 text-center text-sm text-muted-foreground">
-          Don&apos;t have an account?{" "}
+          {t("noAccount")}{" "}
           <Link href="/register" className="text-primary underline-offset-4 hover:underline">
-            Sign up
+            {t("signUp")}
           </Link>
         </p>
       </CardContent>

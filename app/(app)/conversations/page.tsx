@@ -1,20 +1,20 @@
 "use client";
 
-import { useMyConversations } from "@/hooks/use-conversations";
-import { ConversationList } from "@/components/conversations/conversation-list";
-import { Skeleton } from "@/components/ui/skeleton";
+import { useTranslations } from "next-intl";
+import { MessagesSquare } from "lucide-react";
 
 export default function ConversationsPage() {
-  const { data: conversations, isLoading } = useMyConversations();
+  const t = useTranslations("conversations");
 
   return (
-    <main className="mx-auto max-w-3xl flex-1 px-4 py-8">
-      <h1 className="mb-6 text-2xl font-bold">Conversations</h1>
-      {isLoading ? (
-        <Skeleton className="h-64 w-full" />
-      ) : (
-        <ConversationList conversations={conversations ?? []} />
-      )}
-    </main>
+    <div className="flex h-full w-full flex-col items-center justify-center gap-2 px-6 text-center">
+      <div className="flex size-14 items-center justify-center rounded-full bg-muted">
+        <MessagesSquare className="size-7 text-muted-foreground" />
+      </div>
+      <p className="text-base font-medium">{t("selectConversationTitle")}</p>
+      <p className="max-w-sm text-sm text-muted-foreground">
+        {t("selectConversationDescription")}
+      </p>
+    </div>
   );
 }

@@ -1,8 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { MapPin, Tag } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import { useTranslations } from "next-intl";
+import { Bath, Bed, Car, MapPin, Tag } from "lucide-react";
+import { PriceInput } from "@/components/ui/price-input";
 import {
   Select,
   SelectContent,
@@ -10,78 +12,213 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { PROPERTY_TYPE_LABELS } from "@/lib/constants";
+import { usePropertyTypeLabels } from "@/lib/i18n/labels";
+import { VENEZUELA_STATES, getMunicipalities } from "@/lib/data/venezuela-locations";
 import type { PropertyType } from "@/types/enums";
 
 const ALL_TYPES = "all";
+const ANY = "any";
+const MIN_COUNT_OPTIONS = ["1", "2", "3", "4"];
+
+type FilterKey =
+  | "type"
+  | "state"
+  | "municipality"
+  | "minPrice"
+  | "maxPrice"
+  | "bedrooms"
+  | "bathrooms"
+  | "parkingSpaces";
 
 export function PropertyFilters() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const t = useTranslations("home");
+  const propertyTypeLabels = usePropertyTypeLabels();
 
-  const type = searchParams.get("type") ?? ALL_TYPES;
-  const city = searchParams.get("city") ?? "";
+  const values: Record<FilterKey, string> = {
+    type: searchParams.get("type") ?? ALL_TYPES,
+    state: searchParams.get("state") ?? ANY,
+    municipality: searchParams.get("municipality") ?? ANY,
+    minPrice: searchParams.get("minPrice") ?? "",
+    maxPrice: searchParams.get("maxPrice") ?? "",
+    bedrooms: searchParams.get("bedrooms") ?? ANY,
+    bathrooms: searchParams.get("bathrooms") ?? ANY,
+    parkingSpaces: searchParams.get("parkingSpaces") ?? ANY,
+  };
 
-  function updateParams(next: { type?: string; city?: string }) {
+  const [minPrice, setMinPrice] = useState(values.minPrice);
+  const [maxPrice, setMaxPrice] = useState(values.maxPrice);
+
+  const municipalities = values.state === ANY ? [] : getMunicipalities(values.state);
+
+  function updateParams(next: Partial<Record<FilterKey, string>>) {
     const params = new URLSearchParams(searchParams.toString());
 
-    const nextType = next.type ?? type;
-    if (nextType && nextType !== ALL_TYPES) {
-      params.set("type", nextType);
-    } else {
-      params.delete("type");
-    }
-
-    const nextCity = next.city ?? city;
-    if (nextCity) {
-      params.set("city", nextCity);
-    } else {
-      params.delete("city");
+    for (const key of Object.keys(values) as FilterKey[]) {
+      const value = next[key] ?? values[key];
+      const isEmpty = value === "" || value === ALL_TYPES || value === ANY;
+      if (isEmpty) {
+        params.delete(key);
+      } else {
+        params.set(key, value);
+      }
     }
 
     router.push(`/?${params.toString()}`);
   }
 
   return (
-    <div className="flex flex-wrap items-center gap-3 rounded-full border border-border bg-card p-2">
+    <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-border bg-card p-2">
       <Select
-        value={type}
+        value={values.type}
         onValueChange={(value) => updateParams({ type: value ?? undefined })}
       >
-        <SelectTrigger className="w-48 rounded-full border-0 bg-muted pl-4">
+        <SelectTrigger className="rounded-full border-0 bg-muted pl-4">
           <Tag className="size-4 text-primary" />
-          <SelectValue placeholder="Property type">
+          <SelectValue placeholder={t("propertyTypePlaceholder")}>
             {(value: string) =>
               value === ALL_TYPES
-                ? "All types"
-                : PROPERTY_TYPE_LABELS[value as PropertyType]
+                ? t("allTypes")
+                : propertyTypeLabels[value as PropertyType]
             }
           </SelectValue>
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value={ALL_TYPES}>All types</SelectItem>
-          {(Object.keys(PROPERTY_TYPE_LABELS) as PropertyType[]).map((key) => (
+          <SelectItem value={ALL_TYPES}>{t("allTypes")}</SelectItem>
+          {(Object.keys(propertyTypeLabels) as PropertyType[]).map((key) => (
             <SelectItem key={key} value={key}>
-              {PROPERTY_TYPE_LABELS[key]}
+              {propertyTypeLabels[key]}
             </SelectItem>
           ))}
         </SelectContent>
       </Select>
 
-      <div className="flex h-8 w-48 items-center gap-2 rounded-full bg-muted pl-4">
-        <MapPin className="size-4 shrink-0 text-primary" />
-        <Input
-          placeholder="City"
-          defaultValue={city}
-          className="h-8 border-0 bg-transparent px-0 shadow-none focus-visible:ring-0"
-          onBlur={(event) => updateParams({ city: event.target.value })}
+      <Select
+        value={values.state}
+        onValueChange={(value) =>
+          updateParams({ state: value ?? undefined, municipality: undefined })
+        }
+      >
+        <SelectTrigger className="rounded-full border-0 bg-muted pl-4">
+          <MapPin className="size-4 text-primary" />
+          <SelectValue placeholder={t("statePlaceholder")}>
+            {(value: string) => (value === ANY ? t("anyState") : value)}
+          </SelectValue>
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value={ANY}>{t("anyState")}</SelectItem>
+          {VENEZUELA_STATES.map((state) => (
+            <SelectItem key={state.name} value={state.name}>
+              {state.name}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+
+      <Select
+        value={values.municipality}
+        onValueChange={(value) => updateParams({ municipality: value ?? undefined })}
+        disabled={values.state === ANY}
+      >
+        <SelectTrigger className="rounded-full border-0 bg-muted pl-4">
+          <SelectValue placeholder={t("municipalityPlaceholder")}>
+            {(value: string) => (value === ANY ? t("anyMunicipality") : value)}
+          </SelectValue>
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value={ANY}>{t("anyMunicipality")}</SelectItem>
+          {municipalities.map((municipality) => (
+            <SelectItem key={municipality} value={municipality}>
+              {municipality}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+
+      <div className="flex h-8 items-center gap-1 rounded-full bg-muted pl-1">
+        <PriceInput
+          value={minPrice}
+          onValueChange={setMinPrice}
+          placeholder={t("minPrice")}
+          className="h-8 w-28 border-0 bg-transparent shadow-none focus-visible:ring-0"
+          onBlur={() => updateParams({ minPrice })}
           onKeyDown={(event) => {
-            if (event.key === "Enter") {
-              updateParams({ city: event.currentTarget.value });
-            }
+            if (event.key === "Enter") updateParams({ minPrice });
+          }}
+        />
+        <span className="text-muted-foreground">–</span>
+        <PriceInput
+          value={maxPrice}
+          onValueChange={setMaxPrice}
+          placeholder={t("maxPrice")}
+          className="h-8 w-28 border-0 bg-transparent pr-4 shadow-none focus-visible:ring-0"
+          onBlur={() => updateParams({ maxPrice })}
+          onKeyDown={(event) => {
+            if (event.key === "Enter") updateParams({ maxPrice });
           }}
         />
       </div>
+
+      <Select
+        value={values.bedrooms}
+        onValueChange={(value) => updateParams({ bedrooms: value ?? undefined })}
+      >
+        <SelectTrigger className="rounded-full border-0 bg-muted pl-4">
+          <Bed className="size-4 text-primary" />
+          <SelectValue placeholder={t("bedroomsPlaceholder")}>
+            {(value: string) => (value === ANY ? t("any") : t("countOrMore", { count: value }))}
+          </SelectValue>
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value={ANY}>{t("any")}</SelectItem>
+          {MIN_COUNT_OPTIONS.map((count) => (
+            <SelectItem key={count} value={count}>
+              {t("countOrMore", { count })}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+
+      <Select
+        value={values.bathrooms}
+        onValueChange={(value) => updateParams({ bathrooms: value ?? undefined })}
+      >
+        <SelectTrigger className="rounded-full border-0 bg-muted pl-4">
+          <Bath className="size-4 text-primary" />
+          <SelectValue placeholder={t("bathroomsPlaceholder")}>
+            {(value: string) => (value === ANY ? t("any") : t("countOrMore", { count: value }))}
+          </SelectValue>
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value={ANY}>{t("any")}</SelectItem>
+          {MIN_COUNT_OPTIONS.map((count) => (
+            <SelectItem key={count} value={count}>
+              {t("countOrMore", { count })}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+
+      <Select
+        value={values.parkingSpaces}
+        onValueChange={(value) => updateParams({ parkingSpaces: value ?? undefined })}
+      >
+        <SelectTrigger className="rounded-full border-0 bg-muted pl-4">
+          <Car className="size-4 text-primary" />
+          <SelectValue placeholder={t("parkingPlaceholder")}>
+            {(value: string) => (value === ANY ? t("any") : t("countOrMore", { count: value }))}
+          </SelectValue>
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value={ANY}>{t("any")}</SelectItem>
+          {MIN_COUNT_OPTIONS.map((count) => (
+            <SelectItem key={count} value={count}>
+              {t("countOrMore", { count })}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
     </div>
   );
 }

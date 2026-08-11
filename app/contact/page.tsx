@@ -1,35 +1,37 @@
 import { Mail, MapPin, Phone } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import { Card, CardContent } from "@/components/ui/card";
 
-const channels = [
-  {
-    icon: Mail,
-    label: "Email",
-    value: "hello@alquenta.example",
-    href: "mailto:hello@alquenta.example",
-  },
-  {
-    icon: Phone,
-    label: "Phone",
-    value: "+1 (555) 010-1234",
-    href: "tel:+15550101234",
-  },
-  {
-    icon: MapPin,
-    label: "Address",
-    value: "123 Main St, Remote-first",
-    href: undefined,
-  },
-];
+export default async function ContactPage() {
+  const t = await getTranslations("contact");
 
-export default function ContactPage() {
+  const channels = [
+    {
+      icon: Mail,
+      label: t("email"),
+      value: "hello@alquenta.example",
+      href: "mailto:hello@alquenta.example",
+    },
+    {
+      icon: Phone,
+      label: t("phone"),
+      value: "+1 (555) 010-1234",
+      href: "tel:+15550101234",
+    },
+    {
+      icon: MapPin,
+      label: t("address"),
+      value: "123 Main St, Remote-first",
+      href: undefined,
+    },
+  ];
+
   return (
     <main className="mx-auto max-w-2xl flex-1 px-4 py-12">
       <div className="text-center">
-        <h1 className="text-3xl font-bold">Contact us</h1>
+        <h1 className="text-3xl font-bold">{t("title")}</h1>
         <p className="mx-auto mt-3 max-w-md text-muted-foreground">
-          Questions about the platform? Reach out through any of these
-          channels.
+          {t("subtitle")}
         </p>
       </div>
 

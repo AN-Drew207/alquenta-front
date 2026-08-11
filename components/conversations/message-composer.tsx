@@ -2,15 +2,15 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 import { useReplyMutation } from "@/hooks/use-conversations";
 import { isApiError } from "@/lib/api/client";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Input } from "@/components/ui/input";
 
 export function MessageComposer({ conversationId }: { conversationId: string }) {
+  const t = useTranslations("conversations");
   const [content, setContent] = useState("");
-  const [offerAmount, setOfferAmount] = useState("");
   const replyMutation = useReplyMutation(conversationId);
 
   function handleSubmit(event: React.FormEvent) {
@@ -18,38 +18,29 @@ export function MessageComposer({ conversationId }: { conversationId: string }) 
     if (!content.trim()) return;
 
     replyMutation.mutate(
-      { content, offerAmount: offerAmount ? Number(offerAmount) : undefined },
+      { content },
       {
         onSuccess: () => {
           setContent("");
-          setOfferAmount("");
         },
         onError: (error) => {
-          toast.error(isApiError(error) ? error.message : "Could not send message");
+          toast.error(isApiError(error) ? error.message : t("couldNotSendMessage"));
         },
       },
     );
   }
 
   return (
-    <form onSubmit={handleSubmit} className="mt-4 space-y-2 border-t border-border pt-4">
+    <form onSubmit={handleSubmit} className="space-y-2 pt-4">
       <Textarea
         value={content}
         onChange={(event) => setContent(event.target.value)}
-        placeholder="Write a reply..."
+        placeholder={t("replyPlaceholder")}
         rows={2}
       />
-      <div className="flex items-center gap-2">
-        <Input
-          type="number"
-          min={0}
-          value={offerAmount}
-          onChange={(event) => setOfferAmount(event.target.value)}
-          placeholder="Offer amount (optional)"
-          className="w-56"
-        />
+      <div className="flex items-center justify-end gap-2">
         <Button type="submit" disabled={replyMutation.isPending}>
-          {replyMutation.isPending ? "Sending..." : "Send"}
+          {replyMutation.isPending ? t("sending") : t("send")}
         </Button>
       </div>
     </form>

@@ -4,6 +4,7 @@ export interface Notification {
   id: string;
   type: NotificationType;
   messageId: string | null;
+  conversationId: string | null;
   text: string;
   status: NotificationStatus;
   createdAt: string;
