@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
@@ -12,20 +12,10 @@ import { isApiError } from "@/lib/api/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useRoleLabels } from "@/lib/i18n/labels";
-import type { Role } from "@/types/enums";
 
 export default function RegisterPage() {
   const t = useTranslations("auth");
-  const roleLabels = useRoleLabels();
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirect") ?? undefined;
   const registerMutation = useRegisterMutation(redirectTo);
@@ -34,7 +24,6 @@ export default function RegisterPage() {
     name: z.string().min(1, t("nameRequired")),
     email: z.email(t("invalidEmail")),
     password: z.string().min(8, t("passwordMinLength")),
-    role: z.enum(["ADMIN", "CLIENT"]),
     phone: z.string().optional(),
   });
   type RegisterFormValues = z.infer<typeof registerSchema>;
@@ -42,11 +31,9 @@ export default function RegisterPage() {
   const {
     register,
     handleSubmit,
-    control,
     formState: { errors },
   } = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
-    defaultValues: { role: "CLIENT" },
   });
 
   function onSubmit(values: RegisterFormValues) {
@@ -88,30 +75,6 @@ export default function RegisterPage() {
           <div className="space-y-1.5">
             <Label htmlFor="phone">{t("phoneOptional")}</Label>
             <Input id="phone" {...register("phone")} />
-          </div>
-          <div className="space-y-1.5">
-            <Label>{t("iAmA")}</Label>
-            <Controller
-              control={control}
-              name="role"
-              render={({ field }) => (
-                <Select value={field.value} onValueChange={field.onChange}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue>
-                      {(value: Role) => roleLabels[value]}
-                    </SelectValue>
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="CLIENT">
-                      {t("roleClientDescription")}
-                    </SelectItem>
-                    <SelectItem value="ADMIN">
-                      {t("roleAdminDescription")}
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              )}
-            />
           </div>
           <Button
             type="submit"
