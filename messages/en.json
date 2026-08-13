@@ -7,6 +7,8 @@
     "lightMode": "Light mode",
     "darkMode": "Dark mode",
     "cancel": "Cancel",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
     "back": "Back",
     "next": "Next",
     "unexpectedError": "Unexpected error"

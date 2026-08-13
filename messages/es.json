@@ -7,6 +7,8 @@
     "lightMode": "Modo claro",
     "darkMode": "Modo oscuro",
     "cancel": "Cancelar",
+    "showPassword": "Mostrar contraseña",
+    "hidePassword": "Ocultar contraseña",
     "back": "Atrás",
     "next": "Siguiente",
     "unexpectedError": "Error inesperado"

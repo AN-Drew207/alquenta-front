@@ -11,6 +11,7 @@ import { useRegisterMutation } from "@/hooks/use-auth-mutations";
 import { isApiError } from "@/lib/api/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -67,7 +68,7 @@ export default function RegisterPage() {
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="password">{t("password")}</Label>
-            <Input id="password" type="password" {...register("password")} />
+            <PasswordInput id="password" {...register("password")} />
             {errors.password && (
               <p className="text-sm text-destructive">{errors.password.message}</p>
             )}
