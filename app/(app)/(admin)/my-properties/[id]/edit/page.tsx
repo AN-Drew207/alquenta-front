@@ -33,26 +33,28 @@ export default function EditPropertyPage() {
   }
 
   return (
-    <main className="mx-auto max-w-5xl flex-1 px-4 py-8">
-      <BackButton className="mb-4" />
-      <Card className="w-full">
-        <CardHeader>
-          <CardTitle>{t("editTitle")}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {isLoading || !property ? (
-            <Skeleton className="h-96 w-full" />
-          ) : (
-            <PropertyWizard
-              defaultProperty={property}
-              onSubmit={handleSubmit}
-              isSubmitting={updateMutation.isPending}
-              showStatus
-              submitLabel={t("saveChanges")}
-            />
-          )}
-        </CardContent>
-      </Card>
+    <main className="w-full min-h-[calc(100vh-65px)] flex items-center justify-center px-4 py-8">
+      <div className="w-full max-w-3xl">
+        <BackButton className="mb-4" />
+        <Card className="w-full">
+          <CardHeader>
+            <CardTitle>{t("editTitle")}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {isLoading || !property ? (
+              <Skeleton className="h-96 w-full" />
+            ) : (
+              <PropertyWizard
+                defaultProperty={property}
+                onSubmit={handleSubmit}
+                isSubmitting={updateMutation.isPending}
+                showStatus
+                submitLabel={t("saveChanges")}
+              />
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </main>
   );
 }

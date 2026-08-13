@@ -33,7 +33,7 @@ type FilterKey =
   | "bathrooms"
   | "parkingSpaces";
 
-export function PropertyFilters() {
+export function PropertyFilters({ basePath = "/" }: { basePath?: string }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const t = useTranslations("home");
@@ -72,7 +72,7 @@ export function PropertyFilters() {
       }
     }
 
-    router.push(`/?${params.toString()}`);
+    router.push(`${basePath}?${params.toString()}`);
   }
 
   return (
@@ -181,7 +181,7 @@ export function PropertyFilters() {
         </SelectContent>
       </Select>
 
-      <div className="flex h-11 items-center gap-1 rounded-full bg-muted pl-1">
+      <div className="flex h-11 items-center gap-1 rounded-full border border-input bg-muted pl-1">
         <PriceInput
           value={minPrice}
           onValueChange={setMinPrice}

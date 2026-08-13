@@ -1,28 +1,69 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Search } from "lucide-react";
 import { useMyProperties } from "@/hooks/use-properties";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MyPropertyCard } from "@/components/properties/my-property-card";
+import { PropertyFilters } from "@/components/properties/property-filters";
+import type { OperationType, PropertyType } from "@/types/enums";
+
+const ALL_TYPES = "all";
+const ANY = "any";
 
 export default function MyPropertiesPage() {
   const t = useTranslations("myProperties");
   const { data: properties, isLoading } = useMyProperties();
-  const [search, setSearch] = useState("");
+  const searchParams = useSearchParams();
+
+  const search = searchParams.get("search")?.trim().toLowerCase() ?? "";
+  const type = searchParams.get("type") ?? ALL_TYPES;
+  const operationType = searchParams.get("operationType") ?? ALL_TYPES;
+  const state = searchParams.get("state") ?? ANY;
+  const municipality = searchParams.get("municipality") ?? ANY;
+  const minPrice = searchParams.get("minPrice");
+  const maxPrice = searchParams.get("maxPrice");
+  const bedrooms = searchParams.get("bedrooms");
+  const bathrooms = searchParams.get("bathrooms");
+  const parkingSpaces = searchParams.get("parkingSpaces");
 
   const filteredProperties = useMemo(() => {
     if (!properties) return properties;
-    const query = search.trim().toLowerCase();
-    if (!query) return properties;
-    return properties.filter((property) =>
-      property.title.toLowerCase().includes(query),
-    );
-  }, [properties, search]);
+
+    return properties.filter((property) => {
+      if (search && !property.title.toLowerCase().includes(search)) return false;
+      if (type !== ALL_TYPES && property.type !== (type as PropertyType)) return false;
+      if (
+        operationType !== ALL_TYPES &&
+        property.operationType !== (operationType as OperationType)
+      )
+        return false;
+      if (state !== ANY && property.state !== state) return false;
+      if (municipality !== ANY && property.municipality !== municipality) return false;
+      if (minPrice && property.price < Number(minPrice)) return false;
+      if (maxPrice && property.price > Number(maxPrice)) return false;
+      if (bedrooms && (property.bedrooms ?? 0) < Number(bedrooms)) return false;
+      if (bathrooms && (property.bathrooms ?? 0) < Number(bathrooms)) return false;
+      if (parkingSpaces && (property.parkingSpaces ?? 0) < Number(parkingSpaces))
+        return false;
+      return true;
+    });
+  }, [
+    properties,
+    search,
+    type,
+    operationType,
+    state,
+    municipality,
+    minPrice,
+    maxPrice,
+    bedrooms,
+    bathrooms,
+    parkingSpaces,
+  ]);
 
   return (
     <main className="mx-auto max-w-6xl flex-1 px-4 py-8">
@@ -37,14 +78,8 @@ export default function MyPropertiesPage() {
       </div>
 
       {!isLoading && properties && properties.length > 0 && (
-        <div className="relative mb-6 max-w-sm">
-          <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            placeholder={t("searchPlaceholder")}
-            className="pl-9"
-          />
+        <div className="mb-6">
+          <PropertyFilters basePath="/my-properties" />
         </div>
       )}
 
