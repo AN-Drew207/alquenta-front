@@ -34,15 +34,15 @@ export default function AuthLayout({
             <Image
               src={alquentaLogoStacked}
               alt="Alquenta"
-              className="h-36 w-auto"
+              className="h-28 w-auto animate-nos-mark-in"
               priority
             />
           </Link>
-          {children}
+          <div className="animate-nos-fade-up [animation-delay:150ms]">{children}</div>
         </div>
       </div>
 
-      <HouseImagePanel className="hidden w-1/2 lg:block" />
+      <HouseImagePanel className="hidden w-1/2 animate-nos-fade-up lg:block" />
     </main>
   );
 }

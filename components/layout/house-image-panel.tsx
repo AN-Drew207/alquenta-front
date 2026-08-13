@@ -36,7 +36,7 @@ export function HouseImagePanel({ className }: { className?: string }) {
       <Image
         src={alquentaLogoOnDark}
         alt="Alquenta"
-        className="absolute top-8 left-8 h-9 w-auto"
+        className="absolute top-8 left-8 h-8 w-auto"
       />
     </div>
   );
