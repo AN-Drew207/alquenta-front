@@ -1,122 +1,65 @@
 "use client";
 
-import { useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { toast } from "sonner";
+import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { useCurrentUser } from "@/hooks/use-current-user";
-import { useUpdateProfileMutation } from "@/hooks/use-auth-mutations";
-import { isApiError } from "@/lib/api/client";
+import { useMyFullProfile } from "@/hooks/use-profile";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
+import { PublicProfileSection } from "@/components/profile/public-profile-section";
+import { ContactSection } from "@/components/profile/contact-section";
+import { NotificationsSection } from "@/components/profile/notifications-section";
+import { PrivacySection } from "@/components/profile/privacy-section";
+import { SecuritySection } from "@/components/profile/security-section";
+
+const SECTIONS = [
+  "publicProfile",
+  "contact",
+  "notifications",
+  "privacy",
+  "security",
+] as const;
+type Section = (typeof SECTIONS)[number];
 
 export default function ProfilePage() {
   const t = useTranslations("profile");
-  const { data: user, isLoading } = useCurrentUser();
-  const updateProfileMutation = useUpdateProfileMutation();
+  const { data: profile, isLoading } = useMyFullProfile();
+  const [section, setSection] = useState<Section>("publicProfile");
 
-  const profileSchema = z.object({
-    phone: z.string().optional(),
-    showPhoneOnListings: z.boolean(),
-  });
-  type ProfileFormValues = z.infer<typeof profileSchema>;
-
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm<ProfileFormValues>({
-    resolver: zodResolver(profileSchema),
-    defaultValues: { phone: "", showPhoneOnListings: false },
-  });
-
-  useEffect(() => {
-    if (user) {
-      reset({
-        phone: user.phone ?? "",
-        showPhoneOnListings: user.showPhoneOnListings,
-      });
-    }
-  }, [user, reset]);
-
-  function onSubmit(values: ProfileFormValues) {
-    updateProfileMutation.mutate(
-      {
-        phone: values.phone || null,
-        showPhoneOnListings: values.showPhoneOnListings,
-      },
-      {
-        onSuccess: () => toast.success(t("profileUpdated")),
-        onError: (error) => {
-          toast.error(
-            isApiError(error) ? error.message : t("couldNotUpdateProfile"),
-          );
-        },
-      },
-    );
-  }
-
-  if (isLoading || !user) {
+  if (isLoading || !profile) {
     return (
-      <main className="mx-auto w-full max-w-lg px-4 py-8">
+      <main className="mx-auto w-full max-w-4xl px-4 py-8">
         <Skeleton className="h-64 w-full" />
       </main>
     );
   }
 
   return (
-    <main className="mx-auto w-full max-w-lg px-4 py-8">
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("title")}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <div className="space-y-1.5">
-              <Label htmlFor="phone">{t("whatsappLabel")}</Label>
-              <Input
-                id="phone"
-                type="tel"
-                placeholder={t("whatsappPlaceholder")}
-                {...register("phone")}
-              />
-              <p className="text-sm text-muted-foreground">
-                {t("whatsappHint")}
-              </p>
-              {errors.phone && (
-                <p className="text-sm text-destructive">
-                  {errors.phone.message}
-                </p>
-              )}
-            </div>
+    <main className="mx-auto w-full max-w-4xl px-4 py-8">
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold">{t("title")}</h1>
+      </div>
 
-            {user.role === "ADMIN" && (
-              <label
-                htmlFor="showPhoneOnListings"
-                className="flex items-start gap-2 rounded-md border border-border p-3"
-              >
-                <input
-                  id="showPhoneOnListings"
-                  type="checkbox"
-                  className="mt-0.5 size-4 shrink-0"
-                  {...register("showPhoneOnListings")}
-                />
-                <span className="text-sm">{t("showOnListingsLabel")}</span>
-              </label>
-            )}
+      <nav className="mb-6 flex flex-wrap gap-1 rounded-lg border border-border bg-card p-1">
+        {SECTIONS.map((key) => (
+          <Button
+            key={key}
+            type="button"
+            variant={section === key ? "secondary" : "ghost"}
+            size="sm"
+            className={cn("flex-1")}
+            onClick={() => setSection(key)}
+          >
+            {t(`section${key.charAt(0).toUpperCase()}${key.slice(1)}`)}
+          </Button>
+        ))}
+      </nav>
 
-            <Button type="submit" disabled={updateProfileMutation.isPending}>
-              {updateProfileMutation.isPending ? t("saving") : t("save")}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
+      {section === "publicProfile" && <PublicProfileSection profile={profile} />}
+      {section === "contact" && <ContactSection profile={profile} />}
+      {section === "notifications" && <NotificationsSection profile={profile} />}
+      {section === "privacy" && <PrivacySection profile={profile} />}
+      {section === "security" && <SecuritySection profile={profile} />}
     </main>
   );
 }

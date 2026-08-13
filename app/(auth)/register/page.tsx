@@ -45,7 +45,7 @@ export default function RegisterPage() {
   }
 
   return (
-    <Card className="ring-0 shadow-none">
+    <Card className="bg-background ring-0 shadow-none">
       <CardHeader>
         <CardTitle className="text-center text-2xl">{t("createAccount")}</CardTitle>
       </CardHeader>

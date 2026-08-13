@@ -1,4 +1,6 @@
-export type Role = "ADMIN" | "CLIENT";
+export type Role = "ADMIN" | "CLIENT" | "SUPERADMIN";
+
+export type AccountType = "OWNER" | "AGENCY" | "CLIENT";
 
 export type PropertyType =
   | "HOUSE"

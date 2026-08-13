@@ -38,10 +38,32 @@ import {
 import { usePropertyTypeLabels } from "@/lib/i18n/labels";
 import type { PropertyType } from "@/types/enums";
 
-function PublicNav({ isAdmin }: { isAdmin: boolean }) {
+function PublicNav({
+  isAdmin,
+  isSuperAdmin,
+}: {
+  isAdmin: boolean;
+  isSuperAdmin: boolean;
+}) {
   const t = useTranslations("nav");
   const propertyTypeLabels = usePropertyTypeLabels();
   const propertyTypes = Object.keys(propertyTypeLabels) as PropertyType[];
+
+  if (isSuperAdmin) {
+    return (
+      <nav className="hidden items-center gap-1 md:flex">
+        <Button
+          variant="ghost"
+          size="sm"
+          nativeButton={false}
+          className="nos-nav-link"
+          render={<Link href="/superadmin" />}
+        >
+          {t("admins")}
+        </Button>
+      </nav>
+    );
+  }
 
   if (isAdmin) {
     return (
@@ -168,6 +190,7 @@ function MobileNav() {
   const propertyTypes = Object.keys(propertyTypeLabels) as PropertyType[];
   const { data: user, isLoading } = useCurrentUser();
   const isAdmin = user?.role === "ADMIN";
+  const isSuperAdmin = user?.role === "SUPERADMIN";
 
   return (
     <DropdownMenu>
@@ -178,7 +201,11 @@ function MobileNav() {
         <span className="sr-only">{t("menu")}</span>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
-        {isAdmin ? (
+        {isSuperAdmin ? (
+          <DropdownMenuItem render={<Link href="/superadmin" />}>
+            {t("admins")}
+          </DropdownMenuItem>
+        ) : isAdmin ? (
           <>
             <DropdownMenuItem render={<Link href="/dashboard" />}>
               {t("dashboard")}
@@ -211,12 +238,16 @@ function MobileNav() {
           </>
         )}
 
-        <DropdownMenuItem render={<Link href="/about" />}>
-          {t("about")}
-        </DropdownMenuItem>
-        <DropdownMenuItem render={<Link href="/contact" />}>
-          {t("contact")}
-        </DropdownMenuItem>
+        {!isSuperAdmin && (
+          <>
+            <DropdownMenuItem render={<Link href="/about" />}>
+              {t("about")}
+            </DropdownMenuItem>
+            <DropdownMenuItem render={<Link href="/contact" />}>
+              {t("contact")}
+            </DropdownMenuItem>
+          </>
+        )}
 
         <DropdownMenuSeparator />
         <ThemeMenuItem />
@@ -258,7 +289,10 @@ export function SiteHeader() {
           />
         </Link>
 
-        <PublicNav isAdmin={user?.role === "ADMIN"} />
+        <PublicNav
+          isAdmin={user?.role === "ADMIN"}
+          isSuperAdmin={user?.role === "SUPERADMIN"}
+        />
 
         <div className="flex items-center gap-2">
           {user && (

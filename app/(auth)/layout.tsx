@@ -1,12 +1,23 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useTheme } from "next-themes";
 import { useCurrentUser } from "@/hooks/use-current-user";
+import { defaultRouteForRole } from "@/hooks/use-auth-mutations";
 import { HouseImagePanel } from "@/components/layout/house-image-panel";
-import alquentaLogoStacked from "@/assets/logo/sin_fondo/Alquenta 4.png";
+import alquentaLogoDark from "@/assets/logo/sin_fondo/Alquenta 4.png";
+import alquentaLogoLight from "@/assets/logo/sin_fondo/Alquenta 2.png";
+
+function useMounted() {
+  return useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
+}
 
 export default function AuthLayout({
   children,
@@ -15,10 +26,13 @@ export default function AuthLayout({
 }) {
   const { data: user, isLoading } = useCurrentUser();
   const router = useRouter();
+  const { resolvedTheme } = useTheme();
+  const mounted = useMounted();
+  const isDark = mounted && resolvedTheme === "dark";
 
   useEffect(() => {
     if (!isLoading && user) {
-      router.replace(user.role === "ADMIN" ? "/dashboard" : "/");
+      router.replace(defaultRouteForRole(user.role));
     }
   }, [user, isLoading, router]);
 
@@ -32,7 +46,7 @@ export default function AuthLayout({
         <div className="mx-auto w-full max-w-md">
           <Link href="/" className="mb-8 flex justify-center">
             <Image
-              src={alquentaLogoStacked}
+              src={isDark ? alquentaLogoLight : alquentaLogoDark}
               alt="Alquenta"
               className="h-28 w-auto animate-nos-mark-in"
               priority

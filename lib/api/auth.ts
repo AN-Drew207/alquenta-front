@@ -5,6 +5,7 @@ import type {
   RegisterInput,
   UpdateProfileInput,
 } from "@/types/auth";
+import type { AcceptAdminInvitationInput } from "@/types/admin";
 
 export async function fetchCurrentUser(): Promise<AuthenticatedUser | null> {
   try {
@@ -41,5 +42,12 @@ export async function updateProfile(
   input: UpdateProfileInput,
 ): Promise<AuthenticatedUser> {
   const { data } = await api.patch<AuthenticatedUser>("/auth/me", input);
+  return data;
+}
+
+export async function acceptAdminInvitation(
+  input: AcceptAdminInvitationInput,
+): Promise<AuthenticatedUser> {
+  const { data } = await api.post<AuthenticatedUser>("/auth/admin-invite/accept", input);
   return data;
 }

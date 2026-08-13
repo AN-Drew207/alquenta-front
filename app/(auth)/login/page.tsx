@@ -43,7 +43,7 @@ export default function LoginPage() {
   }
 
   return (
-    <Card className="ring-0 shadow-none">
+    <Card className="bg-background ring-0 shadow-none">
       <CardHeader>
         <CardTitle className="text-center text-2xl">{t("logIn")}</CardTitle>
       </CardHeader>

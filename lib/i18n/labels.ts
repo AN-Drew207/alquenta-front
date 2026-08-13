@@ -42,6 +42,7 @@ export function useRoleLabels(): Record<Role, string> {
   return {
     ADMIN: t("ADMIN"),
     CLIENT: t("CLIENT"),
+    SUPERADMIN: t("SUPERADMIN"),
   };
 }
 
