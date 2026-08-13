@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { PropertyCard } from "@/components/properties/property-card";
 import { PropertyFilters } from "@/components/properties/property-filters";
 import { PaginationControls } from "@/components/properties/pagination-controls";
+import { HomeHero } from "@/components/home/home-hero";
 import type { Property } from "@/types/property";
 
 const PAGE_SIZE = 12;
@@ -81,35 +82,37 @@ export default async function HomePage({ searchParams }: PageProps<"/">) {
   }
 
   return (
-    <main className="mx-auto max-w-6xl flex-1 px-4 py-8">
-      <div className="mb-6 flex flex-col gap-4">
-        <div>
-          <h1 className="text-2xl font-bold">{t("title")}</h1>
-          <p className="text-muted-foreground">{t("subtitle")}</p>
+    <main className="flex-1">
+      <HomeHero />
+
+      <div className="mx-auto max-w-6xl px-4 pb-8">
+        <div className="mb-6 flex flex-col gap-4">
+          <PropertyFilters />
+          <p className="text-sm text-muted-foreground">
+            {t("totalAvailable", { count: totalCount })}
+          </p>
         </div>
-        <PropertyFilters />
-        <p className="text-sm text-muted-foreground">
-          {t("totalAvailable", { count: totalCount })}
-        </p>
+
+        {properties.length === 0 ? (
+          <p className="py-12 text-center text-muted-foreground">{t("noResults")}</p>
+        ) : (
+          <>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {paginatedProperties.map((property) => (
+                <div key={property.id} data-rv>
+                  <PropertyCard property={property} />
+                </div>
+              ))}
+            </div>
+
+            <PaginationControls
+              currentPage={currentPage}
+              totalPages={totalPages}
+              buildHref={pageHref}
+            />
+          </>
+        )}
       </div>
-
-      {properties.length === 0 ? (
-        <p className="py-12 text-center text-muted-foreground">{t("noResults")}</p>
-      ) : (
-        <>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {paginatedProperties.map((property) => (
-              <PropertyCard key={property.id} property={property} />
-            ))}
-          </div>
-
-          <PaginationControls
-            currentPage={currentPage}
-            totalPages={totalPages}
-            buildHref={pageHref}
-          />
-        </>
-      )}
     </main>
   );
 }

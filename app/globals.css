@@ -445,6 +445,28 @@
     transform: translateY(-4px);
   }
 
+  .nos-nav-link {
+    position: relative;
+  }
+  .nos-nav-link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 2px;
+    height: 2px;
+    width: 100%;
+    background: var(--nos-accent);
+    border-radius: 2px;
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.35s var(--nos-ease-out);
+  }
+  .nos-nav-link:hover::after,
+  .nos-nav-link[data-active="true"]::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+
   .nos-cta {
     background: linear-gradient(125deg, #1a1512, #241a14 45%, var(--nos-accent-3));
   }
@@ -550,6 +572,7 @@
   .nos-btn-primary,
   .nos-btn-arrow,
   .nos-btn-secondary,
+  .nos-nav-link::after,
   [data-rv] {
     transition-duration: 0.01ms !important;
   }

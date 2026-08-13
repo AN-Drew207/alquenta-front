@@ -8,13 +8,16 @@ export function CTA() {
   const t = useTranslations("about");
 
   return (
-    <section className="px-4 pt-0 pb-16 sm:pb-24">
+    <section className="px-4 pt-0 py-16 sm:py-24">
       <div className="mx-auto max-w-4xl">
         <div
           data-rv
           className="nos-cta relative overflow-hidden rounded-[32px] px-6 py-14 text-center text-white sm:px-10 sm:py-16"
         >
-          <div className="pointer-events-none absolute inset-0 z-0" aria-hidden="true">
+          <div
+            className="pointer-events-none absolute inset-0 z-0"
+            aria-hidden="true"
+          >
             <span className="nos-blob absolute top-[-200px] right-[-140px] h-[460px] w-[460px] bg-[radial-gradient(circle_at_60%_40%,rgba(240,90,40,.40),transparent_66%)] opacity-50 [animation-delay:-7s]" />
             <span className="nos-blob absolute top-[60px] left-[-100px] h-[360px] w-[360px] bg-[radial-gradient(circle_at_50%_50%,rgba(255,190,120,.55),transparent_70%)] opacity-50 [animation-delay:-13s]" />
           </div>

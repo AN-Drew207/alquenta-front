@@ -27,6 +27,7 @@
     "logOut": "Cerrar sesión"
   },
   "home": {
+    "heroBadge": "Marketplace directo · sin intermediarios",
     "title": "Encuentra tu próxima propiedad",
     "subtitle": "Explora publicaciones disponibles de propietarios e inmobiliarias independientes.",
     "noResults": "Ninguna propiedad coincide con tu búsqueda.",
@@ -91,6 +92,7 @@
     "ctaSecondary": "Explorar catálogo"
   },
   "contact": {
+    "heroBadge": "Marketplace directo · sin intermediarios",
     "title": "Contáctanos",
     "subtitle": "¿Preguntas sobre la plataforma? Comunícate por cualquiera de estos canales.",
     "email": "Correo electrónico",

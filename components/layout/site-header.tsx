@@ -51,13 +51,14 @@ function PublicNav() {
         variant="ghost"
         size="sm"
         nativeButton={false}
+        className="nos-nav-link"
         render={<Link href="/" />}
       >
         {t("home")}
       </Button>
 
       <DropdownMenu>
-        <DropdownMenuTrigger render={<Button variant="ghost" size="sm" />}>
+        <DropdownMenuTrigger render={<Button variant="ghost" size="sm" className="nos-nav-link" />}>
           {t("propertyTypes")}
           <ChevronDown className="size-3.5" />
         </DropdownMenuTrigger>
@@ -77,6 +78,7 @@ function PublicNav() {
         variant="ghost"
         size="sm"
         nativeButton={false}
+        className="nos-nav-link"
         render={<Link href="/about" />}
       >
         {t("about")}
@@ -85,6 +87,7 @@ function PublicNav() {
         variant="ghost"
         size="sm"
         nativeButton={false}
+        className="nos-nav-link"
         render={<Link href="/contact" />}
       >
         {t("contact")}
@@ -211,8 +214,11 @@ export function SiteHeader() {
   return (
     <header className="border-b border-border bg-background">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4">
-        <Link href="/" className="flex items-center pt-1">
-          <AlquentaLogo priority className="h-7 w-auto" />
+        <Link href="/" className="group flex items-center pt-1">
+          <AlquentaLogo
+            priority
+            className="h-7 w-auto transition-transform duration-500 ease-(--nos-ease-out) group-hover:scale-105"
+          />
         </Link>
 
         <PublicNav />

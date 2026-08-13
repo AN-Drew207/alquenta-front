@@ -27,6 +27,7 @@
     "logOut": "Log out"
   },
   "home": {
+    "heroBadge": "Direct marketplace · no intermediaries",
     "title": "Find your next property",
     "subtitle": "Browse available listings from independent owners and agencies.",
     "noResults": "No properties match your search.",
@@ -91,6 +92,7 @@
     "ctaSecondary": "Browse the catalog"
   },
   "contact": {
+    "heroBadge": "Direct marketplace · no intermediaries",
     "title": "Contact us",
     "subtitle": "Questions about the platform? Reach out through any of these channels.",
     "email": "Email",
