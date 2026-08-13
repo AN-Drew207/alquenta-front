@@ -12,14 +12,6 @@ export function ContactHero() {
     <div className="text-center">
       <AlquentaLogo className="mx-auto h-9 w-auto" />
 
-      <span
-        data-rv
-        className="mt-5 inline-flex items-center gap-2.5 rounded-full border border-nos-line-strong bg-[color-mix(in_srgb,var(--nos-surface)_70%,transparent)] py-1.5 pr-4 pl-2.5 text-xs font-semibold tracking-[.01em] text-nos-ink-2 backdrop-blur-md"
-      >
-        <span className="nos-pulse" />
-        {t("heroBadge")}
-      </span>
-
       <h1
         data-rv
         className="nos-grad-text mt-4 text-[clamp(28px,4.5vw,42px)] leading-[1.05] font-extrabold tracking-[-.03em]"

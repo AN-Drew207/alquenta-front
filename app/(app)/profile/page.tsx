@@ -54,7 +54,9 @@ export default function ProfilePage() {
       {
         onSuccess: () => toast.success(t("profileUpdated")),
         onError: (error) => {
-          toast.error(isApiError(error) ? error.message : t("couldNotUpdateProfile"));
+          toast.error(
+            isApiError(error) ? error.message : t("couldNotUpdateProfile"),
+          );
         },
       },
     );
@@ -84,9 +86,13 @@ export default function ProfilePage() {
                 placeholder={t("whatsappPlaceholder")}
                 {...register("phone")}
               />
-              <p className="text-sm text-muted-foreground">{t("whatsappHint")}</p>
+              <p className="text-sm text-muted-foreground">
+                {t("whatsappHint")}
+              </p>
               {errors.phone && (
-                <p className="text-sm text-destructive">{errors.phone.message}</p>
+                <p className="text-sm text-destructive">
+                  {errors.phone.message}
+                </p>
               )}
             </div>
 
