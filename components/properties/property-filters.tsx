@@ -83,7 +83,7 @@ export function PropertyFilters() {
           value={search}
           onChange={(event) => setSearch(event.target.value)}
           placeholder={t("searchPlaceholder")}
-          className="h-8 w-48 rounded-full border-0 bg-muted pl-9"
+          className="h-11 w-48 rounded-full border-0 bg-muted pl-9"
           onBlur={() => updateParams({ search })}
           onKeyDown={(event) => {
             if (event.key === "Enter") updateParams({ search });
@@ -181,12 +181,12 @@ export function PropertyFilters() {
         </SelectContent>
       </Select>
 
-      <div className="flex h-8 items-center gap-1 rounded-full bg-muted pl-1">
+      <div className="flex h-11 items-center gap-1 rounded-full bg-muted pl-1">
         <PriceInput
           value={minPrice}
           onValueChange={setMinPrice}
           placeholder={t("minPrice")}
-          className="h-8 w-28 border-0 bg-transparent shadow-none focus-visible:ring-0"
+          className="h-11 w-28 border-0 bg-transparent shadow-none focus-visible:ring-0"
           onBlur={() => updateParams({ minPrice })}
           onKeyDown={(event) => {
             if (event.key === "Enter") updateParams({ minPrice });
@@ -197,7 +197,7 @@ export function PropertyFilters() {
           value={maxPrice}
           onValueChange={setMaxPrice}
           placeholder={t("maxPrice")}
-          className="h-8 w-28 border-0 bg-transparent pr-4 shadow-none focus-visible:ring-0"
+          className="h-11 w-28 border-0 bg-transparent pr-4 shadow-none focus-visible:ring-0"
           onBlur={() => updateParams({ maxPrice })}
           onKeyDown={(event) => {
             if (event.key === "Enter") updateParams({ maxPrice });
