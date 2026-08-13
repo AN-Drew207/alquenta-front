@@ -2,7 +2,9 @@ export interface Conversation {
   id: string;
   propertyId: string;
   clientId: string;
+  clientName: string;
   adminId: string;
+  adminName: string;
   createdAt: string;
 }
 
@@ -10,6 +12,7 @@ export interface Message {
   id: string;
   conversationId: string;
   authorId: string;
+  authorName: string;
   content: string;
   read: boolean;
   createdAt: string;

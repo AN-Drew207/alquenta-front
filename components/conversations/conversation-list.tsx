@@ -22,7 +22,12 @@ function ConversationRow({
 }) {
   const t = useTranslations("conversations");
   const locale = useLocale();
+  const { data: currentUser } = useCurrentUser();
   const { data: property, isLoading } = useProperty(conversation.propertyId);
+  const otherName =
+    currentUser?.id === conversation.adminId
+      ? conversation.clientName
+      : conversation.adminName;
 
   return (
     <Link
@@ -52,6 +57,9 @@ function ConversationRow({
             {property?.title ?? t("propertyNoLongerAvailable")}
           </span>
         )}
+        <span className="truncate text-xs text-muted-foreground">
+          {otherName}
+        </span>
         <span className="text-xs text-muted-foreground">
           {formatDistanceToNow(new Date(conversation.createdAt), {
             addSuffix: true,

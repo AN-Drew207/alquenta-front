@@ -35,6 +35,11 @@ export function MessageThread({ messages }: { messages: Message[] }) {
             key={message.id}
             className={cn("flex flex-col", isMine ? "items-end" : "items-start")}
           >
+            {!isMine && (
+              <span className="mb-0.5 px-1 text-xs font-medium text-muted-foreground">
+                {message.authorName}
+              </span>
+            )}
             <div
               className={cn(
                 "max-w-md rounded-lg px-3 py-2 text-sm",

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useConversationMessages, useMyConversations } from "@/hooks/use-conversations";
+import { useCurrentUser } from "@/hooks/use-current-user";
 import { useProperty } from "@/hooks/use-properties";
 import { MessageThread } from "@/components/conversations/message-thread";
 import { MessageComposer } from "@/components/conversations/message-composer";
@@ -16,9 +17,15 @@ export default function ConversationDetailPage() {
   const params = useParams<{ id: string }>();
   const { data: conversations } = useMyConversations();
   const { data: messages, isLoading } = useConversationMessages(params.id);
+  const { data: currentUser } = useCurrentUser();
 
   const conversation = conversations?.find((c) => c.id === params.id);
   const { data: property } = useProperty(conversation?.propertyId ?? "");
+  const otherName = conversation
+    ? currentUser?.id === conversation.adminId
+      ? conversation.clientName
+      : conversation.adminName
+    : undefined;
 
   return (
     <div className="flex h-full flex-col">
@@ -41,15 +48,22 @@ export default function ConversationDetailPage() {
             className="size-8 shrink-0 rounded-md object-cover"
           />
         )}
-        <h1 className="truncate text-base font-semibold">
-          {property ? (
-            <Link href={`/properties/${property.id}`} className="hover:underline">
-              {property.title}
-            </Link>
-          ) : (
-            t("conversationFallbackTitle")
+        <div className="flex min-w-0 flex-col">
+          <h1 className="truncate text-base font-semibold">
+            {property ? (
+              <Link href={`/properties/${property.id}`} className="hover:underline">
+                {property.title}
+              </Link>
+            ) : (
+              t("conversationFallbackTitle")
+            )}
+          </h1>
+          {otherName && (
+            <span className="truncate text-xs text-muted-foreground">
+              {otherName}
+            </span>
           )}
-        </h1>
+        </div>
       </div>
 
       {isLoading ? (

@@ -6,6 +6,12 @@ export interface AuthenticatedUser {
   name: string;
   role: Role;
   phone: string | null;
+  showPhoneOnListings: boolean;
+}
+
+export interface UpdateProfileInput {
+  phone?: string | null;
+  showPhoneOnListings?: boolean;
 }
 
 export interface LoginInput {

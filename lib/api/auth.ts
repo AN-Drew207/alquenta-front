@@ -1,5 +1,10 @@
 import { api } from "./client";
-import type { AuthenticatedUser, LoginInput, RegisterInput } from "@/types/auth";
+import type {
+  AuthenticatedUser,
+  LoginInput,
+  RegisterInput,
+  UpdateProfileInput,
+} from "@/types/auth";
 
 export async function fetchCurrentUser(): Promise<AuthenticatedUser | null> {
   try {
@@ -30,4 +35,11 @@ export async function login(input: LoginInput): Promise<AuthenticatedUser> {
 
 export async function logout(): Promise<void> {
   await api.post("/auth/logout");
+}
+
+export async function updateProfile(
+  input: UpdateProfileInput,
+): Promise<AuthenticatedUser> {
+  const { data } = await api.patch<AuthenticatedUser>("/auth/me", input);
+  return data;
 }
