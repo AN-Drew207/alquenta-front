@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { HouseImagePanel } from "@/components/layout/house-image-panel";
-import alquentaLogoStacked from "@/assets/logo/con_fondo/con fondo 3.png";
+import alquentaLogoStacked from "@/assets/logo/sin_fondo/Alquenta 4.png";
 
 export default function AuthLayout({
   children,
@@ -34,7 +34,7 @@ export default function AuthLayout({
             <Image
               src={alquentaLogoStacked}
               alt="Alquenta"
-              className="h-36 w-auto rounded-2xl"
+              className="h-36 w-auto"
               priority
             />
           </Link>
