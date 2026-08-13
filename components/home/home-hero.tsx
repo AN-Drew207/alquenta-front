@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { AuroraBackground } from "@/components/nosotros/aurora-background";
+import { AuroraBackground } from "@/components/about/aurora-background";
 import { useReveal } from "@/hooks/use-reveal";
 
 export function HomeHero() {

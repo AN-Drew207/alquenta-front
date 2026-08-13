@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { AlquentaLogo } from "@/components/layout/alquenta-logo";
-import { AuroraBackground } from "@/components/nosotros/aurora-background";
+import { AuroraBackground } from "@/components/about/aurora-background";
 import { useReveal } from "@/hooks/use-reveal";
 import { cn } from "@/lib/utils";
 

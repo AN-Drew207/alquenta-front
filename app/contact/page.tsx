@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ContactForm } from "@/components/contact/contact-form";
 import { ContactHero } from "@/components/contact/contact-hero";
 import { HouseImagePanel } from "@/components/layout/house-image-panel";
-import { AuroraBackground } from "@/components/nosotros/aurora-background";
+import { AuroraBackground } from "@/components/about/aurora-background";
 
 export default async function ContactPage() {
   const t = await getTranslations("contact");
