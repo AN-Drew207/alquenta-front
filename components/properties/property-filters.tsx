@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Bath, Bed, Car, Handshake, MapPin, Tag } from "lucide-react";
+import { Bath, Bed, Car, Handshake, MapPin, Search, Tag } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import { PriceInput } from "@/components/ui/price-input";
 import {
   Select,
@@ -21,6 +22,7 @@ const ANY = "any";
 const MIN_COUNT_OPTIONS = ["1", "2", "3", "4"];
 
 type FilterKey =
+  | "search"
   | "type"
   | "operationType"
   | "state"
@@ -39,6 +41,7 @@ export function PropertyFilters() {
   const operationTypeLabels = useOperationTypeLabels();
 
   const values: Record<FilterKey, string> = {
+    search: searchParams.get("search") ?? "",
     type: searchParams.get("type") ?? ALL_TYPES,
     operationType: searchParams.get("operationType") ?? ALL_TYPES,
     state: searchParams.get("state") ?? ANY,
@@ -50,6 +53,7 @@ export function PropertyFilters() {
     parkingSpaces: searchParams.get("parkingSpaces") ?? ANY,
   };
 
+  const [search, setSearch] = useState(values.search);
   const [minPrice, setMinPrice] = useState(values.minPrice);
   const [maxPrice, setMaxPrice] = useState(values.maxPrice);
 
@@ -73,6 +77,20 @@ export function PropertyFilters() {
 
   return (
     <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-border bg-card p-2">
+      <div className="relative">
+        <Search className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-primary" />
+        <Input
+          value={search}
+          onChange={(event) => setSearch(event.target.value)}
+          placeholder={t("searchPlaceholder")}
+          className="h-8 w-48 rounded-full border-0 bg-muted pl-9"
+          onBlur={() => updateParams({ search })}
+          onKeyDown={(event) => {
+            if (event.key === "Enter") updateParams({ search });
+          }}
+        />
+      </div>
+
       <Select
         value={values.type}
         onValueChange={(value) => updateParams({ type: value ?? undefined })}

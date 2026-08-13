@@ -64,24 +64,6 @@ function PublicNav({ isAdmin }: { isAdmin: boolean }) {
         >
           {t("myProperties")}
         </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          nativeButton={false}
-          className="nos-nav-link"
-          render={<Link href="/about" />}
-        >
-          {t("about")}
-        </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          nativeButton={false}
-          className="nos-nav-link"
-          render={<Link href="/contact" />}
-        >
-          {t("contact")}
-        </Button>
       </nav>
     );
   }

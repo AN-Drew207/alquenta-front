@@ -47,7 +47,7 @@ function readParam(
 export default async function HomePage({ searchParams }: PageProps<"/">) {
   const params = await searchParams;
 
-  const properties = await getProperties({
+  const allProperties = await getProperties({
     type: readParam(params, "type"),
     operationType: readParam(params, "operationType"),
     state: readParam(params, "state"),
@@ -59,6 +59,11 @@ export default async function HomePage({ searchParams }: PageProps<"/">) {
     parkingSpaces: readParam(params, "parkingSpaces"),
   });
   const t = await getTranslations("home");
+
+  const searchQuery = readParam(params, "search")?.trim().toLowerCase();
+  const properties = searchQuery
+    ? allProperties.filter((property) => property.title.toLowerCase().includes(searchQuery))
+    : allProperties;
 
   const totalCount = properties.length;
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));

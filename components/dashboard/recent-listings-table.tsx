@@ -1,13 +1,15 @@
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useFormatter, useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { Ban, Pencil, Trash2 } from "lucide-react";
+import { Ban, Pencil, Search, Trash2 } from "lucide-react";
 import {
   useDeletePropertyMutation,
   useCancelPropertyMutation,
 } from "@/hooks/use-properties";
 import { isApiError } from "@/lib/api/client";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import {
   Table,
@@ -60,9 +62,20 @@ export function RecentListingsTable({ properties }: { properties: Property[] }) 
     });
   }
 
-  const recent = [...properties]
-    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-    .slice(0, RECENT_LISTINGS_LIMIT);
+  const [search, setSearch] = useState("");
+
+  const sorted = useMemo(
+    () =>
+      [...properties].sort(
+        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+      ),
+    [properties],
+  );
+
+  const query = search.trim().toLowerCase();
+  const recent = query
+    ? sorted.filter((property) => property.title.toLowerCase().includes(query))
+    : sorted.slice(0, RECENT_LISTINGS_LIMIT);
 
   if (properties.length === 0) {
     return (
@@ -78,6 +91,21 @@ export function RecentListingsTable({ properties }: { properties: Property[] }) 
 
   return (
     <div className="flex flex-col gap-3">
+      <div className="relative max-w-sm">
+        <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+        <Input
+          value={search}
+          onChange={(event) => setSearch(event.target.value)}
+          placeholder={tMyProperties("searchPlaceholder")}
+          className="pl-9"
+        />
+      </div>
+
+      {recent.length === 0 ? (
+        <p className="py-8 text-center text-muted-foreground">
+          {tMyProperties("noSearchResults")}
+        </p>
+      ) : (
       <Table>
         <TableHeader>
           <TableRow>
@@ -221,6 +249,7 @@ export function RecentListingsTable({ properties }: { properties: Property[] }) 
           ))}
         </TableBody>
       </Table>
+      )}
       <Link
         href="/my-properties"
         className="self-end text-sm text-primary underline-offset-4 hover:underline"
