@@ -27,10 +27,10 @@
     "logOut": "Cerrar sesión"
   },
   "home": {
-    "heroBadge": "Marketplace directo · sin intermediarios",
     "title": "Encuentra tu próxima propiedad",
     "subtitle": "Explora publicaciones disponibles de propietarios e inmobiliarias independientes.",
     "noResults": "Ninguna propiedad coincide con tu búsqueda.",
+    "searchPlaceholder": "Buscar por título...",
     "propertyTypePlaceholder": "Tipo de propiedad",
     "operationTypePlaceholder": "Alquiler o venta",
     "allOperations": "Alquiler y venta",
@@ -54,7 +54,6 @@
   "about": {
     "title": "Acerca de Alquenta",
     "intro": "Alquenta es un marketplace de propiedades donde propietarios e inmobiliarias publican <b>directamente</b>, y cualquiera puede explorar y contactar como cliente — <b>sin intermediarios de por medio</b>.",
-    "badge": "Marketplace directo · sin intermediarios",
     "heroTitleLine1": "Acerca de",
     "heroStat1Value": "5",
     "heroStat1Label": "TIPOS DE PROPIEDAD",
@@ -92,7 +91,6 @@
     "ctaSecondary": "Explorar catálogo"
   },
   "contact": {
-    "heroBadge": "Marketplace directo · sin intermediarios",
     "title": "Contáctanos",
     "subtitle": "¿Preguntas sobre la plataforma? Comunícate por cualquiera de estos canales.",
     "email": "Correo electrónico",
@@ -160,6 +158,8 @@
   "myProperties": {
     "title": "Mis propiedades",
     "subtitle": "Gestiona las propiedades que publicaste.",
+    "searchPlaceholder": "Buscar por título...",
+    "noSearchResults": "Ninguna propiedad coincide con tu búsqueda.",
     "publishProperty": "Publicar una propiedad",
     "publish": "Publicar",
     "emptyState": "Todavía no publicaste ninguna propiedad.",
@@ -223,6 +223,7 @@
     "priceMustBePositive": "El precio debe ser mayor a cero"
   },
   "propertyDetail": {
+    "publishedBy": "Publicado por",
     "bedrooms": "{count} dormitorios",
     "bathrooms": "{count} baños",
     "parkingSpaces": "{count} estacionamientos",
@@ -242,6 +243,10 @@
     "writeMessageBeforeSending": "Escribe un mensaje antes de enviar",
     "messageSent": "Mensaje enviado al propietario",
     "couldNotSendMessage": "No se pudo enviar el mensaje"
+  },
+  "agencyProfile": {
+    "listingsCount": "{count, plural, =1 {1 propiedad publicada} other {# propiedades publicadas}}",
+    "noListings": "Este perfil todavía no publicó ninguna propiedad."
   },
   "conversations": {
     "title": "Conversaciones",

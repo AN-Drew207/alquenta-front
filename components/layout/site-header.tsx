@@ -7,9 +7,7 @@ import { useTheme } from "next-themes";
 import { useSyncExternalStore } from "react";
 import {
   Bell,
-  Building2,
   ChevronDown,
-  LayoutDashboard,
   LogIn,
   Menu,
   MessageSquare,
@@ -40,10 +38,53 @@ import {
 import { usePropertyTypeLabels } from "@/lib/i18n/labels";
 import type { PropertyType } from "@/types/enums";
 
-function PublicNav() {
+function PublicNav({ isAdmin }: { isAdmin: boolean }) {
   const t = useTranslations("nav");
   const propertyTypeLabels = usePropertyTypeLabels();
   const propertyTypes = Object.keys(propertyTypeLabels) as PropertyType[];
+
+  if (isAdmin) {
+    return (
+      <nav className="hidden items-center gap-1 md:flex">
+        <Button
+          variant="ghost"
+          size="sm"
+          nativeButton={false}
+          className="nos-nav-link"
+          render={<Link href="/dashboard" />}
+        >
+          {t("dashboard")}
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          nativeButton={false}
+          className="nos-nav-link"
+          render={<Link href="/my-properties" />}
+        >
+          {t("myProperties")}
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          nativeButton={false}
+          className="nos-nav-link"
+          render={<Link href="/about" />}
+        >
+          {t("about")}
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          nativeButton={false}
+          className="nos-nav-link"
+          render={<Link href="/contact" />}
+        >
+          {t("contact")}
+        </Button>
+      </nav>
+    );
+  }
 
   return (
     <nav className="hidden items-center gap-1 md:flex">
@@ -144,6 +185,7 @@ function MobileNav() {
   const propertyTypeLabels = usePropertyTypeLabels();
   const propertyTypes = Object.keys(propertyTypeLabels) as PropertyType[];
   const { data: user, isLoading } = useCurrentUser();
+  const isAdmin = user?.role === "ADMIN";
 
   return (
     <DropdownMenu>
@@ -154,25 +196,38 @@ function MobileNav() {
         <span className="sr-only">{t("menu")}</span>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
-        <DropdownMenuItem render={<Link href="/" />}>
-          {t("home")}
-        </DropdownMenuItem>
+        {isAdmin ? (
+          <>
+            <DropdownMenuItem render={<Link href="/dashboard" />}>
+              {t("dashboard")}
+            </DropdownMenuItem>
+            <DropdownMenuItem render={<Link href="/my-properties" />}>
+              {t("myProperties")}
+            </DropdownMenuItem>
+          </>
+        ) : (
+          <>
+            <DropdownMenuItem render={<Link href="/" />}>
+              {t("home")}
+            </DropdownMenuItem>
 
-        <DropdownMenuSub>
-          <DropdownMenuSubTrigger>{t("propertyTypes")}</DropdownMenuSubTrigger>
-          <DropdownMenuPortal>
-            <DropdownMenuSubContent>
-              {propertyTypes.map((type) => (
-                <DropdownMenuItem
-                  key={type}
-                  render={<Link href={`/?type=${type}`} />}
-                >
-                  {propertyTypeLabels[type]}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuSubContent>
-          </DropdownMenuPortal>
-        </DropdownMenuSub>
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger>{t("propertyTypes")}</DropdownMenuSubTrigger>
+              <DropdownMenuPortal>
+                <DropdownMenuSubContent>
+                  {propertyTypes.map((type) => (
+                    <DropdownMenuItem
+                      key={type}
+                      render={<Link href={`/?type=${type}`} />}
+                    >
+                      {propertyTypeLabels[type]}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuSubContent>
+              </DropdownMenuPortal>
+            </DropdownMenuSub>
+          </>
+        )}
 
         <DropdownMenuItem render={<Link href="/about" />}>
           {t("about")}
@@ -221,7 +276,7 @@ export function SiteHeader() {
           />
         </Link>
 
-        <PublicNav />
+        <PublicNav isAdmin={user?.role === "ADMIN"} />
 
         <div className="flex items-center gap-2">
           {user && (
@@ -282,18 +337,6 @@ export function SiteHeader() {
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
-                  {user.role === "ADMIN" && (
-                    <>
-                      <DropdownMenuItem render={<Link href="/dashboard" />}>
-                        <LayoutDashboard />
-                        {t("dashboard")}
-                      </DropdownMenuItem>
-                      <DropdownMenuItem render={<Link href="/my-properties" />}>
-                        <Building2 />
-                        {t("myProperties")}
-                      </DropdownMenuItem>
-                    </>
-                  )}
                   <DropdownMenuItem render={<Link href="/profile" />}>
                     <User />
                     {t("profile")}

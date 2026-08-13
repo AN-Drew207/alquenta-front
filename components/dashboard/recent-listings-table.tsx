@@ -28,7 +28,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { usePropertyStatusLabels } from "@/lib/i18n/labels";
+import { useOperationTypeLabels, usePropertyStatusLabels } from "@/lib/i18n/labels";
+import { cn } from "@/lib/utils";
 import type { Property } from "@/types/property";
 
 const RECENT_LISTINGS_LIMIT = 6;
@@ -39,6 +40,7 @@ export function RecentListingsTable({ properties }: { properties: Property[] }) 
   const tCommon = useTranslations("common");
   const format = useFormatter();
   const propertyStatusLabels = usePropertyStatusLabels();
+  const operationTypeLabels = useOperationTypeLabels();
   const deleteMutation = useDeletePropertyMutation();
   const cancelMutation = useCancelPropertyMutation();
 
@@ -104,7 +106,17 @@ export function RecentListingsTable({ properties }: { properties: Property[] }) 
                     ) : null}
                   </div>
                   <div className="flex flex-col">
-                    <span className="font-medium">{property.title}</span>
+                    <span className="flex items-center gap-1.5 font-medium">
+                      {property.title}
+                      <span
+                        className={cn(
+                          "rounded-full px-2 py-0.5 text-[10px] font-medium text-white",
+                          property.operationType === "RENT" ? "bg-primary" : "bg-blue-600",
+                        )}
+                      >
+                        {operationTypeLabels[property.operationType]}
+                      </span>
+                    </span>
                     <span className="text-xs text-muted-foreground">
                       {property.municipality}, {property.state}
                     </span>

@@ -1,10 +1,14 @@
 import { notFound } from "next/navigation";
-import { Bed, Bath, Car, Ruler, MapPin } from "lucide-react";
+import Link from "next/link";
+import { Bed, Bath, Car, Ruler, MapPin, Building2 } from "lucide-react";
 import { getFormatter, getTranslations } from "next-intl/server";
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import { WhatsAppIcon } from "@/components/ui/whatsapp-icon";
 import { PropertyGallery } from "@/components/properties/property-gallery";
 import { ContactBox } from "@/components/properties/contact-box";
 import { BackButton } from "@/components/ui/back-button";
+import { fetchPublicProfile } from "@/lib/api/profiles";
 import {
   getOperationTypeLabels,
   getPropertyTypeLabels,
@@ -42,6 +46,7 @@ export default async function PropertyDetailPage({
   const format = await getFormatter();
   const propertyTypeLabels = await getPropertyTypeLabels();
   const operationTypeLabels = await getOperationTypeLabels();
+  const publisher = await fetchPublicProfile(property.adminId);
 
   return (
     <main className="mx-auto max-w-6xl flex-1 px-4 py-8">
@@ -118,11 +123,51 @@ export default async function PropertyDetailPage({
           )}
         </div>
 
-        <div>
+        <div className="space-y-4">
+          {property.contactWhatsapp && (
+            <Card>
+              <CardContent className="py-4">
+                <p className="text-xs text-muted-foreground">WhatsApp</p>
+                <a
+                  href={`https://wa.me/${property.contactWhatsapp.replace(/\D/g, "")}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-1 flex items-center gap-2.5 hover:underline"
+                >
+                  <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-green-600/10 text-green-600">
+                    <WhatsAppIcon className="size-4.5" />
+                  </span>
+                  <span className="font-medium">{property.contactWhatsapp}</span>
+                </a>
+              </CardContent>
+            </Card>
+          )}
+
+          {publisher && (
+            <Card>
+              <CardContent className="py-4">
+                <p className="text-xs text-muted-foreground">
+                  {t("publishedBy")}
+                </p>
+                <Link
+                  href={`/agencies/${publisher.id}`}
+                  className="mt-1 flex items-center gap-2.5 hover:underline"
+                >
+                  <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                    <Building2 className="size-4.5" />
+                  </span>
+                  <span className="font-medium">{publisher.name}</span>
+                </Link>
+              </CardContent>
+            </Card>
+          )}
+
           <ContactBox
             propertyId={property.id}
+            propertyTitle={property.title}
             adminId={property.adminId}
             available={property.status === "AVAILABLE"}
+            status={property.status}
           />
         </div>
       </div>

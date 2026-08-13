@@ -27,10 +27,10 @@
     "logOut": "Log out"
   },
   "home": {
-    "heroBadge": "Direct marketplace · no intermediaries",
     "title": "Find your next property",
     "subtitle": "Browse available listings from independent owners and agencies.",
     "noResults": "No properties match your search.",
+    "searchPlaceholder": "Search by title...",
     "propertyTypePlaceholder": "Property type",
     "allTypes": "All types",
     "operationTypePlaceholder": "Rent or sale",
@@ -54,7 +54,6 @@
   "about": {
     "title": "About Alquenta",
     "intro": "Alquenta is a property marketplace where owners and agencies publish listings <b>directly</b>, and anyone can browse and reach out as a client — <b>no intermediaries in between</b>.",
-    "badge": "Direct marketplace · no intermediaries",
     "heroTitleLine1": "About",
     "heroStat1Value": "5",
     "heroStat1Label": "PROPERTY TYPES",
@@ -92,7 +91,6 @@
     "ctaSecondary": "Browse the catalog"
   },
   "contact": {
-    "heroBadge": "Direct marketplace · no intermediaries",
     "title": "Contact us",
     "subtitle": "Questions about the platform? Reach out through any of these channels.",
     "email": "Email",
@@ -160,6 +158,8 @@
   "myProperties": {
     "title": "My properties",
     "subtitle": "Manage the properties you've published.",
+    "searchPlaceholder": "Search by title...",
+    "noSearchResults": "No properties match your search.",
     "publishProperty": "Publish a property",
     "publish": "Publish",
     "emptyState": "You haven't published any properties yet.",
@@ -223,6 +223,7 @@
     "priceMustBePositive": "Price must be greater than zero"
   },
   "propertyDetail": {
+    "publishedBy": "Published by",
     "bedrooms": "{count} bedrooms",
     "bathrooms": "{count} bathrooms",
     "parkingSpaces": "{count} parking spaces",
@@ -242,6 +243,10 @@
     "writeMessageBeforeSending": "Write a message before sending",
     "messageSent": "Message sent to the property owner",
     "couldNotSendMessage": "Could not send message"
+  },
+  "agencyProfile": {
+    "listingsCount": "{count, plural, =1 {1 property published} other {# properties published}}",
+    "noListings": "This profile hasn't published any properties yet."
   },
   "conversations": {
     "title": "Conversations",

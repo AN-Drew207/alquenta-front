@@ -15,7 +15,7 @@ export function PropertyCard({ property }: { property: Property }) {
   const cover = property.images[0];
 
   return (
-    <div className="flex flex-col gap-0 rounded-2xl border border-border bg-card p-1.5">
+    <div className="group flex flex-col gap-0 rounded-2xl border border-border bg-card p-1.5 transition-all duration-500 ease-(--nos-ease-out) hover:-translate-y-1.5 hover:shadow-(--nos-shadow-lg)">
       <Link href={`/properties/${property.id}`} className="relative block">
         <div className="aspect-4/3 w-full overflow-hidden rounded-xl bg-muted">
           {cover ? (
@@ -23,7 +23,7 @@ export function PropertyCard({ property }: { property: Property }) {
             <img
               src={cover}
               alt={property.title}
-              className="h-full w-full object-cover"
+              className="h-full w-full object-cover transition-transform duration-700 ease-(--nos-ease-out) group-hover:scale-105"
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center text-sm text-muted-foreground">

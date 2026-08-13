@@ -18,6 +18,8 @@ export interface Property {
   squareMeters: number | null;
   images: string[];
   videos: string[];
+  whatsapp: string | null;
+  contactWhatsapp: string | null;
   createdAt: string;
 }
 
@@ -48,6 +50,7 @@ export interface CreatePropertyInput {
   squareMeters?: number;
   images?: string[];
   videos?: string[];
+  whatsapp?: string;
 }
 
 export type UpdatePropertyInput = Partial<CreatePropertyInput> & {

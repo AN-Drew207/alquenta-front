@@ -99,9 +99,7 @@ export default async function HomePage({ searchParams }: PageProps<"/">) {
           <>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {paginatedProperties.map((property) => (
-                <div key={property.id} data-rv>
-                  <PropertyCard property={property} />
-                </div>
+                <PropertyCard key={property.id} property={property} />
               ))}
             </div>
 

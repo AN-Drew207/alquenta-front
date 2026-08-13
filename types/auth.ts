@@ -14,6 +14,12 @@ export interface UpdateProfileInput {
   showPhoneOnListings?: boolean;
 }
 
+export interface PublicProfile {
+  id: string;
+  name: string;
+  role: Role;
+}
+
 export interface LoginInput {
   email: string;
   password: string;

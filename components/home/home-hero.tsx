@@ -13,14 +13,9 @@ export function HomeHero() {
       <AuroraBackground />
 
       <div className="relative z-[2] mx-auto max-w-3xl px-4">
-        <span className="inline-flex items-center gap-2.5 rounded-full border border-nos-line-strong bg-[color-mix(in_srgb,var(--nos-surface)_70%,transparent)] py-1.5 pr-4 pl-2.5 text-xs font-semibold tracking-[.01em] text-nos-ink-2 backdrop-blur-md">
-          <span className="nos-pulse" />
-          {t("heroBadge")}
-        </span>
-
         <h1
           data-rv
-          className="nos-grad-text mt-5 text-[clamp(30px,5vw,52px)] leading-[1.05] font-extrabold tracking-[-.03em]"
+          className="nos-grad-text text-[clamp(30px,5vw,52px)] leading-[1.05] font-extrabold tracking-[-.03em]"
         >
           {t("title")}
         </h1>
