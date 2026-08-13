@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Bath, Bed, Car, MapPin, Tag } from "lucide-react";
+import { Bath, Bed, Car, Handshake, MapPin, Tag } from "lucide-react";
 import { PriceInput } from "@/components/ui/price-input";
 import {
   Select,
@@ -12,9 +12,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { usePropertyTypeLabels } from "@/lib/i18n/labels";
+import { useOperationTypeLabels, usePropertyTypeLabels } from "@/lib/i18n/labels";
 import { VENEZUELA_STATES, getMunicipalities } from "@/lib/data/venezuela-locations";
-import type { PropertyType } from "@/types/enums";
+import type { OperationType, PropertyType } from "@/types/enums";
 
 const ALL_TYPES = "all";
 const ANY = "any";
@@ -22,6 +22,7 @@ const MIN_COUNT_OPTIONS = ["1", "2", "3", "4"];
 
 type FilterKey =
   | "type"
+  | "operationType"
   | "state"
   | "municipality"
   | "minPrice"
@@ -35,9 +36,11 @@ export function PropertyFilters() {
   const searchParams = useSearchParams();
   const t = useTranslations("home");
   const propertyTypeLabels = usePropertyTypeLabels();
+  const operationTypeLabels = useOperationTypeLabels();
 
   const values: Record<FilterKey, string> = {
     type: searchParams.get("type") ?? ALL_TYPES,
+    operationType: searchParams.get("operationType") ?? ALL_TYPES,
     state: searchParams.get("state") ?? ANY,
     municipality: searchParams.get("municipality") ?? ANY,
     minPrice: searchParams.get("minPrice") ?? "",
@@ -89,6 +92,30 @@ export function PropertyFilters() {
           {(Object.keys(propertyTypeLabels) as PropertyType[]).map((key) => (
             <SelectItem key={key} value={key}>
               {propertyTypeLabels[key]}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+
+      <Select
+        value={values.operationType}
+        onValueChange={(value) => updateParams({ operationType: value ?? undefined })}
+      >
+        <SelectTrigger className="rounded-full border-0 bg-muted pl-4">
+          <Handshake className="size-4 text-primary" />
+          <SelectValue placeholder={t("operationTypePlaceholder")}>
+            {(value: string) =>
+              value === ALL_TYPES
+                ? t("allOperations")
+                : operationTypeLabels[value as OperationType]
+            }
+          </SelectValue>
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value={ALL_TYPES}>{t("allOperations")}</SelectItem>
+          {(Object.keys(operationTypeLabels) as OperationType[]).map((key) => (
+            <SelectItem key={key} value={key}>
+              {operationTypeLabels[key]}
             </SelectItem>
           ))}
         </SelectContent>

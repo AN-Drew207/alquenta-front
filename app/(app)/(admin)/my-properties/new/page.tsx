@@ -10,6 +10,7 @@ import {
   type PropertyFormSubmitValues,
 } from "@/components/properties/property-wizard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { BackButton } from "@/components/ui/back-button";
 
 export default function NewPropertyPage() {
   const t = useTranslations("myProperties");
@@ -31,19 +32,22 @@ export default function NewPropertyPage() {
   }
 
   return (
-    <main className="w-full min-h-[calc(100vh-65px)] flex flex-row items-center justify-center px-4 py-8">
-      <Card className="max-w-3xl w-full">
-        <CardHeader>
-          <CardTitle>{t("newTitle")}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <PropertyWizard
-            onSubmit={handleSubmit}
-            isSubmitting={createMutation.isPending}
-            submitLabel={t("publish")}
-          />
-        </CardContent>
-      </Card>
+    <main className="w-full min-h-[calc(100vh-65px)] flex items-center justify-center px-4 py-8">
+      <div className="w-full max-w-3xl">
+        <BackButton className="mb-4" />
+        <Card className="w-full">
+          <CardHeader>
+            <CardTitle>{t("newTitle")}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <PropertyWizard
+              onSubmit={handleSubmit}
+              isSubmitting={createMutation.isPending}
+              submitLabel={t("publish")}
+            />
+          </CardContent>
+        </Card>
+      </div>
     </main>
   );
 }

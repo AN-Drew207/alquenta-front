@@ -23,6 +23,7 @@ export interface Property {
 
 export interface PropertyFilters {
   type?: PropertyType;
+  operationType?: OperationType;
   state?: string;
   municipality?: string;
   minPrice?: number;

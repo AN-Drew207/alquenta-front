@@ -5,6 +5,7 @@ import { ThemeProvider } from "next-themes";
 import { QueryProvider } from "@/lib/query-client";
 import { Toaster } from "@/components/ui/sonner";
 import { SiteHeader } from "@/components/layout/site-header";
+import { SiteFooter } from "@/components/layout/site-footer";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -41,6 +42,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
             <QueryProvider>
               <SiteHeader />
               {children}
+              <SiteFooter />
               <Toaster />
             </QueryProvider>
           </NextIntlClientProvider>

@@ -2,8 +2,13 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { login, logout, register } from "@/lib/api/auth";
-import type { AuthenticatedUser, LoginInput, RegisterInput } from "@/types/auth";
+import { login, logout, register, updateProfile } from "@/lib/api/auth";
+import type {
+  AuthenticatedUser,
+  LoginInput,
+  RegisterInput,
+  UpdateProfileInput,
+} from "@/types/auth";
 import { CURRENT_USER_QUERY_KEY } from "./use-current-user";
 
 function redirectAfterAuth(
@@ -44,6 +49,17 @@ export function useRegisterMutation(redirectTo?: string) {
   });
 }
 
+export function useUpdateProfileMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (input: UpdateProfileInput) => updateProfile(input),
+    onSuccess: (user) => {
+      queryClient.setQueryData(CURRENT_USER_QUERY_KEY, user);
+    },
+  });
+}
+
 export function useLogoutMutation() {
   const queryClient = useQueryClient();
   const router = useRouter();
@@ -51,8 +67,8 @@ export function useLogoutMutation() {
   return useMutation({
     mutationFn: logout,
     onSuccess: () => {
-      queryClient.setQueryData(CURRENT_USER_QUERY_KEY, null);
       queryClient.clear();
+      queryClient.setQueryData(CURRENT_USER_QUERY_KEY, null);
       router.push("/");
     },
   });

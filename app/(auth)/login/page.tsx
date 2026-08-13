@@ -43,9 +43,9 @@ export default function LoginPage() {
   }
 
   return (
-    <Card>
+    <Card className="ring-0 shadow-none">
       <CardHeader>
-        <CardTitle>{t("logIn")}</CardTitle>
+        <CardTitle className="text-center text-2xl">{t("logIn")}</CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -63,7 +63,11 @@ export default function LoginPage() {
               <p className="text-sm text-destructive">{errors.password.message}</p>
             )}
           </div>
-          <Button type="submit" className="w-full" disabled={loginMutation.isPending}>
+          <Button
+            type="submit"
+            className="h-auto w-full py-4"
+            disabled={loginMutation.isPending}
+          >
             {loginMutation.isPending ? t("loggingIn") : t("logIn")}
           </Button>
         </form>

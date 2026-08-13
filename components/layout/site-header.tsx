@@ -1,7 +1,7 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
+import { AlquentaLogo } from "@/components/layout/alquenta-logo";
 import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
 import { useSyncExternalStore } from "react";
@@ -15,6 +15,7 @@ import {
   MessageSquare,
   Moon,
   Sun,
+  User,
   UserPlus,
 } from "lucide-react";
 import { useCurrentUser } from "@/hooks/use-current-user";
@@ -144,9 +145,7 @@ function MobileNav() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        render={
-          <Button variant="ghost" size="icon" className="md:hidden" />
-        }
+        render={<Button variant="ghost" size="icon" className="md:hidden" />}
       >
         <Menu className="size-5" />
         <span className="sr-only">{t("menu")}</span>
@@ -213,19 +212,38 @@ export function SiteHeader() {
     <header className="border-b border-border bg-background">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4">
         <Link href="/" className="flex items-center pt-1">
-          <Image
-            src="/logo/alquenta-logo-color.svg"
-            alt="Alquenta"
-            width={125}
-            height={28}
-            priority
-            className="h-6 w-auto"
-          />
+          <AlquentaLogo priority className="h-7 w-auto" />
         </Link>
 
         <PublicNav />
 
         <div className="flex items-center gap-2">
+          {user && (
+            <>
+              <Button
+                variant="ghost"
+                size="icon"
+                nativeButton={false}
+                render={<Link href="/conversations" />}
+                aria-label={t("conversations")}
+              >
+                <MessageSquare className="size-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                nativeButton={false}
+                render={<Link href="/notifications" />}
+                className="relative"
+                aria-label={t("notifications")}
+              >
+                <Bell className="size-4" />
+                {hasUnreadNotifications && (
+                  <span className="absolute top-1.5 right-1.5 size-2 rounded-full bg-primary" />
+                )}
+              </Button>
+            </>
+          )}
           <ThemeToggle className="hidden md:inline-flex" />
           {isLoading ? (
             <Skeleton className="h-8 w-24" />
@@ -270,21 +288,9 @@ export function SiteHeader() {
                       </DropdownMenuItem>
                     </>
                   )}
-                  <DropdownMenuItem render={<Link href="/conversations" />}>
-                    <MessageSquare />
-                    {t("conversations")}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    render={<Link href="/notifications" />}
-                    className="justify-between"
-                  >
-                    <span className="flex items-center gap-1.5">
-                      <Bell />
-                      {t("notifications")}
-                    </span>
-                    {hasUnreadNotifications && (
-                      <span className="size-2 rounded-full bg-primary" />
-                    )}
+                  <DropdownMenuItem render={<Link href="/profile" />}>
+                    <User />
+                    {t("profile")}
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />

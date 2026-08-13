@@ -8,6 +8,7 @@ const PAGE_SIZE = 12;
 
 interface PropertySearchParams {
   type?: string;
+  operationType?: string;
   state?: string;
   municipality?: string;
   minPrice?: string;
@@ -47,6 +48,7 @@ export default async function HomePage({ searchParams }: PageProps<"/">) {
 
   const properties = await getProperties({
     type: readParam(params, "type"),
+    operationType: readParam(params, "operationType"),
     state: readParam(params, "state"),
     municipality: readParam(params, "municipality"),
     minPrice: readParam(params, "minPrice"),

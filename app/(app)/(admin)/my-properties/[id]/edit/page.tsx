@@ -11,6 +11,7 @@ import {
 } from "@/components/properties/property-wizard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { BackButton } from "@/components/ui/back-button";
 
 export default function EditPropertyPage() {
   const t = useTranslations("myProperties");
@@ -33,6 +34,7 @@ export default function EditPropertyPage() {
 
   return (
     <main className="mx-auto max-w-5xl flex-1 px-4 py-8">
+      <BackButton className="mb-4" />
       <Card className="w-full">
         <CardHeader>
           <CardTitle>{t("editTitle")}</CardTitle>
