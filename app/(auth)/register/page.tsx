@@ -53,37 +53,32 @@ export default function RegisterPage() {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-1.5">
             <Label htmlFor="name">{t("name")}</Label>
-            <Input id="name" className="rounded-md" {...register("name")} />
+            <Input id="name" {...register("name")} />
             {errors.name && (
               <p className="text-sm text-destructive">{errors.name.message}</p>
             )}
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="email">{t("email")}</Label>
-            <Input id="email" type="email" className="rounded-md" {...register("email")} />
+            <Input id="email" type="email" {...register("email")} />
             {errors.email && (
               <p className="text-sm text-destructive">{errors.email.message}</p>
             )}
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="password">{t("password")}</Label>
-            <Input
-              id="password"
-              type="password"
-              className="rounded-md"
-              {...register("password")}
-            />
+            <Input id="password" type="password" {...register("password")} />
             {errors.password && (
               <p className="text-sm text-destructive">{errors.password.message}</p>
             )}
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="phone">{t("phoneOptional")}</Label>
-            <Input id="phone" className="rounded-md" {...register("phone")} />
+            <Input id="phone" {...register("phone")} />
           </div>
           <Button
             type="submit"
-            className="w-full rounded-md"
+            className="h-auto w-full py-4"
             disabled={registerMutation.isPending}
           >
             {registerMutation.isPending ? t("creatingAccount") : t("signUp")}
