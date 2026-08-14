@@ -1,19 +1,25 @@
 import type { AccountType, Role } from "./enums";
 
+// Maps to UserResponseDto (`GET /auth/me`, `PATCH /auth/me`). This backend
+// response shape still uses `name`/`showWhatsapp` — it was NOT renamed to
+// `displayName` alongside the `/profile` endpoint.
 export interface AuthenticatedUser {
   id: string;
   email: string;
   name: string;
   role: Role;
   phone: string | null;
-  showPhoneOnListings: boolean;
+  showWhatsapp: boolean;
 }
 
+// Maps to UpdateProfileRequestDto (`PATCH /auth/me`).
 export interface UpdateProfileInput {
   phone?: string | null;
-  showPhoneOnListings?: boolean;
+  showWhatsapp?: boolean;
 }
 
+// Maps to PublicProfileResponseDto (`GET /auth/:id`, public, no auth
+// required). Still uses `name`, unrelated to the `/profile` displayName rename.
 export interface PublicProfile {
   id: string;
   name: string;
@@ -25,6 +31,7 @@ export interface LoginInput {
   password: string;
 }
 
+// Maps to RegisterRequestDto (`POST /auth/register`). Still uses `name`.
 export interface RegisterInput {
   email: string;
   password: string;
@@ -32,45 +39,27 @@ export interface RegisterInput {
   phone?: string;
 }
 
-export interface NotificationPrefs {
-  newMessage: boolean;
-  threadReply: boolean;
-  unanswered: boolean;
-  weeklyDigest: boolean;
-  listingExpiring: boolean;
-  product: boolean;
-  channels: {
-    email: boolean;
-    inApp: boolean;
-    whatsapp: boolean;
-  };
-  quietFrom: string;
-  quietTo: string;
-}
-
-export interface PrivacyPrefs {
-  publicProfile: boolean;
-  showLocation: boolean;
-  showLastSeen: boolean;
-  showResponseTime: boolean;
-  whoCanMessage: "ANYONE" | "VERIFIED_EMAIL" | "FULLY_VERIFIED";
-  filterSpam: boolean;
-}
-
 export interface GeneralPrefs {
   locale: "es" | "en" | "pt";
-  currency: "USD" | "VES" | "EUR";
   theme: "light" | "dark" | "system";
 }
 
+export interface ProfileCompletion {
+  pct: number;
+  missing: string[];
+}
+
+// Maps to ProfileResponseDto (`GET /profile`, `PATCH /profile`).
 export interface Profile {
   id: string;
   email: string;
   pendingEmail: string | null;
   emailVerified: boolean;
-  name: string;
+  displayName: string;
+  firstName: string;
+  lastName: string;
   username: string | null;
-  role: Role | "SUPERADMIN";
+  role: Role;
   accountType: AccountType;
   avatarUrl: string | null;
   bio: string | null;
@@ -79,16 +68,13 @@ export interface Profile {
   website: string | null;
   phone: string | null;
   altPhone: string | null;
-  phoneVerified: boolean;
-  showPhoneOnListings: boolean;
+  showWhatsapp: boolean;
   allowCalls: boolean;
   showEmail: boolean;
-  notificationPrefs: NotificationPrefs;
-  privacyPrefs: PrivacyPrefs;
   generalPrefs: GeneralPrefs;
-  twoFactorEnabled: boolean;
   deactivatedAt: string | null;
-  completeness: number;
+  createdAt: string;
+  completion: ProfileCompletion;
 }
 
 export interface Session {

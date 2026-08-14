@@ -341,20 +341,23 @@ export function SiteHeader() {
                   />
                 }
               >
-                {profile?.avatarUrl ? (
-                  <img
-                    src={profile.avatarUrl}
-                    alt="Avatar"
-                    className="size-8 rounded-full object-cover"
-                  />
-                ) : (
-                  <Avatar className="size-8 cursor-pointer">
-                    <AvatarFallback>
-                      {user.name.slice(0, 2).toUpperCase()}
-                    </AvatarFallback>
-                    {hasUnreadNotifications && <AvatarBadge />}
-                  </Avatar>
-                )}{" "}
+                <Avatar className="size-8 cursor-pointer">
+                  {profile?.avatarUrl ? (
+                    <img
+                      src={profile.avatarUrl}
+                      alt="Avatar"
+                      className="size-8 rounded-full object-cover"
+                    />
+                  ) : (
+                    <>
+                      {" "}
+                      <AvatarFallback>
+                        {user.name.slice(0, 2).toUpperCase()}
+                      </AvatarFallback>
+                      {hasUnreadNotifications && <AvatarBadge />}
+                    </>
+                  )}
+                </Avatar>{" "}
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-64">
                 <DropdownMenuGroup>

@@ -10,75 +10,85 @@ import {
   usePatchProfileMutation,
   useRequestEmailChangeMutation,
 } from "@/hooks/use-profile";
+import { useDirtyState } from "@/hooks/use-dirty-state";
+import {
+  contactSchema,
+  type ContactFormValues,
+} from "@/lib/validations/profile";
 import { translateApiError } from "@/lib/api/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Field } from "@/components/ui/field";
+import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
+import { SaveBar } from "@/components/ui/save-bar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { Profile } from "@/types/auth";
-
-const contactSchema = z.object({
-  phone: z.string().optional(),
-  altPhone: z.string().optional(),
-  showPhoneOnListings: z.boolean(),
-  allowCalls: z.boolean(),
-  showEmail: z.boolean(),
-});
-type ContactFormValues = z.infer<typeof contactSchema>;
 
 const emailChangeSchema = z.object({
   newEmail: z.email(),
 });
 type EmailChangeFormValues = z.infer<typeof emailChangeSchema>;
 
-export function ContactSection({ profile }: { profile: Profile }) {
+interface ContactSectionProps {
+  profile: Profile;
+  onDirtyChange?: (dirty: boolean) => void;
+}
+
+export function ContactSection({
+  profile,
+  onDirtyChange,
+}: ContactSectionProps) {
   const t = useTranslations("profile");
   const patchProfileMutation = usePatchProfileMutation();
   const requestEmailChangeMutation = useRequestEmailChangeMutation();
 
+  const form = useForm({
+    resolver: zodResolver(contactSchema),
+    defaultValues: {
+      phone: profile.phone ?? "",
+      altPhone: profile.altPhone ?? "",
+      showWhatsapp: profile.showWhatsapp,
+      allowCalls: profile.allowCalls,
+      showEmail: profile.showEmail,
+    },
+  });
   const {
     register,
     handleSubmit,
     reset,
-    formState: { errors },
-  } = useForm<ContactFormValues>({
-    resolver: zodResolver(contactSchema),
-    defaultValues: {
-      phone: "",
-      altPhone: "",
-      showPhoneOnListings: false,
-      allowCalls: false,
-      showEmail: false,
-    },
-  });
+    formState: { errors, dirtyFields },
+  } = form;
+  const { isDirty, dirtyCount, discard } = useDirtyState(form);
+
+  useEffect(() => {
+    onDirtyChange?.(isDirty);
+  }, [isDirty, onDirtyChange]);
 
   useEffect(() => {
     reset({
       phone: profile.phone ?? "",
       altPhone: profile.altPhone ?? "",
-      showPhoneOnListings: profile.showPhoneOnListings,
+      showWhatsapp: profile.showWhatsapp,
       allowCalls: profile.allowCalls,
       showEmail: profile.showEmail,
     });
   }, [profile, reset]);
 
   function onSubmit(values: ContactFormValues) {
-    patchProfileMutation.mutate(
-      {
-        phone: values.phone || null,
-        altPhone: values.altPhone || null,
-        showPhoneOnListings: values.showPhoneOnListings,
-        allowCalls: values.allowCalls,
-        showEmail: values.showEmail,
+    const patch: Partial<Profile> = {};
+    if (dirtyFields.phone) patch.phone = values.phone;
+    if (dirtyFields.altPhone) patch.altPhone = values.altPhone;
+    if (dirtyFields.showWhatsapp) patch.showWhatsapp = values.showWhatsapp;
+    if (dirtyFields.allowCalls) patch.allowCalls = values.allowCalls;
+    if (dirtyFields.showEmail) patch.showEmail = values.showEmail;
+
+    patchProfileMutation.mutate(patch, {
+      onSuccess: () => toast.success(t("contactUpdated")),
+      onError: (error) => {
+        toast.error(translateApiError(error, t("couldNotUpdateContact")));
       },
-      {
-        onSuccess: () => toast.success(t("contactUpdated")),
-        onError: (error) => {
-          toast.error(translateApiError(error, t("couldNotUpdateContact")));
-        },
-      },
-    );
+    });
   }
 
   const {
@@ -111,81 +121,61 @@ export function ContactSection({ profile }: { profile: Profile }) {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <div className="space-y-1.5">
-              <Label htmlFor="phone">{t("whatsappLabel")}</Label>
+            <Field
+              label={t("whatsappLabel")}
+              htmlFor="phone"
+              hint={t("whatsappHint")}
+              error={errors.phone?.message}
+            >
               <Input
                 id="phone"
                 type="tel"
                 placeholder={t("whatsappPlaceholder")}
                 {...register("phone")}
               />
-              <p className="text-sm text-muted-foreground">
-                {t("whatsappHint")}
-              </p>
-              {errors.phone && (
-                <p className="text-sm text-destructive">
-                  {errors.phone.message}
-                </p>
-              )}
-            </div>
+            </Field>
 
-            <div className="space-y-1.5">
-              <Label htmlFor="altPhone">{t("altPhoneLabel")}</Label>
+            <Field
+              label={t("altPhoneLabel")}
+              htmlFor="altPhone"
+              error={errors.altPhone?.message}
+            >
               <Input
                 id="altPhone"
                 type="tel"
                 placeholder={t("altPhonePlaceholder")}
                 {...register("altPhone")}
               />
+            </Field>
+
+            <div className="rounded-md border border-border p-3">
+              <Switch
+                id="showWhatsapp"
+                label={t("showOnListingsLabel")}
+                {...register("showWhatsapp")}
+              />
             </div>
 
-            <label
-              htmlFor="showPhoneOnListings"
-              className="flex items-start gap-2 rounded-md border border-border p-3"
-            >
-              <input
-                id="showPhoneOnListings"
-                type="checkbox"
-                className="mt-0.5 size-4 shrink-0"
-                {...register("showPhoneOnListings")}
-              />
-              <span className="text-sm">{t("showOnListingsLabel")}</span>
-            </label>
-
-            <label
-              htmlFor="allowCalls"
-              className="flex items-start gap-2 rounded-md border border-border p-3"
-            >
-              <input
+            <div className="rounded-md border border-border p-3">
+              <Switch
                 id="allowCalls"
-                type="checkbox"
-                className="mt-0.5 size-4 shrink-0"
+                label={t("allowCallsLabel")}
                 {...register("allowCalls")}
               />
-              <span className="text-sm">{t("allowCallsLabel")}</span>
-            </label>
+            </div>
 
-            <label
-              htmlFor="showEmail"
-              className="flex items-start gap-2 rounded-md border border-border p-3"
-            >
-              <input
+            <div className="rounded-md border border-border p-3">
+              <Switch
                 id="showEmail"
-                type="checkbox"
-                className="mt-0.5 size-4 shrink-0"
+                label={t("showEmailLabel")}
                 {...register("showEmail")}
               />
-              <span className="text-sm">{t("showEmailLabel")}</span>
-            </label>
-
-            <Button type="submit" disabled={patchProfileMutation.isPending}>
-              {patchProfileMutation.isPending ? t("saving") : t("save")}
-            </Button>
+            </div>
           </form>
         </CardContent>
       </Card>
 
-      <Card>
+      {/* <Card>
         <CardHeader>
           <CardTitle>{t("verificationTitle")}</CardTitle>
         </CardHeader>
@@ -216,50 +206,51 @@ export function ContactSection({ profile }: { profile: Profile }) {
 
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium">{t("whatsappLabel")}</p>
-              <p className="text-sm text-muted-foreground">
-                {profile.phone || t("noneSet")}
-              </p>
+              <p className="text-sm font-medium">{t("idDocumentLabel")}</p>
             </div>
-            <Badge variant={profile.phoneVerified ? "default" : "outline"}>
-              {profile.phoneVerified
-                ? t("verifiedBadge")
-                : t("notVerifiedBadge")}
-            </Badge>
+            <Badge variant="muted">{t("idDocumentComingSoon")}</Badge>
           </div>
 
           <form
             onSubmit={handleSubmitEmail(onSubmitEmailChange)}
             className="space-y-2 border-t border-border pt-4"
           >
-            <Label htmlFor="newEmail">{t("newEmailLabel")}</Label>
-            <div className="flex flex-col gap-2 sm:flex-row">
-              <Input
-                id="newEmail"
-                type="email"
-                placeholder={t("newEmailPlaceholder")}
-                {...registerEmail("newEmail")}
-              />
-              <Button
-                type="submit"
-                variant="outline"
-                className="h-11"
-                disabled={requestEmailChangeMutation.isPending}
-              >
-                {requestEmailChangeMutation.isPending
-                  ? t("sendingVerification")
-                  : t("sendVerification")}
-              </Button>
-            </div>
-            {emailErrors.newEmail && (
-              <p className="text-sm text-destructive">{t("invalidNewEmail")}</p>
-            )}
-            <p className="text-sm text-muted-foreground">
-              {t("emailChangeHint")}
-            </p>
+            <Field
+              label={t("newEmailLabel")}
+              htmlFor="newEmail"
+              hint={t("emailChangeHint")}
+              error={emailErrors.newEmail && t("invalidNewEmail")}
+            >
+              <div className="flex flex-col gap-2 sm:flex-row">
+                <Input
+                  id="newEmail"
+                  type="email"
+                  placeholder={t("newEmailPlaceholder")}
+                  {...registerEmail("newEmail")}
+                />
+                <Button
+                  type="submit"
+                  variant="outline"
+                  className="h-11"
+                  disabled={requestEmailChangeMutation.isPending}
+                >
+                  {requestEmailChangeMutation.isPending
+                    ? t("sendingVerification")
+                    : t("sendVerification")}
+                </Button>
+              </div>
+            </Field>
           </form>
         </CardContent>
-      </Card>
+      </Card> */}
+
+      <SaveBar
+        visible={isDirty}
+        fieldCount={dirtyCount}
+        onDiscard={discard}
+        onSave={handleSubmit(onSubmit)}
+        saving={patchProfileMutation.isPending}
+      />
     </div>
   );
 }

@@ -59,3 +59,12 @@ export async function deactivateAccount(): Promise<void> {
 export async function deleteAccount(confirmation: string): Promise<void> {
   await api.delete("/account", { data: { confirmation } });
 }
+
+export async function deleteAvatar(): Promise<Profile> {
+  const { data } = await api.delete<Profile>("/profile/avatar");
+  return data;
+}
+
+export async function exportAccountData(): Promise<void> {
+  await api.post("/account/export");
+}

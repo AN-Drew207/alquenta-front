@@ -7,6 +7,8 @@ import {
   checkUsernameAvailability,
   deactivateAccount,
   deleteAccount,
+  deleteAvatar,
+  exportAccountData,
   fetchMyFullProfile,
   fetchSessions,
   patchProfile,
@@ -32,6 +34,18 @@ export function usePatchProfileMutation() {
 
   return useMutation({
     mutationFn: (input: Partial<Profile>) => patchProfile(input),
+    onSuccess: (profile) => {
+      queryClient.setQueryData(PROFILE_QUERY_KEY, profile);
+      queryClient.invalidateQueries({ queryKey: CURRENT_USER_QUERY_KEY });
+    },
+  });
+}
+
+export function useDeleteAvatarMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: deleteAvatar,
     onSuccess: (profile) => {
       queryClient.setQueryData(PROFILE_QUERY_KEY, profile);
       queryClient.invalidateQueries({ queryKey: CURRENT_USER_QUERY_KEY });
@@ -102,6 +116,12 @@ export function useDeactivateAccountMutation() {
       queryClient.setQueryData(CURRENT_USER_QUERY_KEY, null);
       router.push("/");
     },
+  });
+}
+
+export function useExportAccountDataMutation() {
+  return useMutation({
+    mutationFn: exportAccountData,
   });
 }
 

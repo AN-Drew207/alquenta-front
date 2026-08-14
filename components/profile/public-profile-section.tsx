@@ -6,18 +6,26 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
-import { Check, Loader2, Upload, X } from "lucide-react";
+import { Camera, Check, Loader2, Upload, X } from "lucide-react";
 import {
   usePatchProfileMutation,
   useUsernameAvailability,
+  useDeleteAvatarMutation,
 } from "@/hooks/use-profile";
 import { getUploadSignature, uploadToCloudinary } from "@/lib/api/media";
 import { translateApiError } from "@/lib/api/client";
+import { cn, getInitials } from "@/lib/utils";
+import {
+  publicProfileSchema,
+  type PublicProfileFormValues,
+} from "@/lib/validations/profile";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Progress } from "@/components/ui/progress";
+import { Field } from "@/components/ui/field";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import { SaveBar } from "@/components/ui/save-bar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Select,
@@ -28,83 +36,91 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { VENEZUELA_STATES } from "@/lib/data/venezuela-locations";
+import { useDirtyState } from "@/hooks/use-dirty-state";
+import { AccountDetailsCard } from "@/components/profile/account-details-card";
 import type { Profile } from "@/types/auth";
 
-const USERNAME_PATTERN = /^[a-z0-9_]{3,24}$/;
 const BIO_MAX_LENGTH = 280;
-
+const BIO_AMBER_THRESHOLD = 250;
+const USERNAME_DEBOUNCE_MS = 400;
 const ANY_STATE = "any";
 
-const publicProfileSchema = z.object({
-  avatarUrl: z.string().optional(),
-  name: z.string().min(1),
-  username: z
-    .string()
-    .optional()
-    .refine((value) => !value || USERNAME_PATTERN.test(value), {
-      message: "usernameInvalid",
-    }),
-  accountType: z.enum(["OWNER", "AGENCY", "CLIENT"]),
-  bio: z.string().max(BIO_MAX_LENGTH).optional(),
-  city: z.string().optional(),
-  state: z.string().optional(),
-  website: z.string().optional(),
-});
-type PublicProfileFormValues = z.infer<typeof publicProfileSchema>;
+/**
+ * `publicProfileSchema` has transforms (e.g. empty string -> null), so its
+ * input type (raw, pre-validation field values held by the form) differs
+ * from its output type (`PublicProfileFormValues`, post-validation, passed
+ * to `onSubmit`). `useForm`'s 3rd generic carries that split.
+ */
+type PublicProfileFormInput = z.input<typeof publicProfileSchema>;
 
-export function PublicProfileSection({ profile }: { profile: Profile }) {
+function buildDefaultValues(profile: Profile): PublicProfileFormInput {
+  return {
+    firstName: profile.firstName,
+    lastName: profile.lastName,
+    displayName: profile.displayName,
+    username: profile.username ?? "",
+    bio: profile.bio ?? "",
+    city: profile.city ?? "",
+    state: profile.state ?? ANY_STATE,
+    website: profile.website ?? "",
+    avatarUrl: profile.avatarUrl,
+  };
+}
+
+interface PublicProfileSectionProps {
+  profile: Profile;
+  onDirtyChange?: (dirty: boolean) => void;
+}
+
+export function PublicProfileSection({
+  profile,
+  onDirtyChange,
+}: PublicProfileSectionProps) {
   const t = useTranslations("profile");
   const patchProfileMutation = usePatchProfileMutation();
+  const deleteAvatarMutation = useDeleteAvatarMutation();
   const [uploading, setUploading] = useState(false);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const form = useForm<
+    PublicProfileFormInput,
+    unknown,
+    PublicProfileFormValues
+  >({
+    resolver: zodResolver(publicProfileSchema),
+    defaultValues: buildDefaultValues(profile),
+  });
   const {
     register,
     control,
     handleSubmit,
     watch,
     setValue,
+    resetField,
     reset,
-    formState: { errors },
-  } = useForm<PublicProfileFormValues>({
-    resolver: zodResolver(publicProfileSchema),
-    defaultValues: {
-      avatarUrl: "",
-      name: "",
-      username: "",
-      accountType: "CLIENT",
-      bio: "",
-      city: "",
-      state: ANY_STATE,
-      website: "",
-    },
-  });
+    formState: { errors, dirtyFields },
+  } = form;
 
-  useEffect(() => {
-    reset({
-      avatarUrl: profile.avatarUrl ?? "",
-      name: profile.name,
-      username: profile.username ?? "",
-      accountType: profile.accountType,
-      bio: profile.bio ?? "",
-      city: profile.city ?? "",
-      state: profile.state ?? ANY_STATE,
-      website: profile.website ?? "",
-    });
-  }, [profile, reset]);
+  const { isDirty, dirtyCount, discard } = useDirtyState(form);
 
   const avatarUrl = watch("avatarUrl");
+  const displayName = watch("displayName");
   const bio = watch("bio") ?? "";
+  const city = watch("city");
   const username = watch("username") ?? "";
 
   const [debouncedUsername, setDebouncedUsername] = useState(username);
   useEffect(() => {
-    const timeout = setTimeout(() => setDebouncedUsername(username), 400);
+    const timeout = setTimeout(
+      () => setDebouncedUsername(username),
+      USERNAME_DEBOUNCE_MS,
+    );
     return () => clearTimeout(timeout);
   }, [username]);
 
   const usernameChanged = debouncedUsername !== (profile.username ?? "");
-  const usernameValid = USERNAME_PATTERN.test(debouncedUsername);
+  const usernameValid = !errors.username && debouncedUsername.length > 0;
   const shouldCheckAvailability = usernameChanged && usernameValid;
   const { data: availability, isFetching: isCheckingUsername } =
     useUsernameAvailability(debouncedUsername, shouldCheckAvailability);
@@ -116,226 +132,282 @@ export function PublicProfileSection({ profile }: { profile: Profile }) {
     event.target.value = "";
     if (!file) return;
 
+    const localUrl = URL.createObjectURL(file);
+    setAvatarPreview(localUrl);
     setUploading(true);
     try {
       const signature = await getUploadSignature("image");
       const url = await uploadToCloudinary(file, signature);
-      setValue("avatarUrl", url, { shouldValidate: true });
+      setValue("avatarUrl", url, { shouldDirty: true, shouldValidate: true });
     } catch (error) {
       toast.error(translateApiError(error, t("couldNotUploadAvatar")));
     } finally {
       setUploading(false);
+      setAvatarPreview(null);
+      URL.revokeObjectURL(localUrl);
     }
   }
 
-  function onSubmit(values: PublicProfileFormValues) {
-    patchProfileMutation.mutate(
-      {
-        avatarUrl: values.avatarUrl || null,
-        name: values.name,
-        username: values.username || null,
-        accountType: values.accountType,
-        bio: values.bio || null,
-        city: values.city || null,
-        state: values.state === ANY_STATE ? null : values.state || null,
-        website: values.website || null,
+  function handleRemoveAvatar() {
+    deleteAvatarMutation.mutate(undefined, {
+      onSuccess: (data) => {
+        resetField("avatarUrl", { defaultValue: data.avatarUrl });
+        toast.success(t("avatarRemoved"));
       },
-      {
-        onSuccess: () => toast.success(t("publicProfileUpdated")),
-        onError: (error) => {
-          toast.error(
-            translateApiError(error, t("couldNotUpdatePublicProfile")),
-          );
-        },
+      onError: (error) => {
+        toast.error(translateApiError(error, t("couldNotRemoveAvatar")));
       },
-    );
+    });
   }
 
+  function onSubmit(values: PublicProfileFormValues) {
+    const payload: Partial<Profile> = {};
+    if (dirtyFields.firstName) payload.firstName = values.firstName;
+    if (dirtyFields.lastName) payload.lastName = values.lastName;
+    if (dirtyFields.displayName) payload.displayName = values.displayName;
+    if (dirtyFields.username) payload.username = values.username || null;
+    if (dirtyFields.bio) payload.bio = values.bio || null;
+    if (dirtyFields.city) payload.city = values.city || null;
+    if (dirtyFields.state) {
+      payload.state = values.state === ANY_STATE ? null : values.state || null;
+    }
+    if (dirtyFields.website) payload.website = values.website || null;
+    if (dirtyFields.avatarUrl) payload.avatarUrl = values.avatarUrl || null;
+
+    if (Object.keys(payload).length === 0) return;
+
+    patchProfileMutation.mutate(payload, {
+      onSuccess: (data) => {
+        toast.success(t("publicProfileUpdated"));
+        reset(buildDefaultValues(data));
+      },
+      onError: (error) => {
+        toast.error(translateApiError(error, t("couldNotUpdatePublicProfile")));
+      },
+    });
+  }
+
+  const onSave = handleSubmit(onSubmit);
+
+  const nameInitials = getInitials(displayName || profile.displayName);
+  const bioLength = bio.length;
+  const bioNearLimit = bioLength > BIO_AMBER_THRESHOLD;
+
+  const accountTypeLabel = t(`accountType${profile.accountType}`);
+  const previewLine = [accountTypeLabel, city, t("previewResponseTime")]
+    .filter((part): part is string => Boolean(part))
+    .join(" · ");
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{t("publicProfileTitle")}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="mb-6 space-y-1.5">
-          <Label>{t("completenessLabel")}</Label>
-          <Progress value={profile.completeness}>
-            <span className="text-sm text-muted-foreground">
-              {profile.completeness}%
-            </span>
-          </Progress>
-        </div>
+    <div className={cn("space-y-6", isDirty && "pb-24")}>
+      <AccountDetailsCard profile={profile} />
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div className="space-y-4">
-            <Label>{t("avatarLabel")}</Label>
-            <div className="flex items-center gap-4">
-              {avatarUrl ? (
-                <img
-                  src={avatarUrl}
-                  alt="Avatar"
-                  className="h-36 w-36 rounded-full object-cover"
-                />
-              ) : (
-                <Avatar className="h-36 w-36">
-                  <AvatarImage src={avatarUrl} alt="Avatar" />
-                  <AvatarFallback>{profile.name[0]}</AvatarFallback>
-                </Avatar>
-              )}
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={handleAvatarFileChange}
-              />
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                disabled={uploading}
-                onClick={() => fileInputRef.current?.click()}
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>{t("personalInfoTitle")}</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <Field
+                label={t("firstNameLabel")}
+                htmlFor="firstName"
+                required
+                error={errors.firstName?.message}
               >
-                {uploading ? (
-                  <Loader2 className="size-3.5 animate-spin" />
-                ) : (
-                  <Upload className="size-3.5" />
-                )}
-                {uploading ? t("uploadingAvatar") : t("uploadAvatar")}
-              </Button>
+                <Input id="firstName" {...register("firstName")} />
+              </Field>
+              <Field
+                label={t("lastNameLabel")}
+                htmlFor="lastName"
+                required
+                error={errors.lastName?.message}
+              >
+                <Input id="lastName" {...register("lastName")} />
+              </Field>
             </div>
-          </div>
 
-          <div className="space-y-1.5">
-            <Label htmlFor="name">{t("nameLabel")}</Label>
-            <Input id="name" {...register("name")} />
-            {errors.name && (
-              <p className="text-sm text-destructive">{t("nameRequired")}</p>
-            )}
-          </div>
+            <Field
+              label={t("displayNameLabel")}
+              htmlFor="displayName"
+              required
+              hint={t("displayNameHint")}
+              error={errors.displayName?.message}
+            >
+              <Input id="displayName" {...register("displayName")} />
+            </Field>
 
-          <div className="space-y-1.5">
-            <Label htmlFor="username">{t("usernameLabel")}</Label>
-            <Input
-              id="username"
-              placeholder={t("usernamePlaceholder")}
-              {...register("username")}
-            />
-            <p className="text-sm text-muted-foreground">{t("usernameHint")}</p>
-            {errors.username && (
-              <p className="text-sm text-destructive">{t("usernameInvalid")}</p>
-            )}
-            {!errors.username && shouldCheckAvailability && (
+            <Field
+              label={t("usernameLabel")}
+              htmlFor="username"
+              hint={!errors.username ? t("usernameHint") : undefined}
+              error={errors.username?.message}
+            >
+              <Input
+                id="username"
+                placeholder={t("usernamePlaceholder")}
+                {...register("username")}
+              />
+              {!errors.username && shouldCheckAvailability && (
+                <p
+                  className={cn(
+                    "flex items-center gap-1 text-sm",
+                    isCheckingUsername
+                      ? "text-muted-foreground"
+                      : availability?.available
+                        ? "text-primary"
+                        : "text-destructive",
+                  )}
+                >
+                  {isCheckingUsername ? (
+                    <>
+                      <Loader2 className="size-3.5 animate-spin" />
+                      {t("usernameChecking")}
+                    </>
+                  ) : availability?.available ? (
+                    <>
+                      <Check className="size-3.5" />
+                      {t("usernameAvailable")}
+                    </>
+                  ) : (
+                    <>
+                      <X className="size-3.5" />
+                      {t("usernameTaken")}
+                    </>
+                  )}
+                </p>
+              )}
+            </Field>
+
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium">{t("currentEmailLabel")}</p>
+                <p className="text-sm text-muted-foreground">{profile.email}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>{t("bioLabel")}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Field htmlFor="bio">
+              <Textarea
+                id="bio"
+                rows={4}
+                maxLength={BIO_MAX_LENGTH}
+                placeholder={t("bioPlaceholder")}
+                {...register("bio")}
+              />
               <p
-                className={
-                  isCheckingUsername
-                    ? "flex items-center gap-1 text-sm text-muted-foreground"
-                    : availability?.available
-                      ? "flex items-center gap-1 text-sm text-primary"
-                      : "flex items-center gap-1 text-sm text-destructive"
-                }
+                className={cn(
+                  "text-right text-xs",
+                  bioNearLimit
+                    ? "text-amber-600 dark:text-amber-400"
+                    : "text-muted-foreground",
+                )}
               >
-                {isCheckingUsername ? (
-                  <>
-                    <Loader2 className="size-3.5 animate-spin" />
-                    {t("usernameChecking")}
-                  </>
-                ) : availability?.available ? (
-                  <>
-                    <Check className="size-3.5" />
-                    {t("usernameAvailable")}
-                  </>
-                ) : (
-                  <>
-                    <X className="size-3.5" />
-                    {t("usernameTaken")}
-                  </>
-                )}
+                {bioLength}/{BIO_MAX_LENGTH}
               </p>
-            )}
-          </div>
+            </Field>
+          </CardContent>
+        </Card>
 
-          {/* <div className="space-y-1.5">
-            <Label>{t("accountTypeLabel")}</Label>
-            <Controller
-              control={control}
-              name="accountType"
-              render={({ field }) => (
-                <Select value={field.value} onValueChange={field.onChange}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue>
-                      {(value: AccountType) => t(`accountType${value}`)}
-                    </SelectValue>
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="OWNER">{t("accountTypeOWNER")}</SelectItem>
-                    <SelectItem value="AGENCY">{t("accountTypeAGENCY")}</SelectItem>
-                    <SelectItem value="CLIENT">{t("accountTypeCLIENT")}</SelectItem>
-                  </SelectContent>
-                </Select>
-              )}
-            />
-          </div> */}
-
-          <div className="space-y-1.5">
-            <Label htmlFor="bio">{t("bioLabel")}</Label>
-            <Textarea
-              id="bio"
-              rows={4}
-              maxLength={BIO_MAX_LENGTH}
-              placeholder={t("bioPlaceholder")}
-              {...register("bio")}
-            />
-            <p className="text-right text-xs text-muted-foreground">
-              {bio.length}/{BIO_MAX_LENGTH}
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div className="space-y-1.5">
-              <Label htmlFor="city">{t("cityLabel")}</Label>
-              <Input id="city" {...register("city")} />
-            </div>
-            <div className="space-y-1.5">
-              <Label>{t("stateLabel")}</Label>
-              <Controller
-                control={control}
-                name="state"
-                render={({ field }) => (
-                  <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder={t("statePlaceholder")}>
-                        {(value: string) =>
-                          value === ANY_STATE ? t("statePlaceholder") : value
-                        }
-                      </SelectValue>
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value={ANY_STATE}>
-                        {t("statePlaceholder")}
-                      </SelectItem>
-                      {VENEZUELA_STATES.map((state) => (
-                        <SelectItem key={state.name} value={state.name}>
-                          {state.name}
+        <Card>
+          <CardHeader>
+            <CardTitle>{t("locationTitle")}</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <Field label={t("cityLabel")} htmlFor="city">
+                <Input id="city" {...register("city")} />
+              </Field>
+              <Field label={t("stateLabel")} htmlFor="state">
+                <Controller
+                  control={control}
+                  name="state"
+                  render={({ field }) => (
+                    <Select
+                      value={field.value ?? ANY_STATE}
+                      onValueChange={field.onChange}
+                    >
+                      <SelectTrigger id="state" className="w-full">
+                        <SelectValue placeholder={t("statePlaceholder")}>
+                          {(value: string) =>
+                            value === ANY_STATE ? t("statePlaceholder") : value
+                          }
+                        </SelectValue>
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value={ANY_STATE}>
+                          {t("statePlaceholder")}
                         </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                )}
-              />
+                        {VENEZUELA_STATES.map((state) => (
+                          <SelectItem key={state.name} value={state.name}>
+                            {state.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+              </Field>
             </div>
-          </div>
 
-          <div className="space-y-1.5">
-            <Label htmlFor="website">{t("websiteLabel")}</Label>
-            <Input id="website" type="url" {...register("website")} />
-          </div>
+            <Field
+              label={t("websiteLabel")}
+              htmlFor="website"
+              error={errors.website?.message}
+            >
+              <Input
+                id="website"
+                type="text"
+                placeholder="https://..."
+                {...register("website")}
+              />
+            </Field>
+          </CardContent>
+        </Card>
 
-          <Button type="submit" disabled={patchProfileMutation.isPending}>
-            {patchProfileMutation.isPending ? t("saving") : t("save")}
-          </Button>
-        </form>
-      </CardContent>
-    </Card>
+        <Card className="border-dashed">
+          <CardHeader>
+            <CardTitle>{t("previewTitle")}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center gap-3">
+              <Avatar size="lg">
+                <AvatarImage src={avatarUrl ?? undefined} alt={displayName} />
+                <AvatarFallback className="bg-linear-to-br from-primary to-[color-mix(in_oklch,var(--primary),var(--foreground)_18%)] text-primary-foreground">
+                  {nameInitials}
+                </AvatarFallback>
+              </Avatar>
+              <div className="min-w-0">
+                <div className="flex items-center gap-1.5">
+                  <p className="truncate text-sm font-medium">
+                    {displayName || t("displayNameLabel")}
+                  </p>
+                  {profile.emailVerified && (
+                    <Badge variant="success">{t("verifiedBadge")}</Badge>
+                  )}
+                </div>
+                <p className="truncate text-sm text-muted-foreground">
+                  {previewLine}
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </form>
+
+      <SaveBar
+        visible={isDirty}
+        fieldCount={dirtyCount}
+        onDiscard={discard}
+        onSave={onSave}
+        saving={patchProfileMutation.isPending}
+      />
+    </div>
   );
 }
