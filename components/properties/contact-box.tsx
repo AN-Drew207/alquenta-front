@@ -29,7 +29,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import type { PropertyStatus } from "@/types/enums";
+import type { OperationType, PropertyStatus } from "@/types/enums";
 
 export function ContactBox({
   propertyId,
@@ -37,12 +37,14 @@ export function ContactBox({
   adminId,
   available,
   status,
+  operationType,
 }: {
   propertyId: string;
   propertyTitle: string;
   adminId: string;
   available: boolean;
   status: PropertyStatus;
+  operationType: OperationType;
 }) {
   const t = useTranslations("propertyDetail");
   const tMyProperties = useTranslations("myProperties");
@@ -91,10 +93,19 @@ export function ContactBox({
       });
     }
 
+    const isSale = operationType === "SALE";
+    const markAsRentedOrSoldLabel = isSale
+      ? tMyProperties("markAsSold")
+      : tMyProperties("markAsRented");
+
     function handleMarkAsRentedOrSold() {
       markAsRentedOrSoldMutation.mutate(propertyId, {
         onSuccess: () => {
-          toast.success(tMyProperties("propertyMarkedAsRentedOrSold"));
+          toast.success(
+            isSale
+              ? tMyProperties("propertyMarkedAsSold")
+              : tMyProperties("propertyMarkedAsRented"),
+          );
           router.refresh();
         },
         onError: (error) =>
@@ -123,12 +134,14 @@ export function ContactBox({
             <AlertDialog>
               <AlertDialogTrigger render={<Button variant="outline" />}>
                 <Handshake />
-                {tMyProperties("markAsRentedOrSold")}
+                {markAsRentedOrSoldLabel}
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
                   <AlertDialogTitle>
-                    {tMyProperties("markAsRentedOrSoldConfirmTitle")}
+                    {isSale
+                      ? tMyProperties("markAsSoldConfirmTitle")
+                      : tMyProperties("markAsRentedConfirmTitle")}
                   </AlertDialogTitle>
                   <AlertDialogDescription>
                     {tMyProperties("markAsRentedOrSoldConfirmDescription", {
@@ -139,7 +152,7 @@ export function ContactBox({
                 <AlertDialogFooter>
                   <AlertDialogCancel>{tCommon("cancel")}</AlertDialogCancel>
                   <AlertDialogAction onClick={handleMarkAsRentedOrSold}>
-                    {tMyProperties("markAsRentedOrSold")}
+                    {markAsRentedOrSoldLabel}
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>

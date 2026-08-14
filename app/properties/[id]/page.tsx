@@ -168,6 +168,7 @@ export default async function PropertyDetailPage({
             adminId={property.adminId}
             available={property.status === "AVAILABLE"}
             status={property.status}
+            operationType={property.operationType}
           />
         </div>
       </div>

@@ -44,9 +44,13 @@ export function MyPropertyCard({ property }: { property: Property }) {
     });
   }
 
+  const isSale = property.operationType === "SALE";
+  const markAsRentedOrSoldLabel = isSale ? t("markAsSold") : t("markAsRented");
+
   function handleMarkAsRentedOrSold() {
     markAsRentedOrSoldMutation.mutate(property.id, {
-      onSuccess: () => toast.success(t("propertyMarkedAsRentedOrSold")),
+      onSuccess: () =>
+        toast.success(isSale ? t("propertyMarkedAsSold") : t("propertyMarkedAsRented")),
       onError: (error) =>
         toast.error(
           translateApiError(error, t("couldNotMarkAsRentedOrSold")),
@@ -149,12 +153,12 @@ export function MyPropertyCard({ property }: { property: Property }) {
               <AlertDialogTrigger
                 render={<Button variant="outline" size="sm" className="flex-1" />}
               >
-                {t("markAsRentedOrSold")}
+                {markAsRentedOrSoldLabel}
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
                   <AlertDialogTitle>
-                    {t("markAsRentedOrSoldConfirmTitle")}
+                    {isSale ? t("markAsSoldConfirmTitle") : t("markAsRentedConfirmTitle")}
                   </AlertDialogTitle>
                   <AlertDialogDescription>
                     {t("markAsRentedOrSoldConfirmDescription", {
@@ -165,7 +169,7 @@ export function MyPropertyCard({ property }: { property: Property }) {
                 <AlertDialogFooter>
                   <AlertDialogCancel>{tCommon("cancel")}</AlertDialogCancel>
                   <AlertDialogAction onClick={handleMarkAsRentedOrSold}>
-                    {t("markAsRentedOrSold")}
+                    {markAsRentedOrSoldLabel}
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>

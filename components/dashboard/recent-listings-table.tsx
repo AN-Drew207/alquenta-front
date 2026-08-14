@@ -54,9 +54,15 @@ export function RecentListingsTable({ properties }: { properties: Property[] }) 
     });
   }
 
-  function handleMarkAsRentedOrSold(id: string) {
+  function handleMarkAsRentedOrSold(id: string, operationType: Property["operationType"]) {
+    const isSale = operationType === "SALE";
     markAsRentedOrSoldMutation.mutate(id, {
-      onSuccess: () => toast.success(tMyProperties("propertyMarkedAsRentedOrSold")),
+      onSuccess: () =>
+        toast.success(
+          isSale
+            ? tMyProperties("propertyMarkedAsSold")
+            : tMyProperties("propertyMarkedAsRented"),
+        ),
       onError: (error) =>
         toast.error(
           translateApiError(error, tMyProperties("couldNotMarkAsRentedOrSold")),
@@ -178,42 +184,52 @@ export function RecentListingsTable({ properties }: { properties: Property[] }) 
                     <Pencil className="size-3.5" />
                   </Button>
 
-                  {property.status === "AVAILABLE" && (
-                    <AlertDialog>
-                      <AlertDialogTrigger
-                        render={
-                          <Button
-                            variant="outline"
-                            size="icon-sm"
-                            aria-label={tMyProperties("markAsRentedOrSold")}
-                            title={tMyProperties("markAsRentedOrSold")}
-                          />
-                        }
-                      >
-                        <Handshake className="size-3.5" />
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>
-                            {tMyProperties("markAsRentedOrSoldConfirmTitle")}
-                          </AlertDialogTitle>
-                          <AlertDialogDescription>
-                            {tMyProperties("markAsRentedOrSoldConfirmDescription", {
-                              title: property.title,
-                            })}
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>{tCommon("cancel")}</AlertDialogCancel>
-                          <AlertDialogAction
-                            onClick={() => handleMarkAsRentedOrSold(property.id)}
-                          >
-                            {tMyProperties("markAsRentedOrSold")}
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  )}
+                  {property.status === "AVAILABLE" && (() => {
+                    const isSale = property.operationType === "SALE";
+                    const markLabel = isSale
+                      ? tMyProperties("markAsSold")
+                      : tMyProperties("markAsRented");
+                    return (
+                      <AlertDialog>
+                        <AlertDialogTrigger
+                          render={
+                            <Button
+                              variant="outline"
+                              size="icon-sm"
+                              aria-label={markLabel}
+                              title={markLabel}
+                            />
+                          }
+                        >
+                          <Handshake className="size-3.5" />
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>
+                              {isSale
+                                ? tMyProperties("markAsSoldConfirmTitle")
+                                : tMyProperties("markAsRentedConfirmTitle")}
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                              {tMyProperties("markAsRentedOrSoldConfirmDescription", {
+                                title: property.title,
+                              })}
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>{tCommon("cancel")}</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() =>
+                                handleMarkAsRentedOrSold(property.id, property.operationType)
+                              }
+                            >
+                              {markLabel}
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    );
+                  })()}
 
                   {property.status !== "CANCELLED" && (
                     <AlertDialog>
