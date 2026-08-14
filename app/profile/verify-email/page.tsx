@@ -7,7 +7,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { CheckCircle2, Loader2, XCircle } from "lucide-react";
 import { confirmEmailChange } from "@/lib/api/profile";
-import { isApiError } from "@/lib/api/client";
+import { translateApiError } from "@/lib/api/client";
 import { CURRENT_USER_QUERY_KEY } from "@/hooks/use-current-user";
 import { PROFILE_QUERY_KEY } from "@/hooks/use-profile";
 import { Button } from "@/components/ui/button";
@@ -44,7 +44,7 @@ export default function VerifyEmailPage() {
       .catch((error) => {
         if (cancelled) return;
         setStatus("error");
-        setErrorMessage(isApiError(error) ? error.message : t("verifyEmailError"));
+        setErrorMessage(translateApiError(error, t("verifyEmailError")));
       });
 
     return () => {

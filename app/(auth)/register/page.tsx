@@ -8,7 +8,7 @@ import { z } from "zod";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 import { useRegisterMutation } from "@/hooks/use-auth-mutations";
-import { isApiError } from "@/lib/api/client";
+import { translateApiError } from "@/lib/api/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
@@ -40,7 +40,7 @@ export default function RegisterPage() {
   function onSubmit(values: RegisterFormValues) {
     registerMutation.mutate(values, {
       onError: (error) => {
-        toast.error(isApiError(error) ? error.message : t("couldNotCreateAccount"));
+        toast.error(translateApiError(error, t("couldNotCreateAccount")));
       },
     });
   }

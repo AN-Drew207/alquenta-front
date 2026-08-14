@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 import { useCreatePropertyMutation } from "@/hooks/use-properties";
-import { isApiError } from "@/lib/api/client";
+import { translateApiError } from "@/lib/api/client";
 import {
   PropertyWizard,
   type PropertyFormSubmitValues,
@@ -24,9 +24,7 @@ export default function NewPropertyPage() {
         router.push(`/properties/${property.id}`);
       },
       onError: (error) => {
-        toast.error(
-          isApiError(error) ? error.message : t("couldNotPublishProperty"),
-        );
+        toast.error(translateApiError(error, t("couldNotPublishProperty")));
       },
     });
   }
@@ -34,7 +32,7 @@ export default function NewPropertyPage() {
   return (
     <main className="w-full min-h-[calc(100vh-65px)] flex items-center justify-center px-4 py-8">
       <div className="w-full max-w-3xl">
-        <BackButton className="mb-4" />
+        <BackButton className="mb-4" label={t("backToHome")} />
         <Card className="w-full">
           <CardHeader>
             <CardTitle>{t("newTitle")}</CardTitle>

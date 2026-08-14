@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MyPropertyCard } from "@/components/properties/my-property-card";
 import { PropertyFilters } from "@/components/properties/property-filters";
-import type { OperationType, PropertyType } from "@/types/enums";
+import type { OperationType, PropertyStatus, PropertyType } from "@/types/enums";
 
 const ALL_TYPES = "all";
 const ANY = "any";
@@ -22,6 +22,7 @@ export default function MyPropertiesPage() {
   const search = searchParams.get("search")?.trim().toLowerCase() ?? "";
   const type = searchParams.get("type") ?? ALL_TYPES;
   const operationType = searchParams.get("operationType") ?? ALL_TYPES;
+  const status = searchParams.get("status") ?? ALL_TYPES;
   const state = searchParams.get("state") ?? ANY;
   const municipality = searchParams.get("municipality") ?? ANY;
   const minPrice = searchParams.get("minPrice");
@@ -41,6 +42,8 @@ export default function MyPropertiesPage() {
         property.operationType !== (operationType as OperationType)
       )
         return false;
+      if (status !== ALL_TYPES && property.status !== (status as PropertyStatus))
+        return false;
       if (state !== ANY && property.state !== state) return false;
       if (municipality !== ANY && property.municipality !== municipality) return false;
       if (minPrice && property.price < Number(minPrice)) return false;
@@ -56,6 +59,7 @@ export default function MyPropertiesPage() {
     search,
     type,
     operationType,
+    status,
     state,
     municipality,
     minPrice,
@@ -79,7 +83,7 @@ export default function MyPropertiesPage() {
 
       {!isLoading && properties && properties.length > 0 && (
         <div className="mb-6">
-          <PropertyFilters basePath="/my-properties" />
+          <PropertyFilters basePath="/my-properties" showStatusFilter />
         </div>
       )}
 

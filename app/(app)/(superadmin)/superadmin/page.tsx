@@ -9,7 +9,7 @@ import { useFormatter, useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { Copy, Eye, Search, UserPlus } from "lucide-react";
 import { useAdmins, useInviteAdminMutation } from "@/hooks/use-admins";
-import { isApiError } from "@/lib/api/client";
+import { translateApiError } from "@/lib/api/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -60,7 +60,7 @@ export default function SuperAdminPage() {
     inviteMutation.mutate(values.email, {
       onSuccess: (data) => setInviteUrl(data.inviteUrl),
       onError: (error) =>
-        toast.error(isApiError(error) ? error.message : t("couldNotInviteAdmin")),
+        toast.error(translateApiError(error, t("couldNotInviteAdmin"))),
     });
   }
 

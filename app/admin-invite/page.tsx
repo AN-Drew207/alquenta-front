@@ -9,7 +9,7 @@ import { z } from "zod";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 import { useAcceptAdminInvitationMutation } from "@/hooks/use-auth-mutations";
-import { isApiError } from "@/lib/api/client";
+import { translateApiError } from "@/lib/api/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
@@ -54,9 +54,7 @@ export default function AdminInvitePage() {
           router.push("/dashboard");
         },
         onError: (error) => {
-          toast.error(
-            isApiError(error) ? error.message : t("couldNotAcceptInvitation"),
-          );
+          toast.error(translateApiError(error, t("couldNotAcceptInvitation")));
         },
       },
     );

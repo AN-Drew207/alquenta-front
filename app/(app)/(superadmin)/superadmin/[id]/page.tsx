@@ -10,7 +10,7 @@ import {
   useAdmins,
   useCancelAdminPropertyMutation,
 } from "@/hooks/use-admins";
-import { isApiError } from "@/lib/api/client";
+import { translateApiError } from "@/lib/api/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -58,7 +58,7 @@ export default function SuperAdminAdminDetailPage() {
     cancelMutation.mutate(propertyId, {
       onSuccess: () => toast.success(t("propertyCancelled")),
       onError: (error) =>
-        toast.error(isApiError(error) ? error.message : t("couldNotCancelProperty")),
+        toast.error(translateApiError(error, t("couldNotCancelProperty"))),
     });
   }
 

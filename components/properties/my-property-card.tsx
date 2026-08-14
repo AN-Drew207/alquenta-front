@@ -4,10 +4,10 @@ import Link from "next/link";
 import { useFormatter, useTranslations } from "next-intl";
 import { toast } from "sonner";
 import {
-  useDeletePropertyMutation,
   useCancelPropertyMutation,
+  useMarkPropertyAsRentedOrSoldMutation,
 } from "@/hooks/use-properties";
-import { isApiError } from "@/lib/api/client";
+import { translateApiError } from "@/lib/api/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -32,23 +32,25 @@ export function MyPropertyCard({ property }: { property: Property }) {
   const format = useFormatter();
   const operationTypeLabels = useOperationTypeLabels();
   const propertyStatusLabels = usePropertyStatusLabels();
-  const deleteMutation = useDeletePropertyMutation();
   const cancelMutation = useCancelPropertyMutation();
+  const markAsRentedOrSoldMutation = useMarkPropertyAsRentedOrSoldMutation();
   const cover = property.images[0];
-
-  function handleDelete() {
-    deleteMutation.mutate(property.id, {
-      onSuccess: () => toast.success(t("propertyDeleted")),
-      onError: (error) =>
-        toast.error(isApiError(error) ? error.message : t("couldNotDeleteProperty")),
-    });
-  }
 
   function handleCancel() {
     cancelMutation.mutate(property.id, {
       onSuccess: () => toast.success(t("propertyCancelled")),
       onError: (error) =>
-        toast.error(isApiError(error) ? error.message : t("couldNotCancelProperty")),
+        toast.error(translateApiError(error, t("couldNotCancelProperty"))),
+    });
+  }
+
+  function handleMarkAsRentedOrSold() {
+    markAsRentedOrSoldMutation.mutate(property.id, {
+      onSuccess: () => toast.success(t("propertyMarkedAsRentedOrSold")),
+      onError: (error) =>
+        toast.error(
+          translateApiError(error, t("couldNotMarkAsRentedOrSold")),
+        ),
     });
   }
 
@@ -120,35 +122,7 @@ export function MyPropertyCard({ property }: { property: Property }) {
           >
             {t("edit")}
           </Button>
-          {property.status === "CANCELLED" ? (
-            <AlertDialog key="delete">
-              <AlertDialogTrigger
-                render={
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    className="flex-1 bg-destructive text-white hover:bg-destructive/90"
-                  />
-                }
-              >
-                {t("delete")}
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>{t("deleteConfirmTitle")}</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    {t("deleteConfirmDescription", { title: property.title })}
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>{tCommon("cancel")}</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleDelete}>
-                    {t("delete")}
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          ) : (
+          {property.status !== "CANCELLED" && (
             <AlertDialog key="cancel">
               <AlertDialogTrigger render={<Button variant="destructive" size="sm" className="flex-1" />}>
                 {t("cancelListing")}
@@ -164,6 +138,34 @@ export function MyPropertyCard({ property }: { property: Property }) {
                   <AlertDialogCancel>{tCommon("cancel")}</AlertDialogCancel>
                   <AlertDialogAction onClick={handleCancel}>
                     {t("cancelListing")}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
+
+          {property.status === "AVAILABLE" && (
+            <AlertDialog key="mark-rented-sold">
+              <AlertDialogTrigger
+                render={<Button variant="outline" size="sm" className="flex-1" />}
+              >
+                {t("markAsRentedOrSold")}
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>
+                    {t("markAsRentedOrSoldConfirmTitle")}
+                  </AlertDialogTitle>
+                  <AlertDialogDescription>
+                    {t("markAsRentedOrSoldConfirmDescription", {
+                      title: property.title,
+                    })}
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>{tCommon("cancel")}</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleMarkAsRentedOrSold}>
+                    {t("markAsRentedOrSold")}
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>

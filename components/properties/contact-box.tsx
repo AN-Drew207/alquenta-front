@@ -5,14 +5,14 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
-import { Ban, Pencil, Trash2 } from "lucide-react";
+import { Ban, Handshake, Pencil } from "lucide-react";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { useStartConversationMutation } from "@/hooks/use-conversations";
 import {
   useCancelPropertyMutation,
-  useDeletePropertyMutation,
+  useMarkPropertyAsRentedOrSoldMutation,
 } from "@/hooks/use-properties";
-import { isApiError } from "@/lib/api/client";
+import { translateApiError } from "@/lib/api/client";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -51,8 +51,8 @@ export function ContactBox({
   const { data: user, isLoading } = useCurrentUser();
   const [content, setContent] = useState("");
   const startConversation = useStartConversationMutation();
-  const deleteMutation = useDeletePropertyMutation();
   const cancelMutation = useCancelPropertyMutation();
+  const markAsRentedOrSoldMutation = useMarkPropertyAsRentedOrSoldMutation();
 
   if (isLoading) {
     return <Skeleton className="h-48 w-full" />;
@@ -80,17 +80,6 @@ export function ContactBox({
   }
 
   if (user.id === adminId) {
-    function handleDelete() {
-      deleteMutation.mutate(propertyId, {
-        onSuccess: () => {
-          toast.success(tMyProperties("propertyDeleted"));
-          router.push("/my-properties");
-        },
-        onError: (error) =>
-          toast.error(isApiError(error) ? error.message : tMyProperties("couldNotDeleteProperty")),
-      });
-    }
-
     function handleCancel() {
       cancelMutation.mutate(propertyId, {
         onSuccess: () => {
@@ -98,7 +87,20 @@ export function ContactBox({
           router.refresh();
         },
         onError: (error) =>
-          toast.error(isApiError(error) ? error.message : tMyProperties("couldNotCancelProperty")),
+          toast.error(translateApiError(error, tMyProperties("couldNotCancelProperty"))),
+      });
+    }
+
+    function handleMarkAsRentedOrSold() {
+      markAsRentedOrSoldMutation.mutate(propertyId, {
+        onSuccess: () => {
+          toast.success(tMyProperties("propertyMarkedAsRentedOrSold"));
+          router.refresh();
+        },
+        onError: (error) =>
+          toast.error(
+            translateApiError(error, tMyProperties("couldNotMarkAsRentedOrSold")),
+          ),
       });
     }
 
@@ -117,28 +119,34 @@ export function ContactBox({
             {tMyProperties("edit")}
           </Button>
 
-          {status === "CANCELLED" ? (
+          {status === "AVAILABLE" && (
             <AlertDialog>
-              <AlertDialogTrigger render={<Button variant="destructive" />}>
-                <Trash2 />
-                {tMyProperties("delete")}
+              <AlertDialogTrigger render={<Button variant="outline" />}>
+                <Handshake />
+                {tMyProperties("markAsRentedOrSold")}
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>{tMyProperties("deleteConfirmTitle")}</AlertDialogTitle>
+                  <AlertDialogTitle>
+                    {tMyProperties("markAsRentedOrSoldConfirmTitle")}
+                  </AlertDialogTitle>
                   <AlertDialogDescription>
-                    {tMyProperties("deleteConfirmDescription", { title: propertyTitle })}
+                    {tMyProperties("markAsRentedOrSoldConfirmDescription", {
+                      title: propertyTitle,
+                    })}
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel>{tCommon("cancel")}</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleDelete}>
-                    {tMyProperties("delete")}
+                  <AlertDialogAction onClick={handleMarkAsRentedOrSold}>
+                    {tMyProperties("markAsRentedOrSold")}
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
-          ) : (
+          )}
+
+          {status !== "CANCELLED" && (
             <AlertDialog>
               <AlertDialogTrigger render={<Button variant="destructive" />}>
                 <Ban />
@@ -202,7 +210,7 @@ export function ContactBox({
           setContent("");
         },
         onError: (error) => {
-          toast.error(isApiError(error) ? error.message : t("couldNotSendMessage"));
+          toast.error(translateApiError(error, t("couldNotSendMessage")));
         },
       },
     );

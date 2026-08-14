@@ -35,7 +35,3 @@ export async function updateProperty(
   const { data } = await api.patch<Property>(`/properties/${id}`, input);
   return data;
 }
-
-export async function deleteProperty(id: string): Promise<void> {
-  await api.delete(`/properties/${id}`);
-}

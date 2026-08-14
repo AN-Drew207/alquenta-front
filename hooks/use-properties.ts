@@ -3,7 +3,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   createProperty,
-  deleteProperty,
   fetchMyProperties,
   fetchProperty,
   updateProperty,
@@ -46,20 +45,21 @@ export function useUpdatePropertyMutation(id: string) {
   });
 }
 
-export function useDeletePropertyMutation() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (id: string) => deleteProperty(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["properties", "mine"] });
-    },
-  });
-}
-
 export function useCancelPropertyMutation() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (id: string) => updateProperty(id, { status: "CANCELLED" }),
+    onSuccess: (_property, id) => {
+      queryClient.invalidateQueries({ queryKey: ["properties", "mine"] });
+      queryClient.invalidateQueries({ queryKey: ["properties", id] });
+    },
+  });
+}
+
+export function useMarkPropertyAsRentedOrSoldMutation() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => updateProperty(id, { status: "RENTED_OR_SOLD" }),
     onSuccess: (_property, id) => {
       queryClient.invalidateQueries({ queryKey: ["properties", "mine"] });
       queryClient.invalidateQueries({ queryKey: ["properties", id] });

@@ -9,7 +9,7 @@ import { useTranslations } from "next-intl";
 import { Check, Loader2, Upload, X } from "lucide-react";
 import { usePatchProfileMutation, useUsernameAvailability } from "@/hooks/use-profile";
 import { getUploadSignature, uploadToCloudinary } from "@/lib/api/media";
-import { isApiError } from "@/lib/api/client";
+import { translateApiError } from "@/lib/api/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -121,7 +121,7 @@ export function PublicProfileSection({ profile }: { profile: Profile }) {
       const url = await uploadToCloudinary(file, signature);
       setValue("avatarUrl", url, { shouldValidate: true });
     } catch (error) {
-      toast.error(isApiError(error) ? error.message : t("couldNotUploadAvatar"));
+      toast.error(translateApiError(error, t("couldNotUploadAvatar")));
     } finally {
       setUploading(false);
     }
@@ -142,9 +142,7 @@ export function PublicProfileSection({ profile }: { profile: Profile }) {
       {
         onSuccess: () => toast.success(t("publicProfileUpdated")),
         onError: (error) => {
-          toast.error(
-            isApiError(error) ? error.message : t("couldNotUpdatePublicProfile"),
-          );
+          toast.error(translateApiError(error, t("couldNotUpdatePublicProfile")));
         },
       },
     );

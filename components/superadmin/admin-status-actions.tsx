@@ -8,7 +8,7 @@ import {
   useDisableAdminMutation,
   useEnableAdminMutation,
 } from "@/hooks/use-admins";
-import { isApiError } from "@/lib/api/client";
+import { translateApiError } from "@/lib/api/client";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -41,7 +41,7 @@ export function AdminStatusActions({
     disableMutation.mutate(admin.id, {
       onSuccess: () => toast.success(t("adminDisabled")),
       onError: (error) =>
-        toast.error(isApiError(error) ? error.message : t("couldNotDisableAdmin")),
+        toast.error(translateApiError(error, t("couldNotDisableAdmin"))),
     });
   }
 
@@ -49,7 +49,7 @@ export function AdminStatusActions({
     enableMutation.mutate(admin.id, {
       onSuccess: () => toast.success(t("adminEnabled")),
       onError: (error) =>
-        toast.error(isApiError(error) ? error.message : t("couldNotEnableAdmin")),
+        toast.error(translateApiError(error, t("couldNotEnableAdmin"))),
     });
   }
 
@@ -60,7 +60,7 @@ export function AdminStatusActions({
         onDeleted?.();
       },
       onError: (error) =>
-        toast.error(isApiError(error) ? error.message : t("couldNotDeleteAdmin")),
+        toast.error(translateApiError(error, t("couldNotDeleteAdmin"))),
     });
   }
 

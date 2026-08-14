@@ -15,6 +15,39 @@ export function isApiError(error: unknown): error is ApiError {
   );
 }
 
+const ERROR_MESSAGES_ES: Record<string, string> = {
+  InvalidCredentialsException: "Correo electrónico o contraseña incorrectos.",
+  EmailAlreadyRegisteredException:
+    "Ya existe una cuenta registrada con ese correo electrónico.",
+  UsernameTakenException: "Ese nombre de usuario ya está en uso.",
+  InvalidVerificationTokenException: "Este enlace no es válido o ya expiró.",
+  InvalidAccountConfirmationException: "El texto de confirmación no coincide.",
+  EntityNotFoundException: "No se encontró lo que buscabas.",
+  PropertyNotOwnedByAdminException: "Esta propiedad no te pertenece.",
+  PropertyNotCancelledException:
+    "La propiedad debe estar cancelada antes de continuar.",
+  InvalidPriceException: "El precio debe ser mayor a cero.",
+  NotificationNotOwnedByUserException: "Esta notificación no te pertenece.",
+  NotConversationParticipantException: "No formas parte de esta conversación.",
+  PropertyNotAvailableException: "Esta propiedad ya no está disponible.",
+  Unauthorized: "Tu sesión expiró. Inicia sesión de nuevo.",
+  Forbidden: "No tienes permiso para hacer esto.",
+  "Bad Request": "Revisa los datos ingresados.",
+};
+
+/**
+ * Backend exception messages are always in English. This maps the small,
+ * known set of domain exceptions to Spanish copy and otherwise falls back
+ * to the caller's already-translated message, so raw English text never
+ * reaches the user.
+ */
+export function translateApiError(error: unknown, fallback: string): string {
+  if (isApiError(error) && ERROR_MESSAGES_ES[error.error]) {
+    return ERROR_MESSAGES_ES[error.error];
+  }
+  return fallback;
+}
+
 export const api = axios.create({
   baseURL: `${process.env.NEXT_PUBLIC_API_URL}/api`,
   withCredentials: true,

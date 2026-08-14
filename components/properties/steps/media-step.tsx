@@ -8,7 +8,7 @@ import { UploadCloud, X } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { getUploadSignature, uploadToCloudinary } from "@/lib/api/media";
-import { isApiError } from "@/lib/api/client";
+import { translateApiError } from "@/lib/api/client";
 import type { PropertyWizardValues } from "../property-wizard";
 
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
@@ -59,7 +59,7 @@ function MediaDropzone({
       onAdd(url);
     } catch (error) {
       toast.error(
-        isApiError(error) ? error.message : t("couldNotUploadFile", { name: file.name }),
+        translateApiError(error, t("couldNotUploadFile", { name: file.name })),
       );
     } finally {
       setUploading((prev) => prev.filter((u) => u.id !== uploadId));

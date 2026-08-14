@@ -4,7 +4,7 @@ import { useParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 import { useProperty, useUpdatePropertyMutation } from "@/hooks/use-properties";
-import { isApiError } from "@/lib/api/client";
+import { translateApiError } from "@/lib/api/client";
 import {
   PropertyWizard,
   type PropertyFormSubmitValues,
@@ -27,7 +27,7 @@ export default function EditPropertyPage() {
         router.push("/my-properties");
       },
       onError: (error) => {
-        toast.error(isApiError(error) ? error.message : t("couldNotUpdateProperty"));
+        toast.error(translateApiError(error, t("couldNotUpdateProperty")));
       },
     });
   }

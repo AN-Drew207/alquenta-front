@@ -2,12 +2,12 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useFormatter, useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { Ban, Pencil, Search, Trash2 } from "lucide-react";
+import { Ban, Handshake, Pencil, Search } from "lucide-react";
 import {
-  useDeletePropertyMutation,
   useCancelPropertyMutation,
+  useMarkPropertyAsRentedOrSoldMutation,
 } from "@/hooks/use-properties";
-import { isApiError } from "@/lib/api/client";
+import { translateApiError } from "@/lib/api/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -43,22 +43,24 @@ export function RecentListingsTable({ properties }: { properties: Property[] }) 
   const format = useFormatter();
   const propertyStatusLabels = usePropertyStatusLabels();
   const operationTypeLabels = useOperationTypeLabels();
-  const deleteMutation = useDeletePropertyMutation();
   const cancelMutation = useCancelPropertyMutation();
-
-  function handleDelete(id: string) {
-    deleteMutation.mutate(id, {
-      onSuccess: () => toast.success(tMyProperties("propertyDeleted")),
-      onError: (error) =>
-        toast.error(isApiError(error) ? error.message : tMyProperties("couldNotDeleteProperty")),
-    });
-  }
+  const markAsRentedOrSoldMutation = useMarkPropertyAsRentedOrSoldMutation();
 
   function handleCancel(id: string) {
     cancelMutation.mutate(id, {
       onSuccess: () => toast.success(tMyProperties("propertyCancelled")),
       onError: (error) =>
-        toast.error(isApiError(error) ? error.message : tMyProperties("couldNotCancelProperty")),
+        toast.error(translateApiError(error, tMyProperties("couldNotCancelProperty"))),
+    });
+  }
+
+  function handleMarkAsRentedOrSold(id: string) {
+    markAsRentedOrSoldMutation.mutate(id, {
+      onSuccess: () => toast.success(tMyProperties("propertyMarkedAsRentedOrSold")),
+      onError: (error) =>
+        toast.error(
+          translateApiError(error, tMyProperties("couldNotMarkAsRentedOrSold")),
+        ),
     });
   }
 
@@ -176,40 +178,44 @@ export function RecentListingsTable({ properties }: { properties: Property[] }) 
                     <Pencil className="size-3.5" />
                   </Button>
 
-                  {property.status === "CANCELLED" ? (
+                  {property.status === "AVAILABLE" && (
                     <AlertDialog>
                       <AlertDialogTrigger
                         render={
                           <Button
-                            variant="destructive"
+                            variant="outline"
                             size="icon-sm"
-                            aria-label={tMyProperties("delete")}
-                            title={tMyProperties("delete")}
+                            aria-label={tMyProperties("markAsRentedOrSold")}
+                            title={tMyProperties("markAsRentedOrSold")}
                           />
                         }
                       >
-                        <Trash2 className="size-3.5" />
+                        <Handshake className="size-3.5" />
                       </AlertDialogTrigger>
                       <AlertDialogContent>
                         <AlertDialogHeader>
                           <AlertDialogTitle>
-                            {tMyProperties("deleteConfirmTitle")}
+                            {tMyProperties("markAsRentedOrSoldConfirmTitle")}
                           </AlertDialogTitle>
                           <AlertDialogDescription>
-                            {tMyProperties("deleteConfirmDescription", {
+                            {tMyProperties("markAsRentedOrSoldConfirmDescription", {
                               title: property.title,
                             })}
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
                           <AlertDialogCancel>{tCommon("cancel")}</AlertDialogCancel>
-                          <AlertDialogAction onClick={() => handleDelete(property.id)}>
-                            {tMyProperties("delete")}
+                          <AlertDialogAction
+                            onClick={() => handleMarkAsRentedOrSold(property.id)}
+                          >
+                            {tMyProperties("markAsRentedOrSold")}
                           </AlertDialogAction>
                         </AlertDialogFooter>
                       </AlertDialogContent>
                     </AlertDialog>
-                  ) : (
+                  )}
+
+                  {property.status !== "CANCELLED" && (
                     <AlertDialog>
                       <AlertDialogTrigger
                         render={

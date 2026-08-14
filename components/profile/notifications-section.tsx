@@ -7,7 +7,7 @@ import { z } from "zod";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 import { usePatchProfileMutation } from "@/hooks/use-profile";
-import { isApiError } from "@/lib/api/client";
+import { translateApiError } from "@/lib/api/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -114,9 +114,7 @@ export function NotificationsSection({ profile }: { profile: Profile }) {
       {
         onSuccess: () => toast.success(t("notificationsUpdated")),
         onError: (error) => {
-          toast.error(
-            isApiError(error) ? error.message : t("couldNotUpdateNotifications"),
-          );
+          toast.error(translateApiError(error, t("couldNotUpdateNotifications")));
         },
       },
     );

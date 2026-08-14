@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Bath, Bed, Car, Handshake, MapPin, Search, Tag } from "lucide-react";
+import { Bath, Bed, Car, CircleCheck, Handshake, MapPin, Search, Tag } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { PriceInput } from "@/components/ui/price-input";
 import {
@@ -13,9 +13,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useOperationTypeLabels, usePropertyTypeLabels } from "@/lib/i18n/labels";
+import {
+  useOperationTypeLabels,
+  usePropertyStatusLabels,
+  usePropertyTypeLabels,
+} from "@/lib/i18n/labels";
 import { VENEZUELA_STATES, getMunicipalities } from "@/lib/data/venezuela-locations";
-import type { OperationType, PropertyType } from "@/types/enums";
+import type { OperationType, PropertyStatus, PropertyType } from "@/types/enums";
 
 const ALL_TYPES = "all";
 const ANY = "any";
@@ -25,6 +29,7 @@ type FilterKey =
   | "search"
   | "type"
   | "operationType"
+  | "status"
   | "state"
   | "municipality"
   | "minPrice"
@@ -33,17 +38,26 @@ type FilterKey =
   | "bathrooms"
   | "parkingSpaces";
 
-export function PropertyFilters({ basePath = "/" }: { basePath?: string }) {
+export function PropertyFilters({
+  basePath = "/",
+  showStatusFilter = false,
+}: {
+  basePath?: string;
+  showStatusFilter?: boolean;
+}) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const t = useTranslations("home");
+  const tMyProperties = useTranslations("myProperties");
   const propertyTypeLabels = usePropertyTypeLabels();
   const operationTypeLabels = useOperationTypeLabels();
+  const propertyStatusLabels = usePropertyStatusLabels();
 
   const values: Record<FilterKey, string> = {
     search: searchParams.get("search") ?? "",
     type: searchParams.get("type") ?? ALL_TYPES,
     operationType: searchParams.get("operationType") ?? ALL_TYPES,
+    status: searchParams.get("status") ?? ALL_TYPES,
     state: searchParams.get("state") ?? ANY,
     municipality: searchParams.get("municipality") ?? ANY,
     minPrice: searchParams.get("minPrice") ?? "",
@@ -138,6 +152,32 @@ export function PropertyFilters({ basePath = "/" }: { basePath?: string }) {
           ))}
         </SelectContent>
       </Select>
+
+      {showStatusFilter && (
+        <Select
+          value={values.status}
+          onValueChange={(value) => updateParams({ status: value ?? undefined })}
+        >
+          <SelectTrigger className="rounded-full border-0 bg-muted pl-4">
+            <CircleCheck className="size-4 text-primary" />
+            <SelectValue placeholder={tMyProperties("statusPlaceholder")}>
+              {(value: string) =>
+                value === ALL_TYPES
+                  ? tMyProperties("allStatuses")
+                  : propertyStatusLabels[value as PropertyStatus]
+              }
+            </SelectValue>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value={ALL_TYPES}>{tMyProperties("allStatuses")}</SelectItem>
+            {(Object.keys(propertyStatusLabels) as PropertyStatus[]).map((key) => (
+              <SelectItem key={key} value={key}>
+                {propertyStatusLabels[key]}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      )}
 
       <Select
         value={values.state}

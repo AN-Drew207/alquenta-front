@@ -4,7 +4,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 import { useReplyMutation } from "@/hooks/use-conversations";
-import { isApiError } from "@/lib/api/client";
+import { translateApiError } from "@/lib/api/client";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 
@@ -24,7 +24,7 @@ export function MessageComposer({ conversationId }: { conversationId: string }) 
           setContent("");
         },
         onError: (error) => {
-          toast.error(isApiError(error) ? error.message : t("couldNotSendMessage"));
+          toast.error(translateApiError(error, t("couldNotSendMessage")));
         },
       },
     );

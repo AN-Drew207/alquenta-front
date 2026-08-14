@@ -15,7 +15,7 @@ import {
   useRevokeSessionMutation,
   useSessions,
 } from "@/hooks/use-profile";
-import { isApiError } from "@/lib/api/client";
+import { translateApiError } from "@/lib/api/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
@@ -76,7 +76,7 @@ function ChangePasswordCard() {
           reset({ currentPassword: "", nextPassword: "", confirmPassword: "" });
         },
         onError: (error) => {
-          toast.error(isApiError(error) ? error.message : t("couldNotChangePassword"));
+          toast.error(translateApiError(error, t("couldNotChangePassword")));
         },
       },
     );
@@ -172,7 +172,7 @@ function SessionsCard() {
     revokeSessionMutation.mutate(id, {
       onSuccess: () => toast.success(t("sessionRevoked")),
       onError: (error) => {
-        toast.error(isApiError(error) ? error.message : t("couldNotRevokeSession"));
+        toast.error(translateApiError(error, t("couldNotRevokeSession")));
       },
     });
   }
@@ -181,9 +181,7 @@ function SessionsCard() {
     revokeOtherSessionsMutation.mutate(undefined, {
       onSuccess: () => toast.success(t("otherSessionsRevoked")),
       onError: (error) => {
-        toast.error(
-          isApiError(error) ? error.message : t("couldNotRevokeOtherSessions"),
-        );
+        toast.error(translateApiError(error, t("couldNotRevokeOtherSessions")));
       },
     });
   }
@@ -284,9 +282,7 @@ function DangerZoneCard({ profile }: { profile: Profile }) {
     deactivateAccountMutation.mutate(undefined, {
       onSuccess: () => toast.success(t("accountDeactivated")),
       onError: (error) => {
-        toast.error(
-          isApiError(error) ? error.message : t("couldNotDeactivateAccount"),
-        );
+        toast.error(translateApiError(error, t("couldNotDeactivateAccount")));
       },
     });
   }
@@ -296,7 +292,7 @@ function DangerZoneCard({ profile }: { profile: Profile }) {
     deleteAccountMutation.mutate(confirmationText.trim(), {
       onSuccess: () => toast.success(t("accountDeleted")),
       onError: (error) => {
-        toast.error(isApiError(error) ? error.message : t("couldNotDeleteAccount"));
+        toast.error(translateApiError(error, t("couldNotDeleteAccount")));
       },
     });
   }

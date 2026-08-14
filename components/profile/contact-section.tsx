@@ -7,7 +7,7 @@ import { z } from "zod";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 import { usePatchProfileMutation, useRequestEmailChangeMutation } from "@/hooks/use-profile";
-import { isApiError } from "@/lib/api/client";
+import { translateApiError } from "@/lib/api/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -72,7 +72,7 @@ export function ContactSection({ profile }: { profile: Profile }) {
       {
         onSuccess: () => toast.success(t("contactUpdated")),
         onError: (error) => {
-          toast.error(isApiError(error) ? error.message : t("couldNotUpdateContact"));
+          toast.error(translateApiError(error, t("couldNotUpdateContact")));
         },
       },
     );
@@ -95,9 +95,7 @@ export function ContactSection({ profile }: { profile: Profile }) {
         resetEmail({ newEmail: "" });
       },
       onError: (error) => {
-        toast.error(
-          isApiError(error) ? error.message : t("couldNotRequestEmailChange"),
-        );
+        toast.error(translateApiError(error, t("couldNotRequestEmailChange")));
       },
     });
   }
