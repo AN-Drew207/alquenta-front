@@ -6,7 +6,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
-import { usePatchProfileMutation, useRequestEmailChangeMutation } from "@/hooks/use-profile";
+import {
+  usePatchProfileMutation,
+  useRequestEmailChangeMutation,
+} from "@/hooks/use-profile";
 import { translateApiError } from "@/lib/api/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -116,9 +119,13 @@ export function ContactSection({ profile }: { profile: Profile }) {
                 placeholder={t("whatsappPlaceholder")}
                 {...register("phone")}
               />
-              <p className="text-sm text-muted-foreground">{t("whatsappHint")}</p>
+              <p className="text-sm text-muted-foreground">
+                {t("whatsappHint")}
+              </p>
               {errors.phone && (
-                <p className="text-sm text-destructive">{errors.phone.message}</p>
+                <p className="text-sm text-destructive">
+                  {errors.phone.message}
+                </p>
               )}
             </div>
 
@@ -189,7 +196,9 @@ export function ContactSection({ profile }: { profile: Profile }) {
               <p className="text-sm text-muted-foreground">{profile.email}</p>
             </div>
             <Badge variant={profile.emailVerified ? "default" : "outline"}>
-              {profile.emailVerified ? t("verifiedBadge") : t("notVerifiedBadge")}
+              {profile.emailVerified
+                ? t("verifiedBadge")
+                : t("notVerifiedBadge")}
             </Badge>
           </div>
 
@@ -197,7 +206,9 @@ export function ContactSection({ profile }: { profile: Profile }) {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium">{t("pendingEmailLabel")}</p>
-                <p className="text-sm text-muted-foreground">{profile.pendingEmail}</p>
+                <p className="text-sm text-muted-foreground">
+                  {profile.pendingEmail}
+                </p>
               </div>
               <Badge variant="outline">{t("pendingBadge")}</Badge>
             </div>
@@ -211,7 +222,9 @@ export function ContactSection({ profile }: { profile: Profile }) {
               </p>
             </div>
             <Badge variant={profile.phoneVerified ? "default" : "outline"}>
-              {profile.phoneVerified ? t("verifiedBadge") : t("notVerifiedBadge")}
+              {profile.phoneVerified
+                ? t("verifiedBadge")
+                : t("notVerifiedBadge")}
             </Badge>
           </div>
 
@@ -230,6 +243,7 @@ export function ContactSection({ profile }: { profile: Profile }) {
               <Button
                 type="submit"
                 variant="outline"
+                className="h-11"
                 disabled={requestEmailChangeMutation.isPending}
               >
                 {requestEmailChangeMutation.isPending
@@ -240,7 +254,9 @@ export function ContactSection({ profile }: { profile: Profile }) {
             {emailErrors.newEmail && (
               <p className="text-sm text-destructive">{t("invalidNewEmail")}</p>
             )}
-            <p className="text-sm text-muted-foreground">{t("emailChangeHint")}</p>
+            <p className="text-sm text-muted-foreground">
+              {t("emailChangeHint")}
+            </p>
           </form>
         </CardContent>
       </Card>

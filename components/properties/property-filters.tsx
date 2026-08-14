@@ -3,7 +3,16 @@
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Bath, Bed, Car, CircleCheck, Handshake, MapPin, Search, Tag } from "lucide-react";
+import {
+  Bath,
+  Bed,
+  Car,
+  CircleCheck,
+  Handshake,
+  MapPin,
+  Search,
+  Tag,
+} from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { PriceInput } from "@/components/ui/price-input";
 import {
@@ -18,8 +27,15 @@ import {
   usePropertyStatusLabels,
   usePropertyTypeLabels,
 } from "@/lib/i18n/labels";
-import { VENEZUELA_STATES, getMunicipalities } from "@/lib/data/venezuela-locations";
-import type { OperationType, PropertyStatus, PropertyType } from "@/types/enums";
+import {
+  VENEZUELA_STATES,
+  getMunicipalities,
+} from "@/lib/data/venezuela-locations";
+import type {
+  OperationType,
+  PropertyStatus,
+  PropertyType,
+} from "@/types/enums";
 
 const ALL_TYPES = "all";
 const ANY = "any";
@@ -71,7 +87,8 @@ export function PropertyFilters({
   const [minPrice, setMinPrice] = useState(values.minPrice);
   const [maxPrice, setMaxPrice] = useState(values.maxPrice);
 
-  const municipalities = values.state === ANY ? [] : getMunicipalities(values.state);
+  const municipalities =
+    values.state === ANY ? [] : getMunicipalities(values.state);
 
   function updateParams(next: Partial<Record<FilterKey, string>>) {
     const params = new URLSearchParams(searchParams.toString());
@@ -131,7 +148,9 @@ export function PropertyFilters({
 
       <Select
         value={values.operationType}
-        onValueChange={(value) => updateParams({ operationType: value ?? undefined })}
+        onValueChange={(value) =>
+          updateParams({ operationType: value ?? undefined })
+        }
       >
         <SelectTrigger className="rounded-full border-0 bg-muted pl-4">
           <Handshake className="size-4 text-primary" />
@@ -156,7 +175,9 @@ export function PropertyFilters({
       {showStatusFilter && (
         <Select
           value={values.status}
-          onValueChange={(value) => updateParams({ status: value ?? undefined })}
+          onValueChange={(value) =>
+            updateParams({ status: value ?? undefined })
+          }
         >
           <SelectTrigger className="rounded-full border-0 bg-muted pl-4">
             <CircleCheck className="size-4 text-primary" />
@@ -169,12 +190,16 @@ export function PropertyFilters({
             </SelectValue>
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value={ALL_TYPES}>{tMyProperties("allStatuses")}</SelectItem>
-            {(Object.keys(propertyStatusLabels) as PropertyStatus[]).map((key) => (
-              <SelectItem key={key} value={key}>
-                {propertyStatusLabels[key]}
-              </SelectItem>
-            ))}
+            <SelectItem value={ALL_TYPES}>
+              {tMyProperties("allStatuses")}
+            </SelectItem>
+            {(Object.keys(propertyStatusLabels) as PropertyStatus[]).map(
+              (key) => (
+                <SelectItem key={key} value={key}>
+                  {propertyStatusLabels[key]}
+                </SelectItem>
+              ),
+            )}
           </SelectContent>
         </Select>
       )}
@@ -203,7 +228,9 @@ export function PropertyFilters({
 
       <Select
         value={values.municipality}
-        onValueChange={(value) => updateParams({ municipality: value ?? undefined })}
+        onValueChange={(value) =>
+          updateParams({ municipality: value ?? undefined })
+        }
         disabled={values.state === ANY}
       >
         <SelectTrigger className="rounded-full border-0 bg-muted pl-4">
@@ -221,12 +248,12 @@ export function PropertyFilters({
         </SelectContent>
       </Select>
 
-      <div className="flex h-11 items-center gap-1 rounded-full border border-input bg-muted pl-1">
+      <div className="flex h-11 items-center gap-1 rounded-full bg-muted">
         <PriceInput
           value={minPrice}
           onValueChange={setMinPrice}
           placeholder={t("minPrice")}
-          className="h-11 w-28 border-0 bg-transparent shadow-none focus-visible:ring-0"
+          className="h-11 w-28 border-0 !rounded-full bg-transparent shadow-none focus-visible:ring-0"
           onBlur={() => updateParams({ minPrice })}
           onKeyDown={(event) => {
             if (event.key === "Enter") updateParams({ minPrice });
@@ -237,7 +264,7 @@ export function PropertyFilters({
           value={maxPrice}
           onValueChange={setMaxPrice}
           placeholder={t("maxPrice")}
-          className="h-11 w-28 border-0 bg-transparent pr-4 shadow-none focus-visible:ring-0"
+          className="h-11 w-28 border-0 !rounded-full bg-transparent pr-4 shadow-none focus-visible:ring-0"
           onBlur={() => updateParams({ maxPrice })}
           onKeyDown={(event) => {
             if (event.key === "Enter") updateParams({ maxPrice });
@@ -247,12 +274,16 @@ export function PropertyFilters({
 
       <Select
         value={values.bedrooms}
-        onValueChange={(value) => updateParams({ bedrooms: value ?? undefined })}
+        onValueChange={(value) =>
+          updateParams({ bedrooms: value ?? undefined })
+        }
       >
         <SelectTrigger className="rounded-full border-0 bg-muted pl-4">
           <Bed className="size-4 text-primary" />
           <SelectValue placeholder={t("bedroomsPlaceholder")}>
-            {(value: string) => (value === ANY ? t("any") : t("countOrMore", { count: value }))}
+            {(value: string) =>
+              value === ANY ? t("any") : t("countOrMore", { count: value })
+            }
           </SelectValue>
         </SelectTrigger>
         <SelectContent>
@@ -267,12 +298,16 @@ export function PropertyFilters({
 
       <Select
         value={values.bathrooms}
-        onValueChange={(value) => updateParams({ bathrooms: value ?? undefined })}
+        onValueChange={(value) =>
+          updateParams({ bathrooms: value ?? undefined })
+        }
       >
         <SelectTrigger className="rounded-full border-0 bg-muted pl-4">
           <Bath className="size-4 text-primary" />
           <SelectValue placeholder={t("bathroomsPlaceholder")}>
-            {(value: string) => (value === ANY ? t("any") : t("countOrMore", { count: value }))}
+            {(value: string) =>
+              value === ANY ? t("any") : t("countOrMore", { count: value })
+            }
           </SelectValue>
         </SelectTrigger>
         <SelectContent>
@@ -287,12 +322,16 @@ export function PropertyFilters({
 
       <Select
         value={values.parkingSpaces}
-        onValueChange={(value) => updateParams({ parkingSpaces: value ?? undefined })}
+        onValueChange={(value) =>
+          updateParams({ parkingSpaces: value ?? undefined })
+        }
       >
         <SelectTrigger className="rounded-full border-0 bg-muted pl-4">
           <Car className="size-4 text-primary" />
           <SelectValue placeholder={t("parkingPlaceholder")}>
-            {(value: string) => (value === ANY ? t("any") : t("countOrMore", { count: value }))}
+            {(value: string) =>
+              value === ANY ? t("any") : t("countOrMore", { count: value })
+            }
           </SelectValue>
         </SelectTrigger>
         <SelectContent>

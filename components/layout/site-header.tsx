@@ -37,6 +37,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { usePropertyTypeLabels } from "@/lib/i18n/labels";
 import type { PropertyType } from "@/types/enums";
+import { useMyFullProfile } from "@/hooks/use-profile";
 
 function PublicNav({
   isAdmin,
@@ -103,7 +104,9 @@ function PublicNav({
       </Button>
 
       <DropdownMenu>
-        <DropdownMenuTrigger render={<Button variant="ghost" size="sm" className="nos-nav-link" />}>
+        <DropdownMenuTrigger
+          render={<Button variant="ghost" size="sm" className="nos-nav-link" />}
+        >
           {t("propertyTypes")}
           <ChevronDown className="size-3.5" />
         </DropdownMenuTrigger>
@@ -221,7 +224,9 @@ function MobileNav() {
             </DropdownMenuItem>
 
             <DropdownMenuSub>
-              <DropdownMenuSubTrigger>{t("propertyTypes")}</DropdownMenuSubTrigger>
+              <DropdownMenuSubTrigger>
+                {t("propertyTypes")}
+              </DropdownMenuSubTrigger>
               <DropdownMenuPortal>
                 <DropdownMenuSubContent>
                   {propertyTypes.map((type) => (
@@ -272,6 +277,7 @@ function MobileNav() {
 
 export function SiteHeader() {
   const { data: user, isLoading } = useCurrentUser();
+  const { data: profile } = useMyFullProfile();
   const logoutMutation = useLogoutMutation();
   const { data: notifications } = useMyNotifications(Boolean(user));
   const hasUnreadNotifications = Boolean(
@@ -335,12 +341,20 @@ export function SiteHeader() {
                   />
                 }
               >
-                <Avatar className="size-8 cursor-pointer">
-                  <AvatarFallback>
-                    {user.name.slice(0, 2).toUpperCase()}
-                  </AvatarFallback>
-                  {hasUnreadNotifications && <AvatarBadge />}
-                </Avatar>
+                {profile?.avatarUrl ? (
+                  <img
+                    src={profile.avatarUrl}
+                    alt="Avatar"
+                    className="size-8 rounded-full object-cover"
+                  />
+                ) : (
+                  <Avatar className="size-8 cursor-pointer">
+                    <AvatarFallback>
+                      {user.name.slice(0, 2).toUpperCase()}
+                    </AvatarFallback>
+                    {hasUnreadNotifications && <AvatarBadge />}
+                  </Avatar>
+                )}{" "}
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-64">
                 <DropdownMenuGroup>

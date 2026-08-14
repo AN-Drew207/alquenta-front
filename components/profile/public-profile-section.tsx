@@ -7,7 +7,10 @@ import { z } from "zod";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 import { Check, Loader2, Upload, X } from "lucide-react";
-import { usePatchProfileMutation, useUsernameAvailability } from "@/hooks/use-profile";
+import {
+  usePatchProfileMutation,
+  useUsernameAvailability,
+} from "@/hooks/use-profile";
 import { getUploadSignature, uploadToCloudinary } from "@/lib/api/media";
 import { translateApiError } from "@/lib/api/client";
 import { Button } from "@/components/ui/button";
@@ -26,7 +29,6 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { VENEZUELA_STATES } from "@/lib/data/venezuela-locations";
 import type { Profile } from "@/types/auth";
-import type { AccountType } from "@/types/enums";
 
 const USERNAME_PATTERN = /^[a-z0-9_]{3,24}$/;
 const BIO_MAX_LENGTH = 280;
@@ -92,7 +94,6 @@ export function PublicProfileSection({ profile }: { profile: Profile }) {
   }, [profile, reset]);
 
   const avatarUrl = watch("avatarUrl");
-  const name = watch("name");
   const bio = watch("bio") ?? "";
   const username = watch("username") ?? "";
 
@@ -105,12 +106,12 @@ export function PublicProfileSection({ profile }: { profile: Profile }) {
   const usernameChanged = debouncedUsername !== (profile.username ?? "");
   const usernameValid = USERNAME_PATTERN.test(debouncedUsername);
   const shouldCheckAvailability = usernameChanged && usernameValid;
-  const { data: availability, isFetching: isCheckingUsername } = useUsernameAvailability(
-    debouncedUsername,
-    shouldCheckAvailability,
-  );
+  const { data: availability, isFetching: isCheckingUsername } =
+    useUsernameAvailability(debouncedUsername, shouldCheckAvailability);
 
-  async function handleAvatarFileChange(event: React.ChangeEvent<HTMLInputElement>) {
+  async function handleAvatarFileChange(
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) {
     const file = event.target.files?.[0];
     event.target.value = "";
     if (!file) return;
@@ -142,7 +143,9 @@ export function PublicProfileSection({ profile }: { profile: Profile }) {
       {
         onSuccess: () => toast.success(t("publicProfileUpdated")),
         onError: (error) => {
-          toast.error(translateApiError(error, t("couldNotUpdatePublicProfile")));
+          toast.error(
+            translateApiError(error, t("couldNotUpdatePublicProfile")),
+          );
         },
       },
     );
@@ -164,13 +167,21 @@ export function PublicProfileSection({ profile }: { profile: Profile }) {
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div className="space-y-1.5">
+          <div className="space-y-4">
             <Label>{t("avatarLabel")}</Label>
             <div className="flex items-center gap-4">
-              <Avatar size="lg">
-                {avatarUrl ? <AvatarImage src={avatarUrl} alt={name} /> : null}
-                <AvatarFallback>{name.slice(0, 2).toUpperCase()}</AvatarFallback>
-              </Avatar>
+              {avatarUrl ? (
+                <img
+                  src={avatarUrl}
+                  alt="Avatar"
+                  className="h-36 w-36 rounded-full object-cover"
+                />
+              ) : (
+                <Avatar className="h-36 w-36">
+                  <AvatarImage src={avatarUrl} alt="Avatar" />
+                  <AvatarFallback>{profile.name[0]}</AvatarFallback>
+                </Avatar>
+              )}
               <input
                 ref={fileInputRef}
                 type="file"
@@ -193,11 +204,6 @@ export function PublicProfileSection({ profile }: { profile: Profile }) {
                 {uploading ? t("uploadingAvatar") : t("uploadAvatar")}
               </Button>
             </div>
-            <Input
-              id="avatarUrl"
-              placeholder={t("avatarUrlPlaceholder")}
-              {...register("avatarUrl")}
-            />
           </div>
 
           <div className="space-y-1.5">
@@ -249,7 +255,7 @@ export function PublicProfileSection({ profile }: { profile: Profile }) {
             )}
           </div>
 
-          <div className="space-y-1.5">
+          {/* <div className="space-y-1.5">
             <Label>{t("accountTypeLabel")}</Label>
             <Controller
               control={control}
@@ -269,7 +275,7 @@ export function PublicProfileSection({ profile }: { profile: Profile }) {
                 </Select>
               )}
             />
-          </div>
+          </div> */}
 
           <div className="space-y-1.5">
             <Label htmlFor="bio">{t("bioLabel")}</Label>
@@ -305,7 +311,9 @@ export function PublicProfileSection({ profile }: { profile: Profile }) {
                       </SelectValue>
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value={ANY_STATE}>{t("statePlaceholder")}</SelectItem>
+                      <SelectItem value={ANY_STATE}>
+                        {t("statePlaceholder")}
+                      </SelectItem>
                       {VENEZUELA_STATES.map((state) => (
                         <SelectItem key={state.name} value={state.name}>
                           {state.name}
