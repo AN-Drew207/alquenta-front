@@ -9,12 +9,17 @@ export interface UploadSignature {
   folder: string;
   maxFileSize: number;
   resourceType: "image" | "video";
+  transformation?: string;
 }
 
 export async function getUploadSignature(
   resourceType: "image" | "video",
+  target?: "property" | "avatar",
 ): Promise<UploadSignature> {
-  const { data } = await api.post<UploadSignature>("/media/signature", { resourceType });
+  const { data } = await api.post<UploadSignature>("/media/signature", {
+    resourceType,
+    target,
+  });
   return data;
 }
 
@@ -32,6 +37,9 @@ export async function uploadToCloudinary(
   formData.append("signature", signature.signature);
   formData.append("folder", signature.folder);
   formData.append("max_file_size", String(signature.maxFileSize));
+  if (signature.transformation) {
+    formData.append("transformation", signature.transformation);
+  }
 
   const { data } = await cloudinaryClient.post<{ secure_url: string }>(
     `https://api.cloudinary.com/v1_1/${signature.cloudName}/${signature.resourceType}/upload`,

@@ -33,7 +33,7 @@ function MetaItem({
 }) {
   return (
     <div className="group flex min-w-0 items-center gap-2.5">
-      <span className="flex size-8.5 shrink-0 items-center justify-center rounded-[11px] bg-primary/10 text-primary transition-transform duration-300 group-hover:scale-108">
+      <span className="flex size-8.5 shrink-0 items-center justify-center rounded-[11px] bg-nos-accent-soft text-nos-accent transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-0.5 group-hover:scale-108 group-hover:bg-linear-to-br group-hover:from-nos-accent-2 group-hover:to-nos-accent-3 group-hover:text-white group-hover:shadow-[0_12px_26px_-8px_var(--color-nos-accent-ring)]">
         <Icon className="size-4" />
       </span>
       <span className="min-w-0">
@@ -63,7 +63,7 @@ export function AccountDetailsCard({ profile }: { profile: Profile }) {
     : t("accountDetailsStatusActive");
 
   return (
-    <Card>
+    <Card className="nos-card ring-0">
       <CardContent>
         <div className="mb-4 text-[11.5px] font-bold tracking-[.14em] text-muted-foreground uppercase">
           {t("accountDetailsTitle")}
@@ -79,11 +79,13 @@ export function AccountDetailsCard({ profile }: { profile: Profile }) {
             label={t("accountDetailsMemberSince")}
             value={memberSinceValue}
           />
-          {/* <MetaItem
-            icon={DollarSign}
-            label={t("accountDetailsCurrency")}
-            value={t("accountDetailsCurrencyValue")}
-          /> */}
+          {profile.plan && (
+            <MetaItem
+              icon={DollarSign}
+              label={t("accountDetailsPlan")}
+              value={profile.plan.name}
+            />
+          )}
           <MetaItem
             icon={CircleCheck}
             label={t("accountDetailsStatus")}

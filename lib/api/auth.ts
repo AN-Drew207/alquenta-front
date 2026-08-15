@@ -34,6 +34,13 @@ export async function login(input: LoginInput): Promise<AuthenticatedUser> {
   return data;
 }
 
+export async function reactivateAccount(
+  input: LoginInput,
+): Promise<AuthenticatedUser> {
+  const { data } = await api.post<AuthenticatedUser>("/auth/reactivate", input);
+  return data;
+}
+
 export async function logout(): Promise<void> {
   await api.post("/auth/logout");
 }

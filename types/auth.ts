@@ -1,4 +1,5 @@
 import type { AccountType, Role } from "./enums";
+import type { Plan } from "./plan";
 
 // Maps to UserResponseDto (`GET /auth/me`, `PATCH /auth/me`). This backend
 // response shape still uses `name`/`showWhatsapp` — it was NOT renamed to
@@ -61,6 +62,7 @@ export interface Profile {
   username: string | null;
   role: Role;
   accountType: AccountType;
+  plan: Plan | null;
   avatarUrl: string | null;
   bio: string | null;
   city: string | null;

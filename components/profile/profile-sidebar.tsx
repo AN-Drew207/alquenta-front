@@ -116,6 +116,12 @@ function ProfileSidebar({
             className="pointer-events-none -rotate-90"
             aria-hidden="true"
           >
+            <defs>
+              <linearGradient id="profile-ring-gradient" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stopColor="var(--color-nos-accent-2)" />
+                <stop offset="1" stopColor="var(--color-nos-accent-3)" />
+              </linearGradient>
+            </defs>
             <circle
               cx={RING_SIZE / 2}
               cy={RING_SIZE / 2}
@@ -130,12 +136,12 @@ function ProfileSidebar({
               cy={RING_SIZE / 2}
               r={RING_RADIUS}
               fill="none"
-              stroke="var(--primary)"
+              stroke="url(#profile-ring-gradient)"
               strokeWidth={RING_STROKE}
               strokeLinecap="round"
               strokeDasharray={RING_CIRCUMFERENCE}
               strokeDashoffset={RING_CIRCUMFERENCE}
-              className="transition-[stroke-dashoffset] duration-700 ease-out motion-reduce:transition-none"
+              className="transition-[stroke-dashoffset] duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none"
             />
           </svg>
 
@@ -146,7 +152,7 @@ function ProfileSidebar({
               onClick={() => fileInputRef.current?.click()}
               disabled={uploading}
               aria-label={t("uploadAvatar")}
-              className="group/avatar-upload relative size-full overflow-hidden rounded-full outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed"
+              className="group/avatar-upload relative size-full overflow-hidden rounded-full outline-none transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:-rotate-2 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:rotate-0"
             >
               <Avatar className="size-full">
                 <AvatarImage
@@ -164,7 +170,7 @@ function ProfileSidebar({
                   <Loader2 className="size-5 animate-spin" />
                 </div>
               ) : (
-                <span className="absolute inset-0 flex items-center justify-center rounded-full bg-black/0 text-transparent transition-colors duration-200 group-hover/avatar-upload:bg-black/45 group-hover/avatar-upload:text-white group-focus-visible/avatar-upload:bg-black/45 group-focus-visible/avatar-upload:text-white">
+                <span className="absolute inset-0 flex items-center justify-center rounded-full bg-black/0 text-transparent opacity-0 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover/avatar-upload:bg-black/45 group-hover/avatar-upload:text-white group-hover/avatar-upload:opacity-100 group-focus-visible/avatar-upload:bg-black/45 group-focus-visible/avatar-upload:text-white group-focus-visible/avatar-upload:opacity-100">
                   <Camera className="size-5" />
                 </span>
               )}

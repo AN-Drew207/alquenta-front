@@ -6,6 +6,7 @@ import {
   acceptAdminInvitation,
   login,
   logout,
+  reactivateAccount,
   register,
   updateProfile,
 } from "@/lib/api/auth";
@@ -38,6 +39,19 @@ export function useLoginMutation(redirectTo?: string) {
 
   return useMutation({
     mutationFn: (input: LoginInput) => login(input),
+    onSuccess: async (user) => {
+      await queryClient.invalidateQueries({ queryKey: CURRENT_USER_QUERY_KEY });
+      redirectAfterAuth(router, user, redirectTo);
+    },
+  });
+}
+
+export function useReactivateAccountMutation(redirectTo?: string) {
+  const queryClient = useQueryClient();
+  const router = useRouter();
+
+  return useMutation({
+    mutationFn: (input: LoginInput) => reactivateAccount(input),
     onSuccess: async (user) => {
       await queryClient.invalidateQueries({ queryKey: CURRENT_USER_QUERY_KEY });
       redirectAfterAuth(router, user, redirectTo);

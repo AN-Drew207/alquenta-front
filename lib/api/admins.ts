@@ -1,5 +1,5 @@
 import { api } from "./client";
-import type { AdminSummary } from "@/types/admin";
+import type { AdminSummary, InviteAdminInput } from "@/types/admin";
 import type { Property } from "@/types/property";
 
 export async function fetchAdmins(): Promise<AdminSummary[]> {
@@ -7,10 +7,11 @@ export async function fetchAdmins(): Promise<AdminSummary[]> {
   return data;
 }
 
-export async function inviteAdmin(email: string): Promise<{ inviteUrl: string }> {
-  const { data } = await api.post<{ inviteUrl: string }>("/superadmin/admins/invite", {
-    email,
-  });
+export async function inviteAdmin(input: InviteAdminInput): Promise<{ inviteUrl: string }> {
+  const { data } = await api.post<{ inviteUrl: string }>(
+    "/superadmin/admins/invite",
+    input,
+  );
   return data;
 }
 

@@ -10,6 +10,7 @@ import {
   fetchAdmins,
   inviteAdmin,
 } from "@/lib/api/admins";
+import type { InviteAdminInput } from "@/types/admin";
 
 export function useAdmins() {
   return useQuery({
@@ -21,7 +22,7 @@ export function useAdmins() {
 export function useInviteAdminMutation() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (email: string) => inviteAdmin(email),
+    mutationFn: (input: InviteAdminInput) => inviteAdmin(input),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admins"] });
     },

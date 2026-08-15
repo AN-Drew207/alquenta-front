@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -7,8 +8,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
-import { useLoginMutation } from "@/hooks/use-auth-mutations";
-import { translateApiError } from "@/lib/api/client";
+import {
+  useLoginMutation,
+  useReactivateAccountMutation,
+} from "@/hooks/use-auth-mutations";
+import { isApiError, translateApiError } from "@/lib/api/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
@@ -20,12 +24,16 @@ export default function LoginPage() {
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirect") ?? undefined;
   const loginMutation = useLoginMutation(redirectTo);
+  const reactivateMutation = useReactivateAccountMutation(redirectTo);
 
   const loginSchema = z.object({
     email: z.email(t("invalidEmail")),
     password: z.string().min(1, t("passwordRequired")),
   });
   type LoginFormValues = z.infer<typeof loginSchema>;
+
+  const [deactivatedCredentials, setDeactivatedCredentials] =
+    useState<LoginFormValues | null>(null);
 
   const {
     register,
@@ -36,9 +44,23 @@ export default function LoginPage() {
   });
 
   function onSubmit(values: LoginFormValues) {
+    setDeactivatedCredentials(null);
     loginMutation.mutate(values, {
       onError: (error) => {
+        if (isApiError(error) && error.error === "AccountDeactivatedException") {
+          setDeactivatedCredentials(values);
+          return;
+        }
         toast.error(translateApiError(error, t("couldNotLogIn")));
+      },
+    });
+  }
+
+  function handleReactivate() {
+    if (!deactivatedCredentials) return;
+    reactivateMutation.mutate(deactivatedCredentials, {
+      onError: (error) => {
+        toast.error(translateApiError(error, t("couldNotReactivateAccount")));
       },
     });
   }
@@ -72,6 +94,24 @@ export default function LoginPage() {
             {loginMutation.isPending ? t("loggingIn") : t("logIn")}
           </Button>
         </form>
+
+        {deactivatedCredentials && (
+          <div className="mt-4 space-y-3 rounded-lg border border-border bg-muted/50 p-4 text-center">
+            <p className="text-sm">{t("accountDeactivatedNotice")}</p>
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full"
+              onClick={handleReactivate}
+              disabled={reactivateMutation.isPending}
+            >
+              {reactivateMutation.isPending
+                ? t("reactivatingAccount")
+                : t("reactivateAccount")}
+            </Button>
+          </div>
+        )}
+
         <p className="mt-4 text-center text-sm text-muted-foreground">
           {t("noAccount")}{" "}
           <Link href="/register" className="text-primary underline-offset-4 hover:underline">

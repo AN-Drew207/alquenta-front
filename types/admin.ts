@@ -3,12 +3,14 @@ export interface AdminSummary {
   email: string;
   name: string;
   phone: string | null;
+  planId: string | null;
   createdAt: string;
   deactivatedAt: string | null;
 }
 
 export interface InviteAdminInput {
   email: string;
+  planId: string;
 }
 
 export interface AcceptAdminInvitationInput {

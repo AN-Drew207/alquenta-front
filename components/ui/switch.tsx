@@ -49,15 +49,15 @@ function Switch({
         <span
           aria-hidden="true"
           className={cn(
-            "pointer-events-none absolute inset-0 rounded-full border border-input bg-input/50 transition-colors motion-reduce:transition-none",
-            "peer-checked:border-transparent peer-checked:bg-linear-to-r peer-checked:from-primary peer-checked:to-[color-mix(in_oklch,var(--primary),var(--foreground)_12%)]",
+            "pointer-events-none absolute inset-0 rounded-full border border-input bg-input/50 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none",
+            "peer-checked:border-transparent peer-checked:bg-linear-to-r peer-checked:from-nos-accent peer-checked:to-nos-accent-3 peer-checked:shadow-[0_6px_16px_-6px_var(--color-nos-accent-ring)]",
             "peer-focus-visible:ring-3 peer-focus-visible:ring-ring/50",
             "dark:bg-input/30",
           )}
         />
         <span
           aria-hidden="true"
-          className="pointer-events-none absolute left-0.5 size-[22px] rounded-full bg-background shadow-sm ring-1 ring-black/5 transition-transform motion-reduce:transition-none peer-checked:translate-x-[18px]"
+          className="pointer-events-none absolute left-0.5 size-[22px] rounded-full bg-background shadow-sm ring-1 ring-black/5 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none peer-checked:translate-x-[18px] peer-checked:scale-105"
         />
       </span>
       {(label || description) && (

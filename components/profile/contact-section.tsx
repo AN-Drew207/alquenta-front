@@ -114,8 +114,8 @@ export function ContactSection({
   }
 
   return (
-    <div className="space-y-6">
-      <Card>
+    <div className="animate-nos-fade-up space-y-6">
+      <Card className="nos-card ring-0">
         <CardHeader>
           <CardTitle>{t("contactTitle")}</CardTitle>
         </CardHeader>

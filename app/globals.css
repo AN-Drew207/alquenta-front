@@ -60,6 +60,7 @@
   --color-nos-ink: var(--nos-ink);
   --color-nos-ink-2: var(--nos-ink-2);
   --color-nos-muted: var(--nos-muted);
+  --color-nos-accent-ring: var(--nos-accent-ring);
 
   --animate-nos-drift: nos-drift 22s ease-in-out infinite;
   --animate-nos-ping: nos-ping 2.4s var(--nos-ease-out) infinite;

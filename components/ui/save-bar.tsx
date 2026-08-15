@@ -30,14 +30,14 @@ function SaveBar({
       data-slot="save-bar"
       data-visible={visible}
       className={cn(
-        "fixed inset-x-0 bottom-0 z-40 flex justify-center px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] transition-[opacity,transform] duration-200 motion-reduce:transition-none",
+        "fixed inset-x-0 bottom-0 z-40 flex justify-center px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] transition-[opacity,transform] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none",
         visible
           ? "translate-y-0 opacity-100"
-          : "pointer-events-none translate-y-4 opacity-0",
+          : "pointer-events-none translate-y-8 opacity-0",
         className
       )}
     >
-      <div className="flex w-full max-w-lg flex-col items-stretch gap-3 rounded-2xl bg-popover p-3 text-popover-foreground shadow-lg ring-1 ring-foreground/10 sm:flex-row sm:items-center sm:justify-between sm:rounded-full sm:py-2 sm:pr-2 sm:pl-4">
+      <div className="flex w-full max-w-lg flex-col items-stretch gap-3 rounded-2xl bg-popover/90 p-3 text-popover-foreground shadow-[0_2px_4px_rgba(16,12,8,.05),0_24px_60px_-20px_var(--color-nos-accent-ring)] ring-1 ring-foreground/10 backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between sm:rounded-full sm:py-2 sm:pr-2 sm:pl-4">
         <p className="text-sm font-medium sm:pl-2">
           {t("unsavedChanges", { count: fieldCount })}
         </p>

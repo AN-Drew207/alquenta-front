@@ -64,7 +64,3 @@ export async function deleteAvatar(): Promise<Profile> {
   const { data } = await api.delete<Profile>("/profile/avatar");
   return data;
 }
-
-export async function exportAccountData(): Promise<void> {
-  await api.post("/account/export");
-}

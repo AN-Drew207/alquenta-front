@@ -17,6 +17,9 @@ export function isApiError(error: unknown): error is ApiError {
 
 const ERROR_MESSAGES_ES: Record<string, string> = {
   InvalidCredentialsException: "Correo electrónico o contraseña incorrectos.",
+  AccountDeactivatedException: "Tu cuenta está desactivada.",
+  AccountDisabledBySuperadminException:
+    "Tu cuenta fue deshabilitada por un administrador. Contacta a soporte.",
   EmailAlreadyRegisteredException:
     "Ya existe una cuenta registrada con ese correo electrónico.",
   UsernameTakenException: "Ese nombre de usuario ya está en uso.",

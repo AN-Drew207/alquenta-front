@@ -6,13 +6,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
 import { useFormatter, useTranslations } from "next-intl";
-import { useTheme } from "next-themes";
 import { Trash2 } from "lucide-react";
 import {
   useChangePasswordMutation,
   useDeactivateAccountMutation,
   useDeleteAccountMutation,
-  useExportAccountDataMutation,
   usePatchProfileMutation,
   useRevokeOtherSessionsMutation,
   useRevokeSessionMutation,
@@ -94,7 +92,7 @@ function ChangePasswordCard() {
   }
 
   return (
-    <Card>
+    <Card className="nos-card ring-0">
       <CardHeader>
         <CardTitle>{t("changePasswordTitle")}</CardTitle>
       </CardHeader>
@@ -142,14 +140,12 @@ function ChangePasswordCard() {
 
 const preferencesSchema = z.object({
   locale: z.enum(["es", "en", "pt"]),
-  theme: z.enum(["light", "dark", "system"]),
 });
 type PreferencesFormValues = z.infer<typeof preferencesSchema>;
 
 function PreferencesCard({ profile }: { profile: Profile }) {
   const t = useTranslations("profile");
   const patchProfileMutation = usePatchProfileMutation();
-  const { setTheme } = useTheme();
 
   const {
     control,
@@ -160,14 +156,12 @@ function PreferencesCard({ profile }: { profile: Profile }) {
     resolver: zodResolver(preferencesSchema),
     defaultValues: {
       locale: profile.generalPrefs.locale,
-      theme: profile.generalPrefs.theme,
     },
   });
 
   useEffect(() => {
     reset({
       locale: profile.generalPrefs.locale,
-      theme: profile.generalPrefs.theme,
     });
   }, [profile, reset]);
 
@@ -176,15 +170,15 @@ function PreferencesCard({ profile }: { profile: Profile }) {
     en: t("localeEn"),
     pt: t("localePt"),
   };
-  const themeLabels: Record<GeneralPrefs["theme"], string> = {
-    light: t("themeLight"),
-    dark: t("themeDark"),
-    system: t("themeSystem"),
-  };
 
   function onSubmit(values: PreferencesFormValues) {
     patchProfileMutation.mutate(
-      { generalPrefs: values },
+      {
+        generalPrefs: {
+          ...values,
+          theme: profile.generalPrefs.theme,
+        },
+      },
       {
         onSuccess: () => {
           toast.success(t("preferencesUpdated"));
@@ -198,62 +192,32 @@ function PreferencesCard({ profile }: { profile: Profile }) {
   }
 
   return (
-    <Card>
+    <Card className="nos-card ring-0">
       <CardHeader>
         <CardTitle>{t("preferencesTitle")}</CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <Field label={t("localeLabel")} htmlFor="locale">
-              <Controller
-                control={control}
-                name="locale"
-                render={({ field }) => (
-                  <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger id="locale" className="w-full">
-                      <SelectValue>
-                        {(value: GeneralPrefs["locale"]) => localeLabels[value]}
-                      </SelectValue>
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="es">{localeLabels.es}</SelectItem>
-                      <SelectItem value="en">{localeLabels.en}</SelectItem>
-                      <SelectItem value="pt">{localeLabels.pt}</SelectItem>
-                    </SelectContent>
-                  </Select>
-                )}
-              />
-            </Field>
-
-            <Field label={t("themeLabel")} htmlFor="theme">
-              <Controller
-                control={control}
-                name="theme"
-                render={({ field }) => (
-                  <Select
-                    value={field.value}
-                    onValueChange={(value: GeneralPrefs["theme"] | null) => {
-                      if (!value) return;
-                      field.onChange(value);
-                      setTheme(value);
-                    }}
-                  >
-                    <SelectTrigger id="theme" className="w-full">
-                      <SelectValue>
-                        {(value: GeneralPrefs["theme"]) => themeLabels[value]}
-                      </SelectValue>
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="light">{themeLabels.light}</SelectItem>
-                      <SelectItem value="dark">{themeLabels.dark}</SelectItem>
-                      <SelectItem value="system">{themeLabels.system}</SelectItem>
-                    </SelectContent>
-                  </Select>
-                )}
-              />
-            </Field>
-          </div>
+          <Field label={t("localeLabel")} htmlFor="locale" className="max-w-xs">
+            <Controller
+              control={control}
+              name="locale"
+              render={({ field }) => (
+                <Select value={field.value} onValueChange={field.onChange}>
+                  <SelectTrigger id="locale" className="w-full">
+                    <SelectValue>
+                      {(value: GeneralPrefs["locale"]) => localeLabels[value]}
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="es">{localeLabels.es}</SelectItem>
+                    <SelectItem value="en">{localeLabels.en}</SelectItem>
+                    <SelectItem value="pt">{localeLabels.pt}</SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
+            />
+          </Field>
 
           <Button
             type="submit"
@@ -262,42 +226,6 @@ function PreferencesCard({ profile }: { profile: Profile }) {
             {patchProfileMutation.isPending ? t("saving") : t("save")}
           </Button>
         </form>
-      </CardContent>
-    </Card>
-  );
-}
-
-function ExportDataCard() {
-  const t = useTranslations("profile");
-  const exportAccountDataMutation = useExportAccountDataMutation();
-
-  function handleExport() {
-    exportAccountDataMutation.mutate(undefined, {
-      onSuccess: () => toast.success(t("exportRequested")),
-      onError: (error) => {
-        toast.error(translateApiError(error, t("couldNotRequestExport")));
-      },
-    });
-  }
-
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{t("exportDataTitle")}</CardTitle>
-      </CardHeader>
-      <CardContent className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-sm text-muted-foreground">
-          {t("exportDataDescription")}
-        </p>
-        <Button
-          type="button"
-          variant="outline"
-          className="shrink-0"
-          onClick={handleExport}
-          disabled={exportAccountDataMutation.isPending}
-        >
-          {exportAccountDataMutation.isPending ? t("exporting") : t("exportData")}
-        </Button>
       </CardContent>
     </Card>
   );
@@ -330,7 +258,7 @@ function SessionsCard() {
   }
 
   return (
-    <Card>
+    <Card className="nos-card ring-0">
       <CardHeader>
         <CardTitle>{t("sessionsTitle")}</CardTitle>
       </CardHeader>
@@ -441,82 +369,99 @@ function DangerZoneCard({ profile }: { profile: Profile }) {
   }
 
   return (
-    <DangerZone title={t("dangerZoneTitle")}>
-      <AlertDialog>
-        <AlertDialogTrigger render={<Button variant="destructive" />}>
-          {t("deactivateAccount")}
-        </AlertDialogTrigger>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t("deactivateConfirmTitle")}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {t("deactivateConfirmDescription")}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>{tCommon("cancel")}</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDeactivate}
-              disabled={deactivateAccountMutation.isPending}
-            >
-              {t("deactivateAccount")}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
-      <AlertDialog
-        open={deleteDialogOpen}
-        onOpenChange={(open) => {
-          setDeleteDialogOpen(open);
-          if (!open) setConfirmationText("");
-        }}
-      >
-        <AlertDialogTrigger render={<Button variant="destructive" />}>
-          <Trash2 />
-          {t("deleteAccount")}
-        </AlertDialogTrigger>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t("deleteAccountTitle")}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {t("deleteAccountDescription", { value: requiredConfirmation })}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <div className="space-y-1.5 px-4">
-            <Label htmlFor="deleteConfirmation">
-              {t("deleteAccountConfirmLabel")}
-            </Label>
-            <Input
-              id="deleteConfirmation"
-              value={confirmationText}
-              onChange={(event) => setConfirmationText(event.target.value)}
-              placeholder={t("deleteAccountConfirmPlaceholder", {
-                value: requiredConfirmation,
-              })}
-            />
+    <DangerZone title={t("dangerZoneTitle")} description={t("dangerZoneDescription")}>
+      <div className="w-full divide-y divide-border">
+        <div className="flex flex-wrap items-center justify-between gap-4 py-3.5 first:pt-0 last:pb-0">
+          <div>
+            <p className="font-medium">{t("deactivateAccount")}</p>
+            <p className="text-sm text-muted-foreground">
+              {t("deactivateAccountRowDescription")}
+            </p>
           </div>
-          <AlertDialogFooter>
-            <AlertDialogCancel>{tCommon("cancel")}</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDelete}
-              disabled={!canDelete || deleteAccountMutation.isPending}
-            >
+          <AlertDialog>
+            <AlertDialogTrigger render={<Button variant="outline" />}>
+              {t("deactivateAccount")}
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>{t("deactivateConfirmTitle")}</AlertDialogTitle>
+                <AlertDialogDescription>
+                  {t("deactivateConfirmDescription")}
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>{tCommon("cancel")}</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={handleDeactivate}
+                  disabled={deactivateAccountMutation.isPending}
+                >
+                  {t("deactivateAccount")}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </div>
+
+        <div className="flex flex-wrap items-center justify-between gap-4 py-3.5 first:pt-0 last:pb-0">
+          <div>
+            <p className="font-medium">{t("deleteAccount")}</p>
+            <p className="text-sm text-muted-foreground">
+              {t("deleteAccountRowDescription")}
+            </p>
+          </div>
+          <AlertDialog
+            open={deleteDialogOpen}
+            onOpenChange={(open) => {
+              setDeleteDialogOpen(open);
+              if (!open) setConfirmationText("");
+            }}
+          >
+            <AlertDialogTrigger render={<Button variant="destructive" />}>
+              <Trash2 />
               {t("deleteAccount")}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>{t("deleteAccountTitle")}</AlertDialogTitle>
+                <AlertDialogDescription>
+                  {t("deleteAccountDescription", { value: requiredConfirmation })}
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <div className="space-y-1.5 px-4">
+                <Label htmlFor="deleteConfirmation">
+                  {t("deleteAccountConfirmLabel")}
+                </Label>
+                <Input
+                  id="deleteConfirmation"
+                  value={confirmationText}
+                  onChange={(event) => setConfirmationText(event.target.value)}
+                  placeholder={t("deleteAccountConfirmPlaceholder", {
+                    value: requiredConfirmation,
+                  })}
+                />
+              </div>
+              <AlertDialogFooter>
+                <AlertDialogCancel>{tCommon("cancel")}</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={handleDelete}
+                  disabled={!canDelete || deleteAccountMutation.isPending}
+                >
+                  {t("deleteAccount")}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </div>
+      </div>
     </DangerZone>
   );
 }
 
 export function SecuritySection({ profile }: { profile: Profile }) {
   return (
-    <div className="space-y-6">
+    <div className="animate-nos-fade-up space-y-6">
       <ChangePasswordCard />
       <PreferencesCard profile={profile} />
-      <ExportDataCard />
       <SessionsCard />
       <DangerZoneCard profile={profile} />
     </div>

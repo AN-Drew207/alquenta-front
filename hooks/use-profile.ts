@@ -8,7 +8,6 @@ import {
   deactivateAccount,
   deleteAccount,
   deleteAvatar,
-  exportAccountData,
   fetchMyFullProfile,
   fetchSessions,
   patchProfile,
@@ -116,12 +115,6 @@ export function useDeactivateAccountMutation() {
       queryClient.setQueryData(CURRENT_USER_QUERY_KEY, null);
       router.push("/");
     },
-  });
-}
-
-export function useExportAccountDataMutation() {
-  return useMutation({
-    mutationFn: exportAccountData,
   });
 }
 

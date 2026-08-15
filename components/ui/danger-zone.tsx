@@ -22,7 +22,10 @@ function DangerZone({
   return (
     <Card
       data-slot="danger-zone"
-      className={cn("border-destructive/40 ring-destructive/20", className)}
+      className={cn(
+        "border-destructive/40 bg-linear-to-b from-destructive/10 to-transparent to-60% ring-destructive/20",
+        className
+      )}
       {...props}
     >
       <CardHeader>

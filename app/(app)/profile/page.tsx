@@ -3,7 +3,10 @@
 import { useCallback, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { useMyFullProfile } from "@/hooks/use-profile";
+import { toast } from "sonner";
+import { useMyFullProfile, usePatchProfileMutation } from "@/hooks/use-profile";
+import { getUploadSignature, uploadToCloudinary } from "@/lib/api/media";
+import { translateApiError } from "@/lib/api/client";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   AlertDialog,
@@ -36,6 +39,17 @@ export default function ProfilePage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { data: profile, isLoading } = useMyFullProfile();
+  const patchProfileMutation = usePatchProfileMutation();
+
+  async function handleAvatarUpload(file: File) {
+    try {
+      const signature = await getUploadSignature("image", "avatar");
+      const url = await uploadToCloudinary(file, signature);
+      await patchProfileMutation.mutateAsync({ avatarUrl: url });
+    } catch (error) {
+      toast.error(translateApiError(error, t("couldNotUploadAvatar")));
+    }
+  }
 
   const activeSection = isProfileSection(searchParams.get("s"))
     ? (searchParams.get("s") as ProfileSidebarSection)
@@ -88,11 +102,16 @@ export default function ProfilePage() {
         profile={profile}
         activeSection={activeSection}
         onSectionChange={handleSectionChange}
+        onAvatarUpload={handleAvatarUpload}
       />
 
       <main id={`profile-panel-${activeSection}`} role="tabpanel" aria-labelledby={`profile-tab-${activeSection}`}>
         {activeSection === "perfil" && (
-          <PublicProfileSection profile={profile} onDirtyChange={setIsDirty} />
+          <PublicProfileSection
+            profile={profile}
+            onDirtyChange={setIsDirty}
+            onAvatarUpload={handleAvatarUpload}
+          />
         )}
         {activeSection === "contacto" && (
           <ContactSection profile={profile} onDirtyChange={setIsDirty} />
