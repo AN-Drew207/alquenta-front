@@ -5,6 +5,7 @@ import { ThemeProvider } from "next-themes";
 import { QueryProvider } from "@/lib/query-client";
 import { Toaster } from "@/components/ui/sonner";
 import { SiteHeader } from "@/components/layout/site-header";
+import { EnvironmentBanner } from "@/components/layout/environment-banner";
 import { SiteFooter } from "@/components/layout/site-footer";
 import "./globals.css";
 
@@ -40,6 +41,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <NextIntlClientProvider locale={locale} messages={messages}>
             <QueryProvider>
+              <EnvironmentBanner />
               <SiteHeader />
               {children}
               <SiteFooter />

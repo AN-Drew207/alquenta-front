@@ -3,6 +3,7 @@ import { PropertyCard } from "@/components/properties/property-card";
 import { PropertyFilters } from "@/components/properties/property-filters";
 import { PaginationControls } from "@/components/properties/pagination-controls";
 import { HomeHero } from "@/components/home/home-hero";
+import { API_URL } from "@/lib/env";
 import type { Property } from "@/types/property";
 
 const PAGE_SIZE = 12;
@@ -26,7 +27,7 @@ async function getProperties(params: PropertySearchParams): Promise<Property[]> 
   }
 
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/properties?${search.toString()}`,
+    `${API_URL}/api/properties?${search.toString()}`,
     { cache: "no-store" },
   );
 

@@ -1,7 +1,8 @@
 import type { PublicProfile } from "@/types/auth";
+import { API_URL } from "@/lib/env";
 
 export async function fetchPublicProfile(id: string): Promise<PublicProfile | null> {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/${id}`, {
+  const res = await fetch(`${API_URL}/api/auth/${id}`, {
     cache: "no-store",
   });
 

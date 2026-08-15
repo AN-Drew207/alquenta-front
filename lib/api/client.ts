@@ -1,4 +1,5 @@
 import axios, { AxiosError } from "axios";
+import { API_URL } from "@/lib/env";
 
 export interface ApiError {
   statusCode: number;
@@ -52,7 +53,7 @@ export function translateApiError(error: unknown, fallback: string): string {
 }
 
 export const api = axios.create({
-  baseURL: `${process.env.NEXT_PUBLIC_API_URL}/api`,
+  baseURL: `${API_URL}/api`,
   withCredentials: true,
 });
 

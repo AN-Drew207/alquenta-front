@@ -14,11 +14,12 @@ import {
   getPropertyTypeLabels,
 } from "@/lib/i18n/labels.server";
 import { cn } from "@/lib/utils";
+import { API_URL } from "@/lib/env";
 import type { Property } from "@/types/property";
 
 async function getProperty(id: string): Promise<Property | null> {
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/properties/${id}`,
+    `${API_URL}/api/properties/${id}`,
     { cache: "no-store" },
   );
 

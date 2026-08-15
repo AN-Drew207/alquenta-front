@@ -3,11 +3,12 @@ import { getTranslations } from "next-intl/server";
 import { Building2 } from "lucide-react";
 import { fetchPublicProfile } from "@/lib/api/profiles";
 import { PropertyCard } from "@/components/properties/property-card";
+import { API_URL } from "@/lib/env";
 import type { Property } from "@/types/property";
 
 async function getPropertiesByAdmin(adminId: string): Promise<Property[]> {
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/properties?adminId=${adminId}`,
+    `${API_URL}/api/properties?adminId=${adminId}`,
     { cache: "no-store" },
   );
 
