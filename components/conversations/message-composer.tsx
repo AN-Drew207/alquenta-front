@@ -30,11 +30,19 @@ export function MessageComposer({ conversationId }: { conversationId: string }) 
     );
   }
 
+  function handleKeyDown(event: React.KeyboardEvent<HTMLTextAreaElement>) {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+      event.currentTarget.form?.requestSubmit();
+    }
+  }
+
   return (
     <form onSubmit={handleSubmit} className="space-y-2 pt-4">
       <Textarea
         value={content}
         onChange={(event) => setContent(event.target.value)}
+        onKeyDown={handleKeyDown}
         placeholder={t("replyPlaceholder")}
         rows={2}
       />

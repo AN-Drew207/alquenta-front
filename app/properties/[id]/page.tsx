@@ -5,6 +5,7 @@ import { getFormatter, getTranslations } from "next-intl/server";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { PropertyGallery } from "@/components/properties/property-gallery";
+import { PropertyLocationMapClient } from "@/components/properties/property-location-map-client";
 import { ContactBox } from "@/components/properties/contact-box";
 import { ShareButton } from "@/components/properties/share-button";
 import { FavoriteButton } from "@/components/properties/favorite-button";
@@ -132,6 +133,16 @@ export default async function PropertyDetailPage({
           <p className="mt-6 whitespace-pre-line text-sm leading-relaxed">
             {property.description}
           </p>
+
+          {property.latitude !== null && property.longitude !== null && (
+            <div className="mt-6">
+              <h2 className="mb-2 text-sm font-semibold">{t("locationTitle")}</h2>
+              <PropertyLocationMapClient
+                latitude={property.latitude}
+                longitude={property.longitude}
+              />
+            </div>
+          )}
 
           {property.videos.length > 0 && (
             <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">

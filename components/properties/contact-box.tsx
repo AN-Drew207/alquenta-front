@@ -270,6 +270,13 @@ export function ContactBox({
     );
   }
 
+  function handleContentKeyDown(event: React.KeyboardEvent<HTMLTextAreaElement>) {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+      event.currentTarget.form?.requestSubmit();
+    }
+  }
+
   return (
     <Card>
       <CardHeader>
@@ -283,6 +290,7 @@ export function ContactBox({
               id="content"
               value={content}
               onChange={(event) => setContent(event.target.value)}
+              onKeyDown={handleContentKeyDown}
               placeholder={t("messagePlaceholder")}
               rows={3}
             />

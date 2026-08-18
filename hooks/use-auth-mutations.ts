@@ -33,14 +33,22 @@ function redirectAfterAuth(
   router.push(redirectTo || defaultRouteForRole(user.role));
 }
 
+// Identity-establishing mutations (login/register/reactivate/invite-accept)
+// all clear the cache before seeding the new user: without it, any data
+// cached under a previous session in this same tab (profile, avatar,
+// favorites, notifications...) keeps rendering under the new account until
+// each query happens to refetch on its own. setQueryData with the response
+// we already have avoids an extra round trip to /auth/me for the common
+// case, unlike invalidateQueries.
 export function useLoginMutation(redirectTo?: string) {
   const queryClient = useQueryClient();
   const router = useRouter();
 
   return useMutation({
     mutationFn: (input: LoginInput) => login(input),
-    onSuccess: async (user) => {
-      await queryClient.invalidateQueries({ queryKey: CURRENT_USER_QUERY_KEY });
+    onSuccess: (user) => {
+      queryClient.clear();
+      queryClient.setQueryData(CURRENT_USER_QUERY_KEY, user);
       redirectAfterAuth(router, user, redirectTo);
     },
   });
@@ -52,8 +60,9 @@ export function useReactivateAccountMutation(redirectTo?: string) {
 
   return useMutation({
     mutationFn: (input: LoginInput) => reactivateAccount(input),
-    onSuccess: async (user) => {
-      await queryClient.invalidateQueries({ queryKey: CURRENT_USER_QUERY_KEY });
+    onSuccess: (user) => {
+      queryClient.clear();
+      queryClient.setQueryData(CURRENT_USER_QUERY_KEY, user);
       redirectAfterAuth(router, user, redirectTo);
     },
   });
@@ -65,8 +74,9 @@ export function useRegisterMutation(redirectTo?: string) {
 
   return useMutation({
     mutationFn: (input: RegisterInput) => register(input),
-    onSuccess: async (user) => {
-      await queryClient.invalidateQueries({ queryKey: CURRENT_USER_QUERY_KEY });
+    onSuccess: (user) => {
+      queryClient.clear();
+      queryClient.setQueryData(CURRENT_USER_QUERY_KEY, user);
       redirectAfterAuth(router, user, redirectTo);
     },
   });
@@ -88,8 +98,8 @@ export function useAcceptAdminInvitationMutation() {
 
   return useMutation({
     mutationFn: (input: AcceptAdminInvitationInput) => acceptAdminInvitation(input),
-    onSuccess: async (user) => {
-      await queryClient.invalidateQueries({ queryKey: CURRENT_USER_QUERY_KEY });
+    onSuccess: (user) => {
+      queryClient.clear();
       queryClient.setQueryData(CURRENT_USER_QUERY_KEY, user);
     },
   });
