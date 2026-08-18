@@ -31,3 +31,10 @@ export interface StartConversationResponse {
 export interface ReplyInput {
   content: string;
 }
+
+// Maps to AdminResponseStatsResponseDto (`GET /conversations/admins/:adminId/response-stats`, public).
+export interface AdminResponseStats {
+  responseRate: number;
+  averageResponseMinutes: number | null;
+  sampleSize: number;
+}

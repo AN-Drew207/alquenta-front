@@ -2,6 +2,15 @@
   "meta": {
     "description": "Marketplace de propiedades — explora, publica y contacta propietarios directamente"
   },
+  "landing": {
+    "metaTitle": "Propiedades en {operation, select, RENT {alquiler} SALE {venta} other {venta}} en {state} | Alquenta",
+    "metaDescription": "Explora propiedades en {operation, select, RENT {alquiler} SALE {venta} other {venta}} en {state}. Casas, apartamentos, locales comerciales y más, publicados directamente por propietarios e inmobiliarias.",
+    "heading": "Propiedades en {operation, select, RENT {alquiler} SALE {venta} other {venta}} en {state}",
+    "intro": "{count, plural, =0 {No hay propiedades} =1 {1 propiedad} other {# propiedades}} en {operation, select, RENT {alquiler} SALE {venta} other {venta}} disponibles en {state} en este momento.",
+    "viewWithFilters": "Ver con más filtros",
+    "noResults": "No hay propiedades en {operation, select, RENT {alquiler} SALE {venta} other {venta}} en {state} en este momento. Prueba con otro estado o revisa más tarde.",
+    "exploreByState": "Explora propiedades por estado"
+  },
   "common": {
     "toggleTheme": "Cambiar tema",
     "lightMode": "Modo claro",
@@ -22,12 +31,14 @@
     "dashboard": "Panel",
     "myProperties": "Mis propiedades",
     "conversations": "Conversaciones",
+    "favorites": "Favoritos",
     "profile": "Perfil",
     "notifications": "Notificaciones",
     "logIn": "Iniciar sesión",
     "signUp": "Registrarse",
     "logOut": "Cerrar sesión",
-    "admins": "Administradores"
+    "admins": "Administradores",
+    "reports": "Reportes"
   },
   "home": {
     "title": "Encuentra tu próxima propiedad",
@@ -52,7 +63,18 @@
     "parkingPlaceholder": "N° Estacionamientos",
     "any": "Cualquiera",
     "countOrMore": "{count}+",
-    "totalAvailable": "{count, plural, =1 {1 propiedad disponible} other {# propiedades disponibles}}"
+    "totalAvailable": "{count, plural, =1 {1 propiedad disponible} other {# propiedades disponibles}}",
+    "viewList": "Lista",
+    "viewMap": "Mapa",
+    "mapUnlocatedNotice": "{count, plural, =1 {1 propiedad no tiene ubicación en el mapa y no aparece aquí.} other {# propiedades no tienen ubicación en el mapa y no aparecen aquí.}}",
+    "sortPlaceholder": "Ordenar por",
+    "sortNewest": "Más recientes",
+    "sortPriceAsc": "Precio: menor a mayor",
+    "sortPriceDesc": "Precio: mayor a menor",
+    "sortAreaDesc": "Superficie: mayor a menor",
+    "addFavorite": "Agregar a favoritos",
+    "removeFavorite": "Quitar de favoritos",
+    "couldNotUpdateFavorite": "No se pudo actualizar tus favoritos"
   },
   "about": {
     "title": "Acerca de Alquenta",
@@ -193,6 +215,7 @@
     "propertyMarkedAsRented": "Propiedad marcada como alquilada",
     "propertyMarkedAsSold": "Propiedad marcada como vendida",
     "couldNotMarkAsRentedOrSold": "No se pudo actualizar el estado de la propiedad",
+    "finalizedNotice": "Esta publicacion ya fue marcada como finalizada y no se puede editar ni cancelar.",
     "newTitle": "Publicar una propiedad",
     "propertyPublished": "Propiedad publicada",
     "couldNotPublishProperty": "No se pudo publicar la propiedad",
@@ -218,6 +241,7 @@
     "fieldBathrooms": "Baños",
     "fieldParkingSpaces": "Estacionamientos",
     "fieldSquareMeters": "Metros cuadrados",
+    "locationPickerHint": "Toca o arrastra el pin para marcar la ubicación exacta en el mapa (opcional, pero así tu propiedad aparece en la búsqueda por mapa).",
     "fieldStatus": "Estado",
     "photos": "Fotos",
     "videos": "Videos",
@@ -229,6 +253,7 @@
     "saving": "Guardando...",
     "titleRequired": "El título es obligatorio",
     "descriptionRequired": "La descripción es obligatoria",
+    "imagesRequired": "Agrega al menos una foto antes de publicar",
     "addressRequired": "La dirección es obligatoria",
     "stateRequired": "El estado es obligatorio",
     "municipalityRequired": "El municipio es obligatorio",
@@ -237,12 +262,33 @@
   },
   "propertyDetail": {
     "publishedBy": "Publicado por",
+    "publishedOn": "Publicado el {date}",
+    "perMonth": "/ mes",
+    "share": "Compartir",
+    "reportListing": "Reportar publicación",
+    "reportDialogTitle": "¿Por qué reportas esta publicación?",
+    "reportDialogDescription": "Un administrador va a revisar tu reporte. No se comparte con el publicador.",
+    "reportReasonLabel": "Motivo",
+    "reportReasonPlaceholder": "Selecciona un motivo",
+    "reportReasonRequired": "Selecciona un motivo",
+    "reportReasonScam": "Estafa o fraude",
+    "reportReasonMisleadingInfo": "Información falsa o engañosa",
+    "reportReasonInappropriateContent": "Contenido inapropiado",
+    "reportReasonOther": "Otro",
+    "reportDetailsLabel": "Detalles (opcional)",
+    "reportDetailsPlaceholder": "Cuéntanos más sobre el problema...",
+    "sendReport": "Enviar reporte",
+    "sendingReport": "Enviando...",
+    "reportSent": "Gracias, tu reporte fue enviado",
+    "couldNotSendReport": "No se pudo enviar el reporte",
+    "showWhatsapp": "Ver WhatsApp",
+    "couldNotRevealWhatsapp": "No se pudo obtener el número",
     "bedrooms": "{count} dormitorios",
     "bathrooms": "{count} baños",
     "parkingSpaces": "{count} estacionamientos",
     "noImagesAvailable": "No hay imágenes disponibles",
     "interested": "¿Te interesa esta propiedad?",
-    "logInToContact": "Inicia sesión como cliente para contactar al propietario.",
+    "logInToContact": "Inicia sesión para contactar al propietario.",
     "logInToContactButton": "Iniciar sesión para contactar",
     "yourListing": "Esta es tu publicación",
     "managePropertiesButton": "Gestionar mis propiedades",
@@ -255,11 +301,26 @@
     "send": "Enviar",
     "writeMessageBeforeSending": "Escribe un mensaje antes de enviar",
     "messageSent": "Mensaje enviado al propietario",
-    "couldNotSendMessage": "No se pudo enviar el mensaje"
+    "couldNotSendMessage": "No se pudo enviar el mensaje",
+    "alreadyMessagedTitle": "Ya enviaste un mensaje",
+    "alreadyMessagedDescription": "Ya iniciaste una conversación sobre esta propiedad. Continúa donde la dejaste.",
+    "viewConversation": "Ver conversación"
   },
   "agencyProfile": {
     "listingsCount": "{count, plural, =1 {1 propiedad publicada} other {# propiedades publicadas}}",
-    "noListings": "Este perfil todavía no publicó ninguna propiedad."
+    "noListings": "Este perfil todavía no publicó ninguna propiedad.",
+    "memberSince": "En Alquenta desde {date}",
+    "visitWebsite": "Sitio web",
+    "verifiedBadge": "Verificado",
+    "responseRate": "Responde el {rate}% de los contactos",
+    "averageResponseTime": "En un promedio de {time}",
+    "minutesShort": "{count} min",
+    "hoursShort": "{count} h",
+    "daysShort": "{count} d"
+  },
+  "favorites": {
+    "title": "Mis favoritos",
+    "empty": "Todavía no guardaste ninguna propiedad. Tocá el corazón en cualquier ficha para guardarla acá."
   },
   "conversations": {
     "title": "Conversaciones",
@@ -450,7 +511,7 @@
     },
     "propertyStatus": {
       "AVAILABLE": "Disponible",
-      "RENTED_OR_SOLD": "Alquilada / Vendida",
+      "RENTED_OR_SOLD": "Finalizado",
       "CANCELLED": "Cancelada"
     },
     "role": {
@@ -521,7 +582,28 @@
     "cancelPropertyConfirmTitle": "¿Cancelar esta publicación?",
     "cancelPropertyConfirmDescription": "\"{title}\" dejará de estar disponible para los clientes.",
     "propertyCancelled": "Publicación cancelada",
-    "couldNotCancelProperty": "No se pudo cancelar la publicación"
+    "couldNotCancelProperty": "No se pudo cancelar la publicación",
+    "verifyAdmin": "Verificar",
+    "unverifyAdmin": "Quitar verificación",
+    "adminVerified": "Administrador verificado",
+    "adminUnverified": "Verificación retirada",
+    "couldNotVerifyAdmin": "No se pudo verificar al administrador",
+    "couldNotUnverifyAdmin": "No se pudo quitar la verificación",
+    "verifiedBadge": "Verificado",
+    "reports": "Reportes",
+    "reportsTitle": "Reportes",
+    "reportsSubtitle": "Publicaciones reportadas por los usuarios, pendientes de revisión.",
+    "reportsEmptyState": "No hay reportes pendientes.",
+    "columnProperty": "Propiedad",
+    "columnReporter": "Reportado por",
+    "columnReason": "Motivo",
+    "columnReportedAt": "Fecha",
+    "columnReportActions": "Acciones",
+    "statusPending": "Pendiente",
+    "statusDismissed": "Descartado",
+    "dismissReport": "Descartar",
+    "reportDismissed": "Reporte descartado",
+    "couldNotDismissReport": "No se pudo descartar el reporte"
   },
   "adminInvite": {
     "title": "Completa tu cuenta de administrador",

@@ -1,10 +1,12 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { Controller, useFormContext } from "react-hook-form";
 import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PriceInput } from "@/components/ui/price-input";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Select,
   SelectContent,
@@ -14,6 +16,11 @@ import {
 } from "@/components/ui/select";
 import { VENEZUELA_STATES, getMunicipalities } from "@/lib/data/venezuela-locations";
 import type { PropertyWizardValues } from "../property-wizard";
+
+const LocationPicker = dynamic(
+  () => import("../location-picker").then((m) => m.LocationPicker),
+  { ssr: false, loading: () => <Skeleton className="h-70 w-full rounded-lg" /> },
+);
 
 export function LocationPriceStep() {
   const t = useTranslations("myProperties");
@@ -99,6 +106,16 @@ export function LocationPriceStep() {
           <p className="text-sm text-destructive">{errors.municipality.message}</p>
         )}
       </div>
+
+      <LocationPicker
+        latitude={watch("latitude") ?? null}
+        longitude={watch("longitude") ?? null}
+        state={selectedState}
+        onChange={(lat, lng) => {
+          setValue("latitude", lat);
+          setValue("longitude", lng);
+        }}
+      />
 
       <div className="space-y-1.5">
         <Label htmlFor="price">{t("fieldPrice")}</Label>

@@ -159,29 +159,39 @@ function MediaDropzone({
 
 export function MediaStep() {
   const t = useTranslations("myProperties");
-  const { watch, getValues, setValue } = useFormContext<PropertyWizardValues>();
+  const {
+    watch,
+    getValues,
+    setValue,
+    formState: { errors },
+  } = useFormContext<PropertyWizardValues>();
   const images = watch("images") ?? [];
   const videos = watch("videos") ?? [];
 
   return (
     <div className="space-y-6">
-      <MediaDropzone
-        resourceType="image"
-        accept="image/*"
-        urls={images}
-        maxCount={MAX_IMAGES}
-        label={t("photos")}
-        onAdd={(url) =>
-          setValue("images", [...(getValues("images") ?? []), url], { shouldValidate: true })
-        }
-        onRemove={(url) =>
-          setValue(
-            "images",
-            (getValues("images") ?? []).filter((u) => u !== url),
-            { shouldValidate: true },
-          )
-        }
-      />
+      <div className="space-y-1">
+        <MediaDropzone
+          resourceType="image"
+          accept="image/*"
+          urls={images}
+          maxCount={MAX_IMAGES}
+          label={t("photos")}
+          onAdd={(url) =>
+            setValue("images", [...(getValues("images") ?? []), url], { shouldValidate: true })
+          }
+          onRemove={(url) =>
+            setValue(
+              "images",
+              (getValues("images") ?? []).filter((u) => u !== url),
+              { shouldValidate: true },
+            )
+          }
+        />
+        {errors.images && (
+          <p className="text-sm text-destructive">{errors.images.message}</p>
+        )}
+      </div>
       <MediaDropzone
         resourceType="video"
         accept="video/*"

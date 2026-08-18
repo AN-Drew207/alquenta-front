@@ -9,6 +9,8 @@ import {
   fetchAdminProperties,
   fetchAdmins,
   inviteAdmin,
+  unverifyAdmin,
+  verifyAdmin,
 } from "@/lib/api/admins";
 import type { InviteAdminInput } from "@/types/admin";
 
@@ -43,6 +45,26 @@ export function useEnableAdminMutation() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (id: string) => enableAdmin(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admins"] });
+    },
+  });
+}
+
+export function useVerifyAdminMutation() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => verifyAdmin(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admins"] });
+    },
+  });
+}
+
+export function useUnverifyAdminMutation() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => unverifyAdmin(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admins"] });
     },

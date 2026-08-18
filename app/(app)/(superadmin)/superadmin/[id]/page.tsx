@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useFormatter, useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { ArrowLeft, Ban } from "lucide-react";
+import { ArrowLeft, BadgeCheck, Ban } from "lucide-react";
 import {
   useAdminProperties,
   useAdmins,
@@ -84,7 +84,15 @@ export default function SuperAdminAdminDetailPage() {
           <CardHeader>
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
-                <CardTitle className="text-xl">{admin.name}</CardTitle>
+                <CardTitle className="flex items-center gap-1.5 text-xl">
+                  {admin.name}
+                  {admin.isVerified && (
+                    <BadgeCheck
+                      className="size-4 text-primary"
+                      aria-label={t("verifiedBadge")}
+                    />
+                  )}
+                </CardTitle>
                 <p className="text-sm text-muted-foreground">{admin.email}</p>
               </div>
               <AdminStatusActions

@@ -1,21 +1,18 @@
 import { getTranslations } from "next-intl/server";
+import { buildLabels } from "./build-labels";
+import { OPERATION_TYPE_VALUES, PROPERTY_TYPE_VALUES } from "@/types/enums";
 import type { OperationType, PropertyType } from "@/types/enums";
 
-export async function getPropertyTypeLabels(): Promise<Record<PropertyType, string>> {
+export async function getPropertyTypeLabels(): Promise<
+  Record<PropertyType, string>
+> {
   const t = await getTranslations("enums.propertyType");
-  return {
-    HOUSE: t("HOUSE"),
-    APARTMENT: t("APARTMENT"),
-    COMMERCIAL_SPACE: t("COMMERCIAL_SPACE"),
-    OFFICE: t("OFFICE"),
-    LAND: t("LAND"),
-  };
+  return buildLabels(PROPERTY_TYPE_VALUES, t);
 }
 
-export async function getOperationTypeLabels(): Promise<Record<OperationType, string>> {
+export async function getOperationTypeLabels(): Promise<
+  Record<OperationType, string>
+> {
   const t = await getTranslations("enums.operationType");
-  return {
-    RENT: t("RENT"),
-    SALE: t("SALE"),
-  };
+  return buildLabels(OPERATION_TYPE_VALUES, t);
 }

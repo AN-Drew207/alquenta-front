@@ -48,9 +48,3 @@ Ver `.env.example` para la lista completa comentada.
 producción**, ni viceversa — cada scope de Vercel debe apuntar únicamente
 a su propio servicio de Render.
 
-## Problema pre-existente, no relacionado a este cambio
-
-`npm run lint` falla hoy por un error en
-`components/layout/house-image-panel.tsx:22` (`react-hooks/set-state-in-effect`,
-ya existía antes de este trabajo). El primer run de CI en este repo va a
-salir en rojo por eso hasta que se corrija aparte.

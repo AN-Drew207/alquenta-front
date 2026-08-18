@@ -117,16 +117,22 @@ export function MyPropertyCard({ property }: { property: Property }) {
         </div>
 
         <div className="flex gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            nativeButton={false}
-            render={<Link href={`/my-properties/${property.id}/edit`} />}
-            className="flex-1"
-          >
-            {t("edit")}
-          </Button>
-          {property.status !== "CANCELLED" && (
+          {property.status === "RENTED_OR_SOLD" ? (
+            <p className="text-sm text-muted-foreground">
+              {t("finalizedNotice")}
+            </p>
+          ) : (
+            <Button
+              variant="outline"
+              size="sm"
+              nativeButton={false}
+              render={<Link href={`/my-properties/${property.id}/edit`} />}
+              className="flex-1"
+            >
+              {t("edit")}
+            </Button>
+          )}
+          {property.status !== "CANCELLED" && property.status !== "RENTED_OR_SOLD" && (
             <AlertDialog key="cancel">
               <AlertDialogTrigger render={<Button variant="destructive" size="sm" className="flex-1" />}>
                 {t("cancelListing")}

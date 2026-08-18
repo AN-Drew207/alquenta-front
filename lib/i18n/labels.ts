@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { buildLabels } from "./build-labels";
 import type {
   NotificationStatus,
   OperationType,
@@ -8,24 +9,16 @@ import type {
   PropertyType,
   Role,
 } from "@/types/enums";
+import { OPERATION_TYPE_VALUES, PROPERTY_TYPE_VALUES } from "@/types/enums";
 
 export function usePropertyTypeLabels(): Record<PropertyType, string> {
   const t = useTranslations("enums.propertyType");
-  return {
-    HOUSE: t("HOUSE"),
-    APARTMENT: t("APARTMENT"),
-    COMMERCIAL_SPACE: t("COMMERCIAL_SPACE"),
-    OFFICE: t("OFFICE"),
-    LAND: t("LAND"),
-  };
+  return buildLabels(PROPERTY_TYPE_VALUES, t);
 }
 
 export function useOperationTypeLabels(): Record<OperationType, string> {
   const t = useTranslations("enums.operationType");
-  return {
-    RENT: t("RENT"),
-    SALE: t("SALE"),
-  };
+  return buildLabels(OPERATION_TYPE_VALUES, t);
 }
 
 export function usePropertyStatusLabels(): Record<PropertyStatus, string> {

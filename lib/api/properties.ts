@@ -35,3 +35,14 @@ export async function updateProperty(
   const { data } = await api.patch<Property>(`/properties/${id}`, input);
   return data;
 }
+
+export async function revealPropertyContact(
+  propertyId: string,
+  token: string,
+): Promise<string> {
+  const { data } = await api.post<{ whatsapp: string }>(
+    `/properties/${propertyId}/reveal-contact`,
+    { token },
+  );
+  return data.whatsapp;
+}

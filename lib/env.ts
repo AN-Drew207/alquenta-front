@@ -28,3 +28,12 @@ export const API_URL = required(
 export const APP_ENV = process.env.NEXT_PUBLIC_APP_ENV ?? "development";
 
 export const IS_PRODUCTION = APP_ENV === "production";
+
+/**
+ * Canonical public URL of this site (no trailing slash) — used to build
+ * absolute URLs in robots.txt/sitemap.xml. Falls back to localhost so local
+ * dev doesn't need to set it.
+ */
+export const SITE_URL = (
+  process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"
+).replace(/\/+$/, "");
