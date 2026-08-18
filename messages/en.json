@@ -30,6 +30,7 @@
     "contact": "Contact",
     "dashboard": "Dashboard",
     "myProperties": "My properties",
+    "analytics": "Analytics",
     "conversations": "Conversations",
     "favorites": "Favorites",
     "profile": "Profile",
@@ -183,6 +184,23 @@
     "viewAllProperties": "View all my properties",
     "emptyState": "You haven't published any properties yet.",
     "publishFirstOne": "Publish your first one"
+  },
+  "analytics": {
+    "title": "Analytics",
+    "subtitle": "How your property portfolio is performing.",
+    "totalViews": "Total views",
+    "totalContacts": "Total contacts",
+    "conversionRate": "Conversion rate",
+    "emptyState": "No data yet. Stats will show up as people view and contact your properties.",
+    "couldNotLoadSummary": "Couldn't load your analytics.",
+    "upsellTitle": "Unlock more with a higher tier",
+    "upsellDescription": "These are the basic stats included in your plan. Higher tiers add:",
+    "upsellTrendCharts": "Trend charts",
+    "upsellRanking": "Property ranking",
+    "upsellDeviceBreakdown": "Device breakdown",
+    "upsellBenchmarking": "Market benchmarking",
+    "upsellAlerts": "Automated alerts",
+    "upsellExport": "Export reports"
   },
   "myProperties": {
     "title": "My properties",

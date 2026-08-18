@@ -11,6 +11,7 @@ import { ShareButton } from "@/components/properties/share-button";
 import { FavoriteButton } from "@/components/properties/favorite-button";
 import { ReportPropertyDialog } from "@/components/properties/report-property-dialog";
 import { WhatsappRevealCard } from "@/components/properties/whatsapp-reveal-card";
+import { ViewTracker } from "@/components/properties/view-tracker";
 import { BackButton } from "@/components/ui/back-button";
 import { fetchPublicProfile } from "@/lib/api/profiles";
 import {
@@ -52,6 +53,7 @@ export default async function PropertyDetailPage({
 
   return (
     <main className="mx-auto max-w-6xl flex-1 px-4 py-8">
+      <ViewTracker propertyId={property.id} ownerId={property.adminId} />
       <BackButton className="mb-4" />
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
         <div className="lg:col-span-2">

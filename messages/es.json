@@ -30,6 +30,7 @@
     "contact": "Contacto",
     "dashboard": "Panel",
     "myProperties": "Mis propiedades",
+    "analytics": "Analíticas",
     "conversations": "Conversaciones",
     "favorites": "Favoritos",
     "profile": "Perfil",
@@ -183,6 +184,23 @@
     "viewAllProperties": "Ver todas mis propiedades",
     "emptyState": "Todavía no publicaste ninguna propiedad.",
     "publishFirstOne": "Publica la primera"
+  },
+  "analytics": {
+    "title": "Analíticas",
+    "subtitle": "Cómo le está yendo a tu portafolio de propiedades.",
+    "totalViews": "Vistas totales",
+    "totalContacts": "Contactos totales",
+    "conversionRate": "Tasa de conversión",
+    "emptyState": "Todavía no hay datos. Las estadísticas aparecen a medida que la gente visita y contacta tus propiedades.",
+    "couldNotLoadSummary": "No se pudieron cargar las estadísticas.",
+    "upsellTitle": "Desbloquea más con un plan superior",
+    "upsellDescription": "Estas son las estadísticas básicas incluidas en tu plan. Los planes superiores suman:",
+    "upsellTrendCharts": "Gráficos de tendencia",
+    "upsellRanking": "Ranking de tus propiedades",
+    "upsellDeviceBreakdown": "Desglose por dispositivo",
+    "upsellBenchmarking": "Comparación con el mercado",
+    "upsellAlerts": "Alertas automáticas",
+    "upsellExport": "Exportar reportes"
   },
   "myProperties": {
     "title": "Mis propiedades",

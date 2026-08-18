@@ -39,6 +39,8 @@ const ERROR_MESSAGES_ES: Record<string, string> = {
   CannotMessageOwnPropertyException: "No puedes enviarte un mensaje a ti mismo sobre tu propia propiedad.",
   InvalidContactRevealTokenException:
     "El enlace para ver el contacto expiró. Recarga la página e intenta de nuevo.",
+  AnalyticsAccessDeniedException:
+    "No tienes acceso a las estadísticas. Verifica tu plan de suscripción.",
   Unauthorized: "Tu sesión expiró. Inicia sesión de nuevo.",
   Forbidden: "No tienes permiso para hacer esto.",
   "Bad Request": "Revisa los datos ingresados.",

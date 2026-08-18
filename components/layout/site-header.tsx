@@ -97,6 +97,15 @@ function PublicNav({
         >
           {t("myProperties")}
         </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          nativeButton={false}
+          className="nos-nav-link"
+          render={<Link href="/analytics" />}
+        >
+          {t("analytics")}
+        </Button>
       </nav>
     );
   }
@@ -230,6 +239,9 @@ function MobileNav() {
             </DropdownMenuItem>
             <DropdownMenuItem render={<Link href="/my-properties" />}>
               {t("myProperties")}
+            </DropdownMenuItem>
+            <DropdownMenuItem render={<Link href="/analytics" />}>
+              {t("analytics")}
             </DropdownMenuItem>
           </>
         ) : (
