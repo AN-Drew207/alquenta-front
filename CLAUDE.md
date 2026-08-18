@@ -67,7 +67,3 @@ Convención: `components/ui/` = primitivas shadcn; el resto de `components/` = e
 ## Testing
 
 No hay suite de tests (ni unit ni e2e). CI solo corre `lint` + `tsc --noEmit`. Sin `zustand` ni `playwright` en `package.json` — se sacaron por no tener ningún uso real; si hace falta Playwright para un click-through manual puntual, `npx playwright` lo trae sin necesidad de declararlo como dependencia.
-
-## Pendientes conocidos (no urgentes)
-
-`.env.vercel-production` tiene un TODO sin confirmar: no se sabe la URL real del backend de producción en Render (`NEXT_PUBLIC_API_URL`).
