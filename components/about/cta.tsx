@@ -8,7 +8,7 @@ export function CTA() {
   const t = useTranslations("about");
 
   return (
-    <section className="px-4 pt-0 py-16 sm:py-24">
+    <section className="px-4 py-16 sm:py-24">
       <div className="mx-auto max-w-4xl">
         <div
           data-rv
