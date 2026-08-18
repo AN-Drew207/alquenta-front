@@ -19,6 +19,12 @@ export function HouseImagePanel({ className }: { className?: string }) {
   const [houseImage, setHouseImage] = useState(HOUSE_IMAGES[0]);
 
   useEffect(() => {
+    // Deliberately deferred to a client-only effect instead of picked during
+    // render: picking randomly during render would run on both the server
+    // and the client, and the two picks would disagree — a hydration
+    // mismatch. Rendering the same fixed HOUSE_IMAGES[0] on server and first
+    // client render, then randomizing right after, avoids that.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setHouseImage(HOUSE_IMAGES[Math.floor(Math.random() * HOUSE_IMAGES.length)]);
   }, []);
 

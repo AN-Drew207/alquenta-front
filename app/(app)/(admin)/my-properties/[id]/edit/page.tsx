@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
@@ -19,6 +20,13 @@ export default function EditPropertyPage() {
   const router = useRouter();
   const { data: property, isLoading } = useProperty(params.id);
   const updateMutation = useUpdatePropertyMutation(params.id);
+
+  useEffect(() => {
+    if (property?.status === "RENTED_OR_SOLD") {
+      toast.error(t("finalizedNotice"));
+      router.replace("/my-properties");
+    }
+  }, [property?.status, router, t]);
 
   function handleSubmit(values: PropertyFormSubmitValues) {
     updateMutation.mutate(values, {
@@ -41,7 +49,7 @@ export default function EditPropertyPage() {
             <CardTitle>{t("editTitle")}</CardTitle>
           </CardHeader>
           <CardContent>
-            {isLoading || !property ? (
+            {isLoading || !property || property.status === "RENTED_OR_SOLD" ? (
               <Skeleton className="h-96 w-full" />
             ) : (
               <PropertyWizard

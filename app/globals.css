@@ -1,8 +1,39 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+@import "leaflet/dist/leaflet.css";
 
 @custom-variant dark (&:is(.dark *));
+
+/*
+ * Leaflet's own panes/controls (z-index up to 1000, see leaflet.css) don't
+ * establish their own stacking context, so without this they leak above any
+ * portaled UI positioned later in the DOM with a lower z-index (Select,
+ * dropdown, dialog — all portal to document.body via Base UI). Pinning the
+ * container to its own stacking context caps that range inside the map, so
+ * the whole map only ever competes at z-index 0 against the rest of the page.
+ */
+.leaflet-container {
+  position: relative;
+  z-index: 0;
+}
+
+/* Leaflet hardcodes the popup card to a white background — invisible in dark
+   mode once the text inside picks up the app's (light) --foreground color.
+   Follow the app's popover theme instead so it stays readable in both. */
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+  background: var(--popover);
+  color: var(--popover-foreground);
+}
+.leaflet-container a.leaflet-popup-close-button {
+  color: var(--popover-foreground);
+  opacity: 0.6;
+}
+.leaflet-container a.leaflet-popup-close-button:hover,
+.leaflet-container a.leaflet-popup-close-button:focus {
+  opacity: 1;
+}
 
 @theme inline {
   --color-background: var(--background);

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -34,6 +34,8 @@ export interface PropertyWizardValues {
   images?: string[];
   videos?: string[];
   status?: PropertyStatus;
+  latitude?: number | null;
+  longitude?: number | null;
 }
 
 export interface PropertyFormSubmitValues {
@@ -52,6 +54,8 @@ export interface PropertyFormSubmitValues {
   images?: string[];
   videos?: string[];
   status?: PropertyStatus;
+  latitude?: number;
+  longitude?: number;
 }
 
 const STEP_FIELDS: (keyof PropertyWizardValues)[][] = [
@@ -66,7 +70,7 @@ const STEP_FIELDS: (keyof PropertyWizardValues)[][] = [
     "parkingSpaces",
     "squareMeters",
   ],
-  [],
+  ["images"],
   [],
 ];
 
@@ -93,26 +97,40 @@ export function PropertyWizard({
   ];
   const [step, setStep] = useState(0);
 
-  const propertyWizardSchema = z.object({
-    title: z.string().min(1, t("titleRequired")),
-    description: z.string().min(1, t("descriptionRequired")),
-    type: z.enum(["HOUSE", "APARTMENT", "COMMERCIAL_SPACE", "OFFICE", "LAND"]),
-    operationType: z.enum(["RENT", "SALE"]),
-    address: z.string().min(1, t("addressRequired")),
-    state: z.string().min(1, t("stateRequired")),
-    municipality: z.string().min(1, t("municipalityRequired")),
-    price: z
-      .string()
-      .min(1, t("priceRequired"))
-      .refine((v) => Number(v) > 0, t("priceMustBePositive")),
-    bedrooms: z.string().optional(),
-    bathrooms: z.string().optional(),
-    parkingSpaces: z.string().optional(),
-    squareMeters: z.string().optional(),
-    images: z.array(z.string()).default([]),
-    videos: z.array(z.string()).default([]),
-    status: z.enum(["AVAILABLE", "RENTED_OR_SOLD", "CANCELLED"]).optional(),
-  });
+  const propertyWizardSchema = useMemo(
+    () =>
+      z.object({
+        title: z.string().min(1, t("titleRequired")),
+        description: z.string().min(1, t("descriptionRequired")),
+        type: z.enum([
+          "HOUSE",
+          "APARTMENT",
+          "COMMERCIAL_SPACE",
+          "OFFICE",
+          "LAND",
+        ]),
+        operationType: z.enum(["RENT", "SALE"]),
+        address: z.string().min(1, t("addressRequired")),
+        state: z.string().min(1, t("stateRequired")),
+        municipality: z.string().min(1, t("municipalityRequired")),
+        price: z
+          .string()
+          .min(1, t("priceRequired"))
+          .refine((v) => Number(v) > 0, t("priceMustBePositive")),
+        bedrooms: z.string().optional(),
+        bathrooms: z.string().optional(),
+        parkingSpaces: z.string().optional(),
+        squareMeters: z.string().optional(),
+        images: z.array(z.string()).min(1, t("imagesRequired")).default([]),
+        videos: z.array(z.string()).default([]),
+        status: z
+          .enum(["AVAILABLE", "RENTED_OR_SOLD", "CANCELLED"])
+          .optional(),
+        latitude: z.number().nullable().optional(),
+        longitude: z.number().nullable().optional(),
+      }),
+    [t],
+  );
 
   const methods = useForm<PropertyWizardValues>({
     resolver: zodResolver(propertyWizardSchema),
@@ -145,6 +163,8 @@ export function PropertyWizard({
           images: defaultProperty.images,
           videos: defaultProperty.videos,
           status: defaultProperty.status,
+          latitude: defaultProperty.latitude,
+          longitude: defaultProperty.longitude,
         }
       : {
           type: "APARTMENT",
@@ -187,6 +207,8 @@ export function PropertyWizard({
       images: values.images,
       videos: values.videos,
       status: values.status,
+      latitude: values.latitude ?? undefined,
+      longitude: values.longitude ?? undefined,
     });
   }
 
@@ -211,11 +233,11 @@ export function PropertyWizard({
               {tCommon("back")}
             </Button>
             {step < STEPS.length - 1 ? (
-              <Button type="button" onClick={goNext}>
+              <Button key="next" type="button" onClick={goNext}>
                 {tCommon("next")}
               </Button>
             ) : (
-              <Button type="submit" disabled={isSubmitting}>
+              <Button key="submit" type="submit" disabled={isSubmitting}>
                 {isSubmitting ? t("saving") : (submitLabel ?? t("publish"))}
               </Button>
             )}

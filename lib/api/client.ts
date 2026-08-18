@@ -1,4 +1,5 @@
 import axios, { AxiosError } from "axios";
+import { API_URL } from "@/lib/env";
 
 export interface ApiError {
   statusCode: number;
@@ -33,9 +34,15 @@ const ERROR_MESSAGES_ES: Record<string, string> = {
   NotificationNotOwnedByUserException: "Esta notificación no te pertenece.",
   NotConversationParticipantException: "No formas parte de esta conversación.",
   PropertyNotAvailableException: "Esta propiedad ya no está disponible.",
+  PropertyAlreadyFinalizedException:
+    "Esta propiedad ya fue marcada como alquilada/vendida y no se puede modificar.",
+  CannotMessageOwnPropertyException: "No puedes enviarte un mensaje a ti mismo sobre tu propia propiedad.",
+  InvalidContactRevealTokenException:
+    "El enlace para ver el contacto expiró. Recarga la página e intenta de nuevo.",
   Unauthorized: "Tu sesión expiró. Inicia sesión de nuevo.",
   Forbidden: "No tienes permiso para hacer esto.",
   "Bad Request": "Revisa los datos ingresados.",
+  "Too Many Requests": "Demasiados intentos. Espera un momento e intenta de nuevo.",
 };
 
 /**
@@ -52,7 +59,7 @@ export function translateApiError(error: unknown, fallback: string): string {
 }
 
 export const api = axios.create({
-  baseURL: `${process.env.NEXT_PUBLIC_API_URL}/api`,
+  baseURL: `${API_URL}/api`,
   withCredentials: true,
 });
 

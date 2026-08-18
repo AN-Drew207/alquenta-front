@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useFormatter, useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { Copy, Eye, Search, UserPlus } from "lucide-react";
+import { BadgeCheck, Copy, Eye, Search, UserPlus } from "lucide-react";
 import { useAdmins, useInviteAdminMutation } from "@/hooks/use-admins";
 import { usePlans } from "@/hooks/use-plans";
 import { translateApiError } from "@/lib/api/client";
@@ -227,7 +227,15 @@ export default function SuperAdminPage() {
                     href={`/superadmin/${admin.id}`}
                     className="flex flex-col hover:underline"
                   >
-                    <span className="font-medium">{admin.name}</span>
+                    <span className="flex items-center gap-1 font-medium">
+                      {admin.name}
+                      {admin.isVerified && (
+                        <BadgeCheck
+                          className="size-3.5 text-primary"
+                          aria-label={t("verifiedBadge")}
+                        />
+                      )}
+                    </span>
                     <span className="text-xs text-muted-foreground">{admin.email}</span>
                   </Link>
                 </TableCell>

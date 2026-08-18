@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import {
+  ArrowUpDown,
   Bath,
   Bed,
   Car,
@@ -39,7 +40,9 @@ import type {
 
 const ALL_TYPES = "all";
 const ANY = "any";
+const DEFAULT_SORT = "newest";
 const MIN_COUNT_OPTIONS = ["1", "2", "3", "4"];
+const SORT_OPTIONS = ["newest", "price_asc", "price_desc", "area_desc"] as const;
 
 type FilterKey =
   | "search"
@@ -52,7 +55,8 @@ type FilterKey =
   | "maxPrice"
   | "bedrooms"
   | "bathrooms"
-  | "parkingSpaces";
+  | "parkingSpaces"
+  | "sort";
 
 export function PropertyFilters({
   basePath = "/",
@@ -81,6 +85,7 @@ export function PropertyFilters({
     bedrooms: searchParams.get("bedrooms") ?? ANY,
     bathrooms: searchParams.get("bathrooms") ?? ANY,
     parkingSpaces: searchParams.get("parkingSpaces") ?? ANY,
+    sort: searchParams.get("sort") ?? DEFAULT_SORT,
   };
 
   const [search, setSearch] = useState(values.search);
@@ -95,7 +100,11 @@ export function PropertyFilters({
 
     for (const key of Object.keys(values) as FilterKey[]) {
       const value = next[key] ?? values[key];
-      const isEmpty = value === "" || value === ALL_TYPES || value === ANY;
+      const isEmpty =
+        value === "" ||
+        value === ALL_TYPES ||
+        value === ANY ||
+        value === DEFAULT_SORT;
       if (isEmpty) {
         params.delete(key);
       } else {
@@ -278,7 +287,10 @@ export function PropertyFilters({
           updateParams({ bedrooms: value ?? undefined })
         }
       >
-        <SelectTrigger className="rounded-full border-0 bg-muted pl-4">
+        <SelectTrigger
+          className="rounded-full border-0 bg-muted pl-4"
+          aria-label={t("bedroomsPlaceholder")}
+        >
           <Bed className="size-4 text-primary" />
           <SelectValue placeholder={t("bedroomsPlaceholder")}>
             {(value: string) =>
@@ -302,7 +314,10 @@ export function PropertyFilters({
           updateParams({ bathrooms: value ?? undefined })
         }
       >
-        <SelectTrigger className="rounded-full border-0 bg-muted pl-4">
+        <SelectTrigger
+          className="rounded-full border-0 bg-muted pl-4"
+          aria-label={t("bathroomsPlaceholder")}
+        >
           <Bath className="size-4 text-primary" />
           <SelectValue placeholder={t("bathroomsPlaceholder")}>
             {(value: string) =>
@@ -326,7 +341,10 @@ export function PropertyFilters({
           updateParams({ parkingSpaces: value ?? undefined })
         }
       >
-        <SelectTrigger className="rounded-full border-0 bg-muted pl-4">
+        <SelectTrigger
+          className="rounded-full border-0 bg-muted pl-4"
+          aria-label={t("parkingPlaceholder")}
+        >
           <Car className="size-4 text-primary" />
           <SelectValue placeholder={t("parkingPlaceholder")}>
             {(value: string) =>
@@ -343,6 +361,40 @@ export function PropertyFilters({
           ))}
         </SelectContent>
       </Select>
+
+      <Select
+        value={values.sort}
+        onValueChange={(value) => updateParams({ sort: value ?? undefined })}
+      >
+        <SelectTrigger className="rounded-full border-0 bg-muted pl-4">
+          <ArrowUpDown className="size-4 text-primary" />
+          <SelectValue placeholder={t("sortPlaceholder")}>
+            {(value: string) => t(sortLabelKey(value))}
+          </SelectValue>
+        </SelectTrigger>
+        <SelectContent>
+          {SORT_OPTIONS.map((option) => (
+            <SelectItem key={option} value={option}>
+              {t(sortLabelKey(option))}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
     </div>
   );
+}
+
+function sortLabelKey(
+  value: string,
+): "sortNewest" | "sortPriceAsc" | "sortPriceDesc" | "sortAreaDesc" {
+  switch (value) {
+    case "price_asc":
+      return "sortPriceAsc";
+    case "price_desc":
+      return "sortPriceDesc";
+    case "area_desc":
+      return "sortAreaDesc";
+    default:
+      return "sortNewest";
+  }
 }

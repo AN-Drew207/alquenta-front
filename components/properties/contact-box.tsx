@@ -5,9 +5,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
-import { Ban, Handshake, Pencil } from "lucide-react";
+import { Ban, Handshake, MessageCircle, Pencil } from "lucide-react";
 import { useCurrentUser } from "@/hooks/use-current-user";
-import { useStartConversationMutation } from "@/hooks/use-conversations";
+import { useMyConversations, useStartConversationMutation } from "@/hooks/use-conversations";
 import {
   useCancelPropertyMutation,
   useMarkPropertyAsRentedOrSoldMutation,
@@ -51,6 +51,8 @@ export function ContactBox({
   const tCommon = useTranslations("common");
   const router = useRouter();
   const { data: user, isLoading } = useCurrentUser();
+  const { data: conversations, isLoading: conversationsLoading } =
+    useMyConversations();
   const [content, setContent] = useState("");
   const startConversation = useStartConversationMutation();
   const cancelMutation = useCancelPropertyMutation();
@@ -121,14 +123,22 @@ export function ContactBox({
           <CardTitle className="text-base">{t("yourListing")}</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-2">
-          <Button
-            variant="outline"
-            nativeButton={false}
-            render={<Link href={`/my-properties/${propertyId}/edit`} />}
-          >
-            <Pencil />
-            {tMyProperties("edit")}
-          </Button>
+          {status === "RENTED_OR_SOLD" && (
+            <p className="text-sm text-muted-foreground">
+              {tMyProperties("finalizedNotice")}
+            </p>
+          )}
+
+          {status !== "RENTED_OR_SOLD" && (
+            <Button
+              variant="outline"
+              nativeButton={false}
+              render={<Link href={`/my-properties/${propertyId}/edit`} />}
+            >
+              <Pencil />
+              {tMyProperties("edit")}
+            </Button>
+          )}
 
           {status === "AVAILABLE" && (
             <AlertDialog>
@@ -159,7 +169,7 @@ export function ContactBox({
             </AlertDialog>
           )}
 
-          {status !== "CANCELLED" && (
+          {status !== "CANCELLED" && status !== "RENTED_OR_SOLD" && (
             <AlertDialog>
               <AlertDialogTrigger render={<Button variant="destructive" />}>
                 <Ban />
@@ -186,7 +196,7 @@ export function ContactBox({
     );
   }
 
-  if (user.role !== "CLIENT") {
+  if (user.role === "SUPERADMIN") {
     return null;
   }
 
@@ -205,6 +215,36 @@ export function ContactBox({
     );
   }
 
+  if (conversationsLoading) {
+    return <Skeleton className="h-48 w-full" />;
+  }
+
+  const existingConversation = conversations?.find(
+    (conversation) => conversation.propertyId === propertyId,
+  );
+
+  if (existingConversation) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">{t("alreadyMessagedTitle")}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="mb-3 text-sm text-muted-foreground">
+            {t("alreadyMessagedDescription")}
+          </p>
+          <Button
+            nativeButton={false}
+            render={<Link href={`/conversations/${existingConversation.id}`} />}
+          >
+            <MessageCircle />
+            {t("viewConversation")}
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
+
   function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
     if (!content.trim()) {
@@ -218,15 +258,23 @@ export function ContactBox({
         content,
       },
       {
-        onSuccess: () => {
+        onSuccess: (data) => {
           toast.success(t("messageSent"));
           setContent("");
+          router.push(`/conversations/${data.conversation.id}`);
         },
         onError: (error) => {
           toast.error(translateApiError(error, t("couldNotSendMessage")));
         },
       },
     );
+  }
+
+  function handleContentKeyDown(event: React.KeyboardEvent<HTMLTextAreaElement>) {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+      event.currentTarget.form?.requestSubmit();
+    }
   }
 
   return (
@@ -242,6 +290,7 @@ export function ContactBox({
               id="content"
               value={content}
               onChange={(event) => setContent(event.target.value)}
+              onKeyDown={handleContentKeyDown}
               placeholder={t("messagePlaceholder")}
               rows={3}
             />

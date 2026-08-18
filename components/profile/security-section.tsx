@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
@@ -11,7 +11,6 @@ import {
   useChangePasswordMutation,
   useDeactivateAccountMutation,
   useDeleteAccountMutation,
-  usePatchProfileMutation,
   useRevokeOtherSessionsMutation,
   useRevokeSessionMutation,
   useSessions,
@@ -22,18 +21,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
 import { Label } from "@/components/ui/label";
-import { Field } from "@/components/ui/field";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DangerZone } from "@/components/ui/danger-zone";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -45,7 +36,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import type { GeneralPrefs, Profile } from "@/types/auth";
+import type { Profile } from "@/types/auth";
 
 function usePasswordSchema(t: ReturnType<typeof useTranslations<"profile">>) {
   return z
@@ -131,99 +122,6 @@ function ChangePasswordCard() {
           </div>
           <Button type="submit" disabled={changePasswordMutation.isPending}>
             {changePasswordMutation.isPending ? t("saving") : t("save")}
-          </Button>
-        </form>
-      </CardContent>
-    </Card>
-  );
-}
-
-const preferencesSchema = z.object({
-  locale: z.enum(["es", "en", "pt"]),
-});
-type PreferencesFormValues = z.infer<typeof preferencesSchema>;
-
-function PreferencesCard({ profile }: { profile: Profile }) {
-  const t = useTranslations("profile");
-  const patchProfileMutation = usePatchProfileMutation();
-
-  const {
-    control,
-    handleSubmit,
-    reset,
-    formState: { isDirty },
-  } = useForm<PreferencesFormValues>({
-    resolver: zodResolver(preferencesSchema),
-    defaultValues: {
-      locale: profile.generalPrefs.locale,
-    },
-  });
-
-  useEffect(() => {
-    reset({
-      locale: profile.generalPrefs.locale,
-    });
-  }, [profile, reset]);
-
-  const localeLabels: Record<GeneralPrefs["locale"], string> = {
-    es: t("localeEs"),
-    en: t("localeEn"),
-    pt: t("localePt"),
-  };
-
-  function onSubmit(values: PreferencesFormValues) {
-    patchProfileMutation.mutate(
-      {
-        generalPrefs: {
-          ...values,
-          theme: profile.generalPrefs.theme,
-        },
-      },
-      {
-        onSuccess: () => {
-          toast.success(t("preferencesUpdated"));
-          reset(values);
-        },
-        onError: (error) => {
-          toast.error(translateApiError(error, t("couldNotUpdatePreferences")));
-        },
-      },
-    );
-  }
-
-  return (
-    <Card className="nos-card ring-0">
-      <CardHeader>
-        <CardTitle>{t("preferencesTitle")}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <Field label={t("localeLabel")} htmlFor="locale" className="max-w-xs">
-            <Controller
-              control={control}
-              name="locale"
-              render={({ field }) => (
-                <Select value={field.value} onValueChange={field.onChange}>
-                  <SelectTrigger id="locale" className="w-full">
-                    <SelectValue>
-                      {(value: GeneralPrefs["locale"]) => localeLabels[value]}
-                    </SelectValue>
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="es">{localeLabels.es}</SelectItem>
-                    <SelectItem value="en">{localeLabels.en}</SelectItem>
-                    <SelectItem value="pt">{localeLabels.pt}</SelectItem>
-                  </SelectContent>
-                </Select>
-              )}
-            />
-          </Field>
-
-          <Button
-            type="submit"
-            disabled={!isDirty || patchProfileMutation.isPending}
-          >
-            {patchProfileMutation.isPending ? t("saving") : t("save")}
           </Button>
         </form>
       </CardContent>
@@ -461,7 +359,6 @@ export function SecuritySection({ profile }: { profile: Profile }) {
   return (
     <div className="animate-nos-fade-up space-y-6">
       <ChangePasswordCard />
-      <PreferencesCard profile={profile} />
       <SessionsCard />
       <DangerZoneCard profile={profile} />
     </div>

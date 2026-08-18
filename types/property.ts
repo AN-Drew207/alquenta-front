@@ -19,9 +19,15 @@ export interface Property {
   images: string[];
   videos: string[];
   whatsapp: string | null;
-  contactWhatsapp: string | null;
+  hasWhatsappContact: boolean;
+  contactRevealToken: string | null;
+  latitude: number | null;
+  longitude: number | null;
   createdAt: string;
 }
+
+export type PropertySortBy = "price" | "createdAt" | "squareMeters";
+export type SortOrder = "asc" | "desc";
 
 export interface PropertyFilters {
   type?: PropertyType;
@@ -33,6 +39,9 @@ export interface PropertyFilters {
   bedrooms?: number;
   bathrooms?: number;
   parkingSpaces?: number;
+  search?: string;
+  sortBy?: PropertySortBy;
+  sortOrder?: SortOrder;
 }
 
 export interface CreatePropertyInput {
@@ -51,6 +60,8 @@ export interface CreatePropertyInput {
   images?: string[];
   videos?: string[];
   whatsapp?: string;
+  latitude?: number;
+  longitude?: number;
 }
 
 export type UpdatePropertyInput = Partial<CreatePropertyInput> & {

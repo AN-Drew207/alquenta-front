@@ -6,6 +6,7 @@ export interface AdminSummary {
   planId: string | null;
   createdAt: string;
   deactivatedAt: string | null;
+  isVerified: boolean;
 }
 
 export interface InviteAdminInput {

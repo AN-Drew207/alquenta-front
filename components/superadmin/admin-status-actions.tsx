@@ -2,11 +2,13 @@
 
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { Ban, CheckCircle2, Trash2 } from "lucide-react";
+import { Ban, BadgeCheck, CheckCircle2, Trash2 } from "lucide-react";
 import {
   useDeleteAdminMutation,
   useDisableAdminMutation,
   useEnableAdminMutation,
+  useUnverifyAdminMutation,
+  useVerifyAdminMutation,
 } from "@/hooks/use-admins";
 import { translateApiError } from "@/lib/api/client";
 import { Button } from "@/components/ui/button";
@@ -35,7 +37,25 @@ export function AdminStatusActions({
   const disableMutation = useDisableAdminMutation();
   const enableMutation = useEnableAdminMutation();
   const deleteMutation = useDeleteAdminMutation();
+  const verifyMutation = useVerifyAdminMutation();
+  const unverifyMutation = useUnverifyAdminMutation();
   const isActive = !admin.deactivatedAt;
+
+  function handleToggleVerified() {
+    if (admin.isVerified) {
+      unverifyMutation.mutate(admin.id, {
+        onSuccess: () => toast.success(t("adminUnverified")),
+        onError: (error) =>
+          toast.error(translateApiError(error, t("couldNotUnverifyAdmin"))),
+      });
+    } else {
+      verifyMutation.mutate(admin.id, {
+        onSuccess: () => toast.success(t("adminVerified")),
+        onError: (error) =>
+          toast.error(translateApiError(error, t("couldNotVerifyAdmin"))),
+      });
+    }
+  }
 
   function handleDisable() {
     disableMutation.mutate(admin.id, {
@@ -125,6 +145,17 @@ export function AdminStatusActions({
           </AlertDialogContent>
         </AlertDialog>
       )}
+
+      <Button
+        variant={admin.isVerified ? "default" : "outline"}
+        size="icon-sm"
+        onClick={handleToggleVerified}
+        disabled={verifyMutation.isPending || unverifyMutation.isPending}
+        aria-label={admin.isVerified ? t("unverifyAdmin") : t("verifyAdmin")}
+        title={admin.isVerified ? t("unverifyAdmin") : t("verifyAdmin")}
+      >
+        <BadgeCheck className="size-3.5" />
+      </Button>
 
       <AlertDialog>
         <AlertDialogTrigger

@@ -27,6 +27,14 @@ export async function deleteAdmin(id: string): Promise<void> {
   await api.delete(`/superadmin/admins/${id}`);
 }
 
+export async function verifyAdmin(id: string): Promise<void> {
+  await api.patch(`/superadmin/admins/${id}/verify`);
+}
+
+export async function unverifyAdmin(id: string): Promise<void> {
+  await api.patch(`/superadmin/admins/${id}/unverify`);
+}
+
 export async function fetchAdminProperties(adminId: string): Promise<Property[]> {
   const { data } = await api.get<Property[]>(`/properties/admin/${adminId}`);
   return data;

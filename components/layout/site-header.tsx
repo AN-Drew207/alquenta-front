@@ -8,6 +8,7 @@ import { useSyncExternalStore } from "react";
 import {
   Bell,
   ChevronDown,
+  Heart,
   LogIn,
   Menu,
   MessageSquare,
@@ -61,6 +62,15 @@ function PublicNav({
           render={<Link href="/superadmin" />}
         >
           {t("admins")}
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          nativeButton={false}
+          className="nos-nav-link"
+          render={<Link href="/superadmin/reports" />}
+        >
+          {t("reports")}
         </Button>
       </nav>
     );
@@ -205,9 +215,14 @@ function MobileNav() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
         {isSuperAdmin ? (
-          <DropdownMenuItem render={<Link href="/superadmin" />}>
-            {t("admins")}
-          </DropdownMenuItem>
+          <>
+            <DropdownMenuItem render={<Link href="/superadmin" />}>
+              {t("admins")}
+            </DropdownMenuItem>
+            <DropdownMenuItem render={<Link href="/superadmin/reports" />}>
+              {t("reports")}
+            </DropdownMenuItem>
+          </>
         ) : isAdmin ? (
           <>
             <DropdownMenuItem render={<Link href="/dashboard" />}>
@@ -303,6 +318,15 @@ export function SiteHeader() {
         <div className="flex items-center gap-2">
           {user && (
             <>
+              <Button
+                variant="ghost"
+                size="icon"
+                nativeButton={false}
+                render={<Link href="/favorites" />}
+                aria-label={t("favorites")}
+              >
+                <Heart className="size-4" />
+              </Button>
               <Button
                 variant="ghost"
                 size="icon"

@@ -25,6 +25,16 @@ export interface PublicProfile {
   id: string;
   name: string;
   role: Role;
+  bio: string | null;
+  avatarUrl: string | null;
+  website: string | null;
+  memberSince: string;
+  /** Manually set by a SUPERADMIN — no automatic criteria. */
+  isVerified: boolean;
+  /** Only present when the user opted to show it publicly. */
+  phone: string | null;
+  /** Only present when the user opted to show it publicly. */
+  email: string | null;
 }
 
 export interface LoginInput {
