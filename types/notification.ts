@@ -5,6 +5,8 @@ export interface Notification {
   type: NotificationType;
   messageId: string | null;
   conversationId: string | null;
+  // Populated on ANALYTICS_ALERT, null on every other NotificationType.
+  propertyId: string | null;
   text: string;
   status: NotificationStatus;
   createdAt: string;

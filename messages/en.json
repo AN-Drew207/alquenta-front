@@ -194,7 +194,7 @@
     "emptyState": "No data yet. Stats will show up as people view and contact your properties.",
     "couldNotLoadSummary": "Couldn't load your analytics.",
     "upsellTitle": "Unlock more with a higher tier",
-    "upsellDescription": "These are the basic stats included in your plan. A PROFESSIONAL plan or higher unlocks:",
+    "upsellDescription": "These are the basic stats included in your plan. A {tier} plan or higher unlocks:",
     "upsellTrendCharts": "Trend charts",
     "upsellRanking": "Property ranking",
     "upsellDeviceBreakdown": "Device breakdown",
@@ -218,7 +218,20 @@
     "deviceBreakdownEmptyState": "No views recorded yet for this property.",
     "couldNotLoadDeviceBreakdown": "Couldn't load the device breakdown.",
     "drilldownTitle": "Property analytics",
-    "drilldownSubtitle": "This property's views/contacts trend and device breakdown."
+    "drilldownSubtitle": "This property's views/contacts trend and device breakdown.",
+    "benchmarkTitle": "Market benchmark",
+    "benchmarkViews": "Your views",
+    "benchmarkContacts": "Your contacts",
+    "benchmarkAverageValue": "Average: {avg}",
+    "benchmarkComparableCount": "Compared against {count} similar properties in your same state, type, and operation.",
+    "benchmarkAboveAverage": "Above average",
+    "benchmarkBelowAverage": "Below average",
+    "benchmarkEmptyState": "Not enough similar properties yet (minimum 5, same state, type, and operation) to compare against. Check back later.",
+    "couldNotLoadBenchmark": "Couldn't load the market benchmark.",
+    "exportTitle": "Export report",
+    "exportDescription": "Download this property's stats in your preferred format.",
+    "exportCsv": "Export CSV",
+    "exportPdf": "Export PDF"
   },
   "myProperties": {
     "title": "My properties",
@@ -550,7 +563,8 @@
       "SUPERADMIN": "Superadmin"
     },
     "notificationType": {
-      "NEW_MESSAGE": "New message"
+      "NEW_MESSAGE": "New message",
+      "ANALYTICS_ALERT": "Analytics alert"
     },
     "notificationStatus": {
       "PENDING": "Unread",

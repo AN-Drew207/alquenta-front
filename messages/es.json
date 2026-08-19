@@ -194,7 +194,7 @@
     "emptyState": "Todavía no hay datos. Las estadísticas aparecen a medida que la gente visita y contacta tus propiedades.",
     "couldNotLoadSummary": "No se pudieron cargar las estadísticas.",
     "upsellTitle": "Desbloquea más con un plan superior",
-    "upsellDescription": "Estas son las estadísticas básicas incluidas en tu plan. Un plan PROFESSIONAL o superior desbloquea:",
+    "upsellDescription": "Estas son las estadísticas básicas incluidas en tu plan. Un plan {tier} o superior desbloquea:",
     "upsellTrendCharts": "Gráficos de tendencia",
     "upsellRanking": "Ranking de tus propiedades",
     "upsellDeviceBreakdown": "Desglose por dispositivo",
@@ -218,7 +218,20 @@
     "deviceBreakdownEmptyState": "Todavía no hay vistas registradas para esta propiedad.",
     "couldNotLoadDeviceBreakdown": "No se pudo cargar el desglose por dispositivo.",
     "drilldownTitle": "Analíticas de la propiedad",
-    "drilldownSubtitle": "Tendencia de vistas/contactos y desglose por dispositivo de esta propiedad."
+    "drilldownSubtitle": "Tendencia de vistas/contactos y desglose por dispositivo de esta propiedad.",
+    "benchmarkTitle": "Comparación con el mercado",
+    "benchmarkViews": "Tus vistas",
+    "benchmarkContacts": "Tus contactos",
+    "benchmarkAverageValue": "Promedio: {avg}",
+    "benchmarkComparableCount": "Comparado con {count} propiedades similares en tu misma zona, tipo y operación.",
+    "benchmarkAboveAverage": "Por encima del promedio",
+    "benchmarkBelowAverage": "Por debajo del promedio",
+    "benchmarkEmptyState": "Todavía no hay suficientes propiedades similares (mínimo 5, mismo estado, tipo y operación) para comparar. Vuelve a revisar más adelante.",
+    "couldNotLoadBenchmark": "No se pudo cargar la comparación con el mercado.",
+    "exportTitle": "Exportar reporte",
+    "exportDescription": "Descarga las estadísticas de esta propiedad en el formato que prefieras.",
+    "exportCsv": "Exportar CSV",
+    "exportPdf": "Exportar PDF"
   },
   "myProperties": {
     "title": "Mis propiedades",
@@ -550,7 +563,8 @@
       "SUPERADMIN": "Superadministrador"
     },
     "notificationType": {
-      "NEW_MESSAGE": "Mensaje nuevo"
+      "NEW_MESSAGE": "Mensaje nuevo",
+      "ANALYTICS_ALERT": "Alerta de analíticas"
     },
     "notificationStatus": {
       "PENDING": "No leída",

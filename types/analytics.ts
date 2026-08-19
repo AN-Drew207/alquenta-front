@@ -34,3 +34,22 @@ export interface AnalyticsDeviceBreakdownEntry {
   deviceType: DeviceType;
   count: number;
 }
+
+// Maps to PropertyAnalyticsBenchmarkResponseDto
+// (`GET /analytics/properties/:id/benchmark`). BUSINESS+ only, owner-only.
+// `available: false` when fewer than 5 comparable listings exist (same
+// state+type+operationType, AVAILABLE, excluding the caller's own
+// properties) — every other field is only present when `available` is true,
+// modeled as a discriminated union so callers can't read them unguarded.
+export type AnalyticsBenchmark =
+  | { available: false }
+  | {
+      available: true;
+      comparableCount: number;
+      avgViews: number;
+      avgContacts: number;
+      propertyViews: number;
+      propertyContacts: number;
+    };
+
+export type PropertyAnalyticsExportFormat = "csv" | "pdf";

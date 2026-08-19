@@ -5,7 +5,7 @@ import { formatDistanceToNow } from "date-fns";
 import { enUS, es } from "date-fns/locale";
 import { useLocale, useTranslations } from "next-intl";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Bell, BellOff, MessageSquare } from "lucide-react";
+import { Bell, BellOff, MessageSquare, TrendingDown } from "lucide-react";
 import { markNotificationAsRead } from "@/lib/api/notifications";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -23,6 +23,14 @@ function NotificationRow({
   const t = useTranslations("notifications");
   const locale = useLocale();
   const isUnread = notification.status === "PENDING";
+  const isAnalyticsAlert = notification.type === "ANALYTICS_ALERT";
+  const href = isAnalyticsAlert
+    ? notification.propertyId
+      ? `/analytics/${notification.propertyId}`
+      : null
+    : notification.conversationId
+      ? `/conversations/${notification.conversationId}`
+      : null;
 
   const content = (
     <>
@@ -32,7 +40,11 @@ function NotificationRow({
           isUnread ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground",
         )}
       >
-        <MessageSquare className="size-4" />
+        {isAnalyticsAlert ? (
+          <TrendingDown className="size-4" />
+        ) : (
+          <MessageSquare className="size-4" />
+        )}
       </div>
 
       <div className="min-w-0 flex-1">
@@ -54,10 +66,10 @@ function NotificationRow({
     isUnread && "bg-primary/5",
   );
 
-  if (notification.conversationId) {
+  if (href) {
     return (
       <Link
-        href={`/conversations/${notification.conversationId}`}
+        href={href}
         onClick={() => isUnread && onOpen(notification.id)}
         className={cn(rowClassName, "transition-colors hover:bg-muted/50")}
       >

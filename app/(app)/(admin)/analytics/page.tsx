@@ -82,7 +82,7 @@ export default function AnalyticsPage() {
         ) : (
           <TierUpsellBanner
             title={t("upsellTitle")}
-            description={t("upsellDescription")}
+            description={t("upsellDescription", { tier: "PROFESSIONAL" })}
             items={[
               t("upsellTrendCharts"),
               t("upsellRanking"),

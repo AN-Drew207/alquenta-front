@@ -4,6 +4,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   fetchAnalyticsRanking,
   fetchAnalyticsSummary,
+  fetchPropertyAnalyticsBenchmark,
   fetchPropertyAnalyticsDeviceBreakdown,
   fetchPropertyAnalyticsSummary,
   fetchPropertyAnalyticsTrend,
@@ -81,6 +82,21 @@ export function usePropertyAnalyticsDeviceBreakdown(
   return useQuery({
     queryKey: ["analytics", "properties", propertyId, "device-breakdown"],
     queryFn: () => fetchPropertyAnalyticsDeviceBreakdown(propertyId),
+    enabled: Boolean(propertyId) && enabled,
+  });
+}
+
+/**
+ * A single property's views/contacts benchmarked against comparable
+ * listings (owner-only, BUSINESS+). Same `enabled` gating rationale as
+ * usePropertyAnalyticsTrend above — the parent page gates on the admin's
+ * plan tier so a sub-BUSINESS admin never triggers the 403 in the first
+ * place.
+ */
+export function usePropertyAnalyticsBenchmark(propertyId: string, enabled = true) {
+  return useQuery({
+    queryKey: ["analytics", "properties", propertyId, "benchmark"],
+    queryFn: () => fetchPropertyAnalyticsBenchmark(propertyId),
     enabled: Boolean(propertyId) && enabled,
   });
 }

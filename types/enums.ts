@@ -35,7 +35,7 @@ export const OPERATION_TYPE_VALUES = Object.keys(
 
 export type PropertyStatus = "AVAILABLE" | "RENTED_OR_SOLD" | "CANCELLED";
 
-export type NotificationType = "NEW_MESSAGE";
+export type NotificationType = "NEW_MESSAGE" | "ANALYTICS_ALERT";
 
 export type NotificationStatus = "PENDING" | "READ";
 
