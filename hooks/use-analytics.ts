@@ -2,8 +2,11 @@
 
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
+  fetchAnalyticsRanking,
   fetchAnalyticsSummary,
+  fetchPropertyAnalyticsDeviceBreakdown,
   fetchPropertyAnalyticsSummary,
+  fetchPropertyAnalyticsTrend,
   recordPropertyView,
 } from "@/lib/api/analytics";
 
@@ -39,5 +42,45 @@ export function useAnalyticsSummary() {
   return useQuery({
     queryKey: ["analytics", "summary"],
     queryFn: fetchAnalyticsSummary,
+  });
+}
+
+/**
+ * A single property's daily view/contact trend (owner-only, PROFESSIONAL+).
+ * `enabled` lets callers gate the request on the admin's plan tier so a
+ * STARTER admin never triggers the 403 in the first place.
+ */
+export function usePropertyAnalyticsTrend(propertyId: string, enabled = true) {
+  return useQuery({
+    queryKey: ["analytics", "properties", propertyId, "trend"],
+    queryFn: () => fetchPropertyAnalyticsTrend(propertyId),
+    enabled: Boolean(propertyId) && enabled,
+  });
+}
+
+/**
+ * Portfolio-wide ranking across all of the admin's properties
+ * (PROFESSIONAL+). Already sorted by the backend — consume as-is.
+ */
+export function useAnalyticsRanking(enabled = true) {
+  return useQuery({
+    queryKey: ["analytics", "ranking"],
+    queryFn: fetchAnalyticsRanking,
+    enabled,
+  });
+}
+
+/**
+ * A single property's device breakdown (owner-only, PROFESSIONAL+). Same
+ * `enabled` gating rationale as usePropertyAnalyticsTrend above.
+ */
+export function usePropertyAnalyticsDeviceBreakdown(
+  propertyId: string,
+  enabled = true,
+) {
+  return useQuery({
+    queryKey: ["analytics", "properties", propertyId, "device-breakdown"],
+    queryFn: () => fetchPropertyAnalyticsDeviceBreakdown(propertyId),
+    enabled: Boolean(propertyId) && enabled,
   });
 }

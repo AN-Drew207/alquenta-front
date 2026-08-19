@@ -3,8 +3,11 @@
 import { useTranslations } from "next-intl";
 import { Eye, MessageSquare, Percent } from "lucide-react";
 import { useAnalyticsSummary } from "@/hooks/use-analytics";
+import { useMyFullProfile } from "@/hooks/use-profile";
+import { isTierAtLeast } from "@/lib/plan-tier";
 import { StatCard } from "@/components/dashboard/stat-card";
 import { TierUpsellBanner } from "@/components/analytics/tier-upsell-banner";
+import { RankingTable } from "@/components/analytics/ranking-table";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { translateApiError } from "@/lib/api/client";
@@ -12,6 +15,8 @@ import { translateApiError } from "@/lib/api/client";
 export default function AnalyticsPage() {
   const t = useTranslations("analytics");
   const { data: summary, isLoading, isError, error } = useAnalyticsSummary();
+  const { data: profile, isLoading: isProfileLoading } = useMyFullProfile();
+  const hasRankingAccess = isTierAtLeast(profile?.plan?.tier, "PROFESSIONAL");
 
   const hasData = Boolean(
     summary && (summary.totalViews > 0 || summary.totalContacts > 0),
@@ -70,18 +75,24 @@ export default function AnalyticsPage() {
       )}
 
       <div className="mt-6">
-        <TierUpsellBanner
-          title={t("upsellTitle")}
-          description={t("upsellDescription")}
-          items={[
-            t("upsellTrendCharts"),
-            t("upsellRanking"),
-            t("upsellDeviceBreakdown"),
-            t("upsellBenchmarking"),
-            t("upsellAlerts"),
-            t("upsellExport"),
-          ]}
-        />
+        {isProfileLoading ? (
+          <Skeleton className="h-32 w-full" />
+        ) : hasRankingAccess ? (
+          <RankingTable />
+        ) : (
+          <TierUpsellBanner
+            title={t("upsellTitle")}
+            description={t("upsellDescription")}
+            items={[
+              t("upsellTrendCharts"),
+              t("upsellRanking"),
+              t("upsellDeviceBreakdown"),
+              t("upsellBenchmarking"),
+              t("upsellAlerts"),
+              t("upsellExport"),
+            ]}
+          />
+        )}
       </div>
     </main>
   );

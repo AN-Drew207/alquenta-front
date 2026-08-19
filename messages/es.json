@@ -194,13 +194,31 @@
     "emptyState": "Todavía no hay datos. Las estadísticas aparecen a medida que la gente visita y contacta tus propiedades.",
     "couldNotLoadSummary": "No se pudieron cargar las estadísticas.",
     "upsellTitle": "Desbloquea más con un plan superior",
-    "upsellDescription": "Estas son las estadísticas básicas incluidas en tu plan. Los planes superiores suman:",
+    "upsellDescription": "Estas son las estadísticas básicas incluidas en tu plan. Un plan PROFESSIONAL o superior desbloquea:",
     "upsellTrendCharts": "Gráficos de tendencia",
     "upsellRanking": "Ranking de tus propiedades",
     "upsellDeviceBreakdown": "Desglose por dispositivo",
     "upsellBenchmarking": "Comparación con el mercado",
     "upsellAlerts": "Alertas automáticas",
-    "upsellExport": "Exportar reportes"
+    "upsellExport": "Exportar reportes",
+    "rankingTitle": "Ranking de propiedades",
+    "rankingColumnProperty": "Propiedad",
+    "rankingColumnViews": "Vistas",
+    "rankingColumnContacts": "Contactos",
+    "rankingColumnConversion": "Conversión",
+    "rankingEmptyState": "Todavía no hay datos suficientes para armar un ranking.",
+    "couldNotLoadRanking": "No se pudo cargar el ranking de propiedades.",
+    "trendTitle": "Tendencia de vistas y contactos",
+    "trendViews": "Vistas",
+    "trendContacts": "Contactos",
+    "trendEmptyState": "Todavía no hay datos de tendencia para esta propiedad.",
+    "couldNotLoadTrend": "No se pudo cargar la tendencia de esta propiedad.",
+    "deviceBreakdownTitle": "Desglose por dispositivo",
+    "deviceBreakdownCount": "Vistas",
+    "deviceBreakdownEmptyState": "Todavía no hay vistas registradas para esta propiedad.",
+    "couldNotLoadDeviceBreakdown": "No se pudo cargar el desglose por dispositivo.",
+    "drilldownTitle": "Analíticas de la propiedad",
+    "drilldownSubtitle": "Tendencia de vistas/contactos y desglose por dispositivo de esta propiedad."
   },
   "myProperties": {
     "title": "Mis propiedades",
@@ -537,6 +555,11 @@
     "notificationStatus": {
       "PENDING": "No leída",
       "READ": "Leída"
+    },
+    "deviceType": {
+      "MOBILE": "Móvil",
+      "DESKTOP": "Escritorio",
+      "UNKNOWN": "Desconocido"
     }
   },
   "superadmin": {

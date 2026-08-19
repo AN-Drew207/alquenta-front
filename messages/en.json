@@ -194,13 +194,31 @@
     "emptyState": "No data yet. Stats will show up as people view and contact your properties.",
     "couldNotLoadSummary": "Couldn't load your analytics.",
     "upsellTitle": "Unlock more with a higher tier",
-    "upsellDescription": "These are the basic stats included in your plan. Higher tiers add:",
+    "upsellDescription": "These are the basic stats included in your plan. A PROFESSIONAL plan or higher unlocks:",
     "upsellTrendCharts": "Trend charts",
     "upsellRanking": "Property ranking",
     "upsellDeviceBreakdown": "Device breakdown",
     "upsellBenchmarking": "Market benchmarking",
     "upsellAlerts": "Automated alerts",
-    "upsellExport": "Export reports"
+    "upsellExport": "Export reports",
+    "rankingTitle": "Property ranking",
+    "rankingColumnProperty": "Property",
+    "rankingColumnViews": "Views",
+    "rankingColumnContacts": "Contacts",
+    "rankingColumnConversion": "Conversion",
+    "rankingEmptyState": "Not enough data yet to build a ranking.",
+    "couldNotLoadRanking": "Couldn't load the property ranking.",
+    "trendTitle": "Views and contacts trend",
+    "trendViews": "Views",
+    "trendContacts": "Contacts",
+    "trendEmptyState": "No trend data yet for this property.",
+    "couldNotLoadTrend": "Couldn't load this property's trend.",
+    "deviceBreakdownTitle": "Device breakdown",
+    "deviceBreakdownCount": "Views",
+    "deviceBreakdownEmptyState": "No views recorded yet for this property.",
+    "couldNotLoadDeviceBreakdown": "Couldn't load the device breakdown.",
+    "drilldownTitle": "Property analytics",
+    "drilldownSubtitle": "This property's views/contacts trend and device breakdown."
   },
   "myProperties": {
     "title": "My properties",
@@ -537,6 +555,11 @@
     "notificationStatus": {
       "PENDING": "Unread",
       "READ": "Read"
+    },
+    "deviceType": {
+      "MOBILE": "Mobile",
+      "DESKTOP": "Desktop",
+      "UNKNOWN": "Unknown"
     }
   },
   "superadmin": {

@@ -38,3 +38,14 @@ export type PropertyStatus = "AVAILABLE" | "RENTED_OR_SOLD" | "CANCELLED";
 export type NotificationType = "NEW_MESSAGE";
 
 export type NotificationStatus = "PENDING" | "READ";
+
+export type DeviceType = "MOBILE" | "DESKTOP" | "UNKNOWN";
+
+const DEVICE_TYPE_KEYS = {
+  MOBILE: true,
+  DESKTOP: true,
+  UNKNOWN: true,
+} satisfies Record<DeviceType, true>;
+export const DEVICE_TYPE_VALUES = Object.keys(
+  DEVICE_TYPE_KEYS,
+) as DeviceType[];

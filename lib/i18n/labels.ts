@@ -3,13 +3,18 @@
 import { useTranslations } from "next-intl";
 import { buildLabels } from "./build-labels";
 import type {
+  DeviceType,
   NotificationStatus,
   OperationType,
   PropertyStatus,
   PropertyType,
   Role,
 } from "@/types/enums";
-import { OPERATION_TYPE_VALUES, PROPERTY_TYPE_VALUES } from "@/types/enums";
+import {
+  DEVICE_TYPE_VALUES,
+  OPERATION_TYPE_VALUES,
+  PROPERTY_TYPE_VALUES,
+} from "@/types/enums";
 
 export function usePropertyTypeLabels(): Record<PropertyType, string> {
   const t = useTranslations("enums.propertyType");
@@ -45,4 +50,9 @@ export function useNotificationStatusLabels(): Record<NotificationStatus, string
     PENDING: t("PENDING"),
     READ: t("READ"),
   };
+}
+
+export function useDeviceTypeLabels(): Record<DeviceType, string> {
+  const t = useTranslations("enums.deviceType");
+  return buildLabels(DEVICE_TYPE_VALUES, t);
 }
