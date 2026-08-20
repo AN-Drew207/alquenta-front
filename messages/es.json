@@ -231,7 +231,18 @@
     "exportTitle": "Exportar reporte",
     "exportDescription": "Descarga las estadísticas de esta propiedad en el formato que prefieras.",
     "exportCsv": "Exportar CSV",
-    "exportPdf": "Exportar PDF"
+    "exportPdf": "Exportar PDF",
+    "filterTypeLabel": "Tipo",
+    "filterOperationTypeLabel": "Operación",
+    "filterStatusLabel": "Estado (publicación)",
+    "filterStateLabel": "Estado (ubicación)",
+    "filterFromLabel": "Desde",
+    "filterToLabel": "Hasta",
+    "filterAllTypes": "Todos los tipos",
+    "filterAllOperations": "Todas las operaciones",
+    "filterAllStatuses": "Todos los estados",
+    "filterAnyState": "Cualquier estado",
+    "clearFilters": "Limpiar filtros"
   },
   "myProperties": {
     "title": "Mis propiedades",

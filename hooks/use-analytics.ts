@@ -10,6 +10,7 @@ import {
   fetchPropertyAnalyticsTrend,
   recordPropertyView,
 } from "@/lib/api/analytics";
+import type { AnalyticsSummaryFilters } from "@/types/analytics";
 
 /**
  * Fire-and-forget: records a property page view. Best-effort ping (rate
@@ -38,11 +39,17 @@ export function usePropertyAnalyticsSummary(propertyId: string, enabled = true) 
   });
 }
 
-/** Portfolio-wide summary across all of the admin's properties. */
-export function useAnalyticsSummary() {
+/**
+ * Portfolio-wide summary across all of the admin's properties. `filters`
+ * (Fase 4, ENTERPRISE-only) narrows the aggregate — omit entirely for
+ * Fase 1's plain STARTER+ behavior. Callers must only pass filters after
+ * confirming the admin's tier client-side (see isTierAtLeast), since the
+ * backend gates any filter presence at ENTERPRISE.
+ */
+export function useAnalyticsSummary(filters?: AnalyticsSummaryFilters) {
   return useQuery({
-    queryKey: ["analytics", "summary"],
-    queryFn: fetchAnalyticsSummary,
+    queryKey: ["analytics", "summary", filters ?? {}],
+    queryFn: () => fetchAnalyticsSummary(filters),
   });
 }
 

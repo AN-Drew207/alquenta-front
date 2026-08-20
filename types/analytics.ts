@@ -1,4 +1,4 @@
-import type { DeviceType } from "./enums";
+import type { DeviceType, OperationType, PropertyStatus, PropertyType } from "./enums";
 
 // Maps to PropertyAnalyticsSummaryResponseDto, shared by both summary
 // endpoints (`/analytics/properties/:id/summary` and `/analytics/summary`).
@@ -6,6 +6,21 @@ export interface AnalyticsSummary {
   totalViews: number;
   totalContacts: number;
   conversionRate: number;
+}
+
+// Maps to PortfolioAnalyticsSummaryQueryDto — Fase 4's optional filters on
+// `GET /analytics/summary`. ENTERPRISE-only: passing any of these bumps the
+// backend's access gate from STARTER+ to ENTERPRISE, so only build this
+// object when the caller already confirmed the admin's tier client-side (see
+// isTierAtLeast in app/(app)/(admin)/analytics/page.tsx). `from`/`to` are
+// plain "YYYY-MM-DD" strings from a native date input, valid ISO 8601.
+export interface AnalyticsSummaryFilters {
+  type?: PropertyType;
+  operationType?: OperationType;
+  state?: string;
+  status?: PropertyStatus;
+  from?: string;
+  to?: string;
 }
 
 // Maps to one entry of `GET /analytics/properties/:id/trend`'s array

@@ -5,6 +5,7 @@ import type {
   AnalyticsDeviceBreakdownEntry,
   AnalyticsRankingEntry,
   AnalyticsSummary,
+  AnalyticsSummaryFilters,
   AnalyticsTrendPoint,
   PropertyAnalyticsExportFormat,
 } from "@/types/analytics";
@@ -22,8 +23,12 @@ export async function fetchPropertyAnalyticsSummary(
   return data;
 }
 
-export async function fetchAnalyticsSummary(): Promise<AnalyticsSummary> {
-  const { data } = await api.get<AnalyticsSummary>("/analytics/summary");
+export async function fetchAnalyticsSummary(
+  filters?: AnalyticsSummaryFilters,
+): Promise<AnalyticsSummary> {
+  const { data } = await api.get<AnalyticsSummary>("/analytics/summary", {
+    params: filters,
+  });
   return data;
 }
 

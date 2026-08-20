@@ -1,5 +1,6 @@
 "use client";
 
+import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Eye, MessageSquare, Percent } from "lucide-react";
 import { useAnalyticsSummary } from "@/hooks/use-analytics";
@@ -8,15 +9,39 @@ import { isTierAtLeast } from "@/lib/plan-tier";
 import { StatCard } from "@/components/dashboard/stat-card";
 import { TierUpsellBanner } from "@/components/analytics/tier-upsell-banner";
 import { RankingTable } from "@/components/analytics/ranking-table";
+import { PortfolioFilters } from "@/components/analytics/portfolio-filters";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { translateApiError } from "@/lib/api/client";
+import type { AnalyticsSummaryFilters } from "@/types/analytics";
+import type { OperationType, PropertyStatus, PropertyType } from "@/types/enums";
 
 export default function AnalyticsPage() {
   const t = useTranslations("analytics");
-  const { data: summary, isLoading, isError, error } = useAnalyticsSummary();
+  const searchParams = useSearchParams();
   const { data: profile, isLoading: isProfileLoading } = useMyFullProfile();
   const hasRankingAccess = isTierAtLeast(profile?.plan?.tier, "PROFESSIONAL");
+  const hasPortfolioFilterAccess = isTierAtLeast(
+    profile?.plan?.tier,
+    "ENTERPRISE",
+  );
+
+  // Only ever built once the admin's ENTERPRISE tier is confirmed — the
+  // backend bumps the access gate to ENTERPRISE the moment any of these is
+  // present, so a non-ENTERPRISE admin must never send them.
+  const filters: AnalyticsSummaryFilters | undefined = hasPortfolioFilterAccess
+    ? {
+        type: (searchParams.get("type") as PropertyType) || undefined,
+        operationType:
+          (searchParams.get("operationType") as OperationType) || undefined,
+        state: searchParams.get("state") || undefined,
+        status: (searchParams.get("status") as PropertyStatus) || undefined,
+        from: searchParams.get("from") || undefined,
+        to: searchParams.get("to") || undefined,
+      }
+    : undefined;
+
+  const { data: summary, isLoading, isError, error } = useAnalyticsSummary(filters);
 
   const hasData = Boolean(
     summary && (summary.totalViews > 0 || summary.totalContacts > 0),
@@ -41,6 +66,10 @@ export default function AnalyticsPage() {
         <h1 className="text-2xl font-bold">{t("title")}</h1>
         <p className="text-muted-foreground">{t("subtitle")}</p>
       </div>
+
+      {isProfileLoading ? null : hasPortfolioFilterAccess ? (
+        <PortfolioFilters />
+      ) : null}
 
       {isLoading ? (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">

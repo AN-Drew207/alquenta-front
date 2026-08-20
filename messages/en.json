@@ -231,7 +231,18 @@
     "exportTitle": "Export report",
     "exportDescription": "Download this property's stats in your preferred format.",
     "exportCsv": "Export CSV",
-    "exportPdf": "Export PDF"
+    "exportPdf": "Export PDF",
+    "filterTypeLabel": "Type",
+    "filterOperationTypeLabel": "Operation",
+    "filterStatusLabel": "Status",
+    "filterStateLabel": "State",
+    "filterFromLabel": "From",
+    "filterToLabel": "To",
+    "filterAllTypes": "All types",
+    "filterAllOperations": "All operations",
+    "filterAllStatuses": "All statuses",
+    "filterAnyState": "Any state",
+    "clearFilters": "Clear filters"
   },
   "myProperties": {
     "title": "My properties",
